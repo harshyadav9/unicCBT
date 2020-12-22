@@ -19,21 +19,21 @@ public class StudentController {
 	@Autowired
 	StudentServiceImpl stuService;
 	
-	@PostMapping(path="/create")
-	public ResponseEntity<Student> createStudent(@RequestBody Student student) {
-		
-		if (student !=null && student.getPassword() != null && student.getStudentName()!= null) {
-			return new ResponseEntity<>(stuService.createStudent(student), HttpStatus.CREATED);
-			
-		}
-		else {
-			return new ResponseEntity<>(new Student(), HttpStatus.BAD_REQUEST);
-			
-		}
-		
-		
-	}
-	
+	/*
+	 * @PostMapping(path="/create") public ResponseEntity<Student>
+	 * createStudent(@RequestBody Student student) {
+	 * 
+	 * if (student !=null && student.getPassword() != null &&
+	 * student.getStudentName()!= null) { return new
+	 * ResponseEntity<>(stuService.createStudent(student), HttpStatus.CREATED);
+	 * 
+	 * } else { return new ResponseEntity<>(new Student(), HttpStatus.BAD_REQUEST);
+	 * 
+	 * }
+	 * 
+	 * 
+	 * }
+	 */
 	@PostMapping(path="/authenticate")
 	public ResponseEntity<String> authenticateStudentById(@RequestBody Student student) {
 		
