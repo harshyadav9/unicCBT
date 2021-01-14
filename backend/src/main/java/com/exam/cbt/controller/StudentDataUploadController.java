@@ -44,7 +44,7 @@ public class StudentDataUploadController {
                 XSSFRow row = worksheet.getRow(index);
                 Integer id = (int) row.getCell(0).getNumericCellValue();
 
-                student.setId(id);
+                student.setRegistrationNo(id);
                 student.setStudentName(row.getCell(1).getStringCellValue());
                 if(row.getCell(2).getCellType()==CellType.STRING) 
                 	 student.setPassword(row.getCell(2).getStringCellValue());

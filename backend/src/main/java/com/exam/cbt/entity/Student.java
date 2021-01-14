@@ -11,7 +11,7 @@ import javax.persistence.Table;
 public class Student {
 	
 	@Id
-	private int id;
+	private int registrationNo;
 
 	public Student() {
 		super();
@@ -31,12 +31,12 @@ public class Student {
 		this.password = password;
 	}
 
-	public int getId() {
-		return id;
+	public int getRegistrationNo() {
+		return registrationNo;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setRegistrationNo(int registrationNo) {
+		this.registrationNo = registrationNo;
 	}
 
 	public String getStudentName() {
@@ -48,7 +48,7 @@ public class Student {
 	}
 
 	
-	 @Override public String toString() { return "Student [id=" + id +
+	 @Override public String toString() { return "Student [registrationNo=" + registrationNo +
 	 ", studentName=" + studentName + ", password=" + password + "]"; }
 	
 

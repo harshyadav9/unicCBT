@@ -14,7 +14,7 @@ import com.exam.cbt.entity.Student;
 import com.exam.cbt.service.impl.StudentServiceImpl;  
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/student")
 @CrossOrigin(origins = "*")
 public class StudentController {
 	
@@ -46,11 +46,11 @@ public class StudentController {
 		
 	}
 	
-	@PostMapping(path="/authenticate")
+	@PostMapping(path="/login")
 	public ResponseEntity<String> authenticateStudentById(@RequestBody Student student) {
 		
 		if (student !=null) {
-			return new ResponseEntity<>(stuService.getStudent(student.getId(),student.getPassword()), HttpStatus.FOUND);
+			return new ResponseEntity<>(stuService.getStudent(student.getRegistrationNo(),student.getPassword()), HttpStatus.FOUND);
 			
 		}
 		else {

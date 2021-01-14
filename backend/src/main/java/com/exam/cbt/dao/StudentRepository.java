@@ -10,6 +10,6 @@ import com.exam.cbt.entity.Student;
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Integer>{
 	
-	Optional<Student> findById(Integer id);
+	Optional<Student> findByRegistrationNo(Integer registrationNo);
 
 }
