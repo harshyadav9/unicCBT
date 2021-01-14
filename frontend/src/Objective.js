@@ -32,6 +32,20 @@ class RadioButtonsGroup extends React.Component {
 
     handleChange = (event, ans, quesNo) => {
         console.log(event, ans, quesNo);
+        let arr = JSON.parse(localStorage.getItem('questionNo'));
+        console.log("arr", arr)
+        if (arr == null) {
+            arr = [];
+            arr.push(quesNo);
+            localStorage.setItem('questionNo', JSON.stringify(arr));
+        } else {
+            if (arr.indexOf(quesNo) == -1) {
+                arr.push(quesNo);
+                localStorage.setItem('questionNo', JSON.stringify(arr));
+            }
+
+        }
+        // localStorage.setItem('questionNo', JSON.stringify(quesNo));
         this.setState({ value: event });
 
         if (event === ans) {

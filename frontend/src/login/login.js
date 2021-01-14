@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -14,6 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Footer from '../footer/footer';
 import Header from '../header/header';
+import axios from 'axios';
 const useStyles = makeStyles((theme) => ({
 
   root: {
@@ -69,6 +70,17 @@ export default function Login() {
   const [isregValid, setisRegValid] = useState(false)
   const [ispassValid, setisPassValid] = useState(false)
 
+
+  useEffect(() => {
+
+    axios.get('https://uniccbt.azurewebsites.net/api/checkStatus', {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
+    }).then(res => {
+      console.log(res);
+    })
+  }, []);
 
   const onSubmit = (e) => {
     console.group(e.value);

@@ -11,6 +11,7 @@ import Objective from './Objective';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import ButtonsGroup from './buttonsGroup/buttonsGroup';
+import SwipeableViews from 'react-swipeable-views';
 import MobileStepper from '@material-ui/core/MobileStepper';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
@@ -46,6 +47,10 @@ const useStyles = theme => ({
     },
     appbar: {
         alignItems: 'center'
+    },
+    mobileStepper: {
+        paddingLeft: theme.spacing.unit * 3,
+        paddingRight: theme.spacing.unit * 3
     },
 
     buttonDefault: {
@@ -110,13 +115,20 @@ const useStyles = theme => ({
         borderRadius: '7px',
         margin: '4px'
 
+    },
+    swipableViews: {
+        position: 'relative',
+        width: '100%'
     }
 });
 
 function Test(props) {
     // const classes = useStyles();
+    const [activeStep, setactiveStep] = useState(0);
+    const maxSteps = Questions.length;
     const { classes, theme } = props;
     let quesNo = '';
+    const [question, setquestion] = useState(0);
     const [questionNo, setquestionNo] = useState({ id: '', type: 'unanswered' });
     const saveQuestion = (e) => {
         console.log(e);
@@ -148,10 +160,95 @@ function Test(props) {
 
 
     }
+
+    const reviewQuestion = () => {
+        let reviewquestions;
+        if ((JSON.parse(localStorage.getItem('reviewQuestionNo'))) === null) {
+
+            localStorage.setItem('reviewQuestionNo', JSON.stringify({ 'reviewU': [], 'reviewA': [] }));
+        }
+        reviewquestions = JSON.parse(localStorage.getItem('reviewQuestionNo'));
+
+        console.log("activeStep", activeStep)
+        let activeQues = activeStep + 1;
+        let questions = JSON.parse(localStorage.getItem('questionNo'));
+        console.log("reviewquestions", reviewquestions);
+        if (questions && questions.indexOf(activeQues) > -1) {
+            // if (JSON.parse(localStorage.getItem('questionNo')) === question) {
+            if (reviewquestions && reviewquestions['reviewA'].indexOf(activeQues) == -1) {
+
+                reviewquestions['reviewA'].push(activeQues);
+                if (reviewquestions['reviewU'].indexOf(activeQues) > -1) {
+                    reviewquestions['reviewU'].splice(reviewquestions['reviewU'].indexOf(activeQues), 1);
+                }
+            }
+
+
+            setquestionNo({ id: activeQues, type: 'reviewA' });
+        } else {
+            if (reviewquestions && reviewquestions['reviewU'].indexOf(activeQues) == -1) {
+                reviewquestions['reviewU'].push(activeQues);
+                if (reviewquestions['reviewA'].indexOf(activeQues) > -1) {
+                    reviewquestions['reviewA'].splice(reviewquestions['reviewA'].indexOf(activeQues), 1);
+                }
+            }
+
+
+            setquestionNo({ id: activeQues, type: 'reviewU' });
+        }
+        localStorage.setItem('reviewQuestionNo', JSON.stringify(reviewquestions));
+        setactiveStep(activeStep + 1);
+    }
+
+    const changeActiveStep = (key) => {
+        console.log("key", key);
+        setactiveStep(key)
+    }
+
+
+    const handleNext = () => {
+        console.log("question", question);
+        let activeQues = activeStep + 1;
+        let questions = JSON.parse(localStorage.getItem('questionNo'));
+        if (questions && questions.indexOf(activeQues) > -1) {
+            setquestionNo({ id: activeQues, type: 'answered' });
+        }
+
+        //     if (e == "save") {
+        //         setquestionNo({ id: question, type: 'unanswered' });
+        //     } else {
+        //         setquestionNo({ id: question, type: 'reviewU' });
+        //     }
+        // } else {
+        //     if (e == "save") {
+        //         setquestionNo({ id: question, type: 'answered' });
+        //     } else {
+        //         setquestionNo({ id: question, type: 'reviewA' });
+        //     }
+
+        // }
+
+        setactiveStep(activeStep + 1);
+        // saveQuestion('save');
+    };
+
+    const handleBack = () => {
+        setactiveStep(activeStep - 1);
+    };
+
+
+    const handleStepChange = activeStep => {
+        setactiveStep(activeStep);
+    };
+
+
     const response = (quesNo) => {
         console.log("quesNo", quesNo);
+        // quesNo = quesNo;
         quesNo = quesNo;
-        localStorage.setItem('questionNo', JSON.stringify(quesNo));
+        setquestion(quesNo);
+        //localStorage.setItem('questionNo', JSON.stringify(quesNo));
+        //setquestionNo({ id: quesNo, type: 'answered' });
         // setquestionNo(quesNo);
         // quesNo = String(quesNo);
         // const questionNo = JSON.parse(localStorage.getItem('questionNo'));
@@ -168,8 +265,10 @@ function Test(props) {
 
     const checkQuestionNo = (quesNo) => {
         console.log("quesNo", quesNo);
-        localStorage.setItem('questionNo', JSON.stringify(quesNo));
+        // localStorage.setItem('questionNo', JSON.stringify(quesNo));
         quesNo = quesNo;
+        setquestion(quesNo);
+        //setquestionNo({ id: quesNo, type: 'answered' });
         // setquestionNo(quesNo);
         // quesNo = String(quesNo);
         // const questionNo = JSON.parse(localStorage.getItem('questionNo'));
@@ -189,25 +288,70 @@ function Test(props) {
             <Grid container className={classes.container}>
                 <Grid container xs={12} md={8} lg={9} className={classes.leftContainer}>
                     <Paper square elevation={0} className={classes.header}>
-                        <Typography>{Questions[1].id} {Questions[1].label}</Typography>
+                        <Typography>{Questions[activeStep].id} {Questions[activeStep].label}</Typography>
                     </Paper>
 
                     {/* {Questions.map(question => ( */}
-                    <Objective
-                        objective={Questions[1].obj}
-                        key={Questions[1].id}
-                        response={(quesNo) => response(quesNo)}
-                        checkQuestionNo={(quesNo) => checkQuestionNo(quesNo)} />
+                    <div className={classes.swipableViews}>
+                        <SwipeableViews
+                            axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+                            index={activeStep}
+                            onChangeIndex={handleStepChange}
+                            enableMouseEvents
+                        >
+                            {/* <Objective
+                            objective={Questions[1].obj}
+                            key={Questions[1].id}
+                            response={(quesNo) => response(quesNo)}
+                            checkQuestionNo={(quesNo) => checkQuestionNo(quesNo)} /> */}
+
+                            {Questions.map(question => (
+                                <Objective
+                                    objective={question.obj}
+                                    key={question.id}
+                                    response={(quesNo) => response(quesNo)}
+                                    checkQuestionNo={(quesNo) => checkQuestionNo(quesNo)} />
+                            ))}
+
+                        </SwipeableViews>
+                    </div>
+
                     {/* ))} */}
 
-                    <Button onClick={() => { saveQuestion('save') }} value="save" variant="contained">Save & Next</Button>
+                    <MobileStepper
+                        steps={maxSteps}
+                        position="static"
+                        variant="progress"
+                        activeStep={activeStep}
+                        className={classes.mobileStepper}
+                        nextButton={
+                            <Button size="small" onClick={handleNext} disabled={activeStep === maxSteps - 1}>
+                                Save & Next
+              {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+                            </Button>
+                        }
+                        backButton={
+                            <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+                                {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+                  Back
+            </Button>
+
+                        }
+                    />
+                    <Button size="small" onClick={reviewQuestion} >
+
+                        Review
+            </Button>
+
+
+                    {/* <Button onClick={() => { saveQuestion('save') }} value="save" variant="contained">Save & Next</Button>
                     <Button onClick={() => { saveQuestion('review') }} onClick={saveQuestion} variant="contained" color="primary">
                         Review
-                    </Button>
+                    </Button> */}
                 </Grid>
                 <Grid item xs={12} md={4} lg={3}>
 
-                    <ButtonsGroup arrLen={50} questionInfo={questionNo} />
+                    <ButtonsGroup arrLen={Questions.length} questionInfo={questionNo} totalQues={Questions.length} changeStep={changeActiveStep} />
 
 
                 </Grid>
