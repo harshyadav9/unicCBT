@@ -3,6 +3,8 @@ package com.exam.cbt.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +15,7 @@ import com.exam.cbt.service.impl.StudentServiceImpl;
 
 @RestController
 @RequestMapping("/api")
-//@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "*")
 public class StudentController {
 	
 	@Autowired
@@ -34,6 +36,16 @@ public class StudentController {
 	 * 
 	 * }
 	 */
+	
+	@GetMapping(path="/checkStatus")
+	public String checkAppStatus() {
+		
+		String str = "App is running";
+		
+		return str;
+		
+	}
+	
 	@PostMapping(path="/authenticate")
 	public ResponseEntity<String> authenticateStudentById(@RequestBody Student student) {
 		
