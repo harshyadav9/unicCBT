@@ -3,7 +3,6 @@ package com.exam.cbt.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -45,7 +44,7 @@ public class StudentDataUploadController {
                 Integer id = (int) row.getCell(0).getNumericCellValue();
 
                 student.setRegistrationNo(id);
-                student.setStudentName(row.getCell(1).getStringCellValue());
+               // student.setStudentName(row.getCell(1).getStringCellValue());
                 if(row.getCell(2).getCellType()==CellType.STRING) 
                 	 student.setPassword(row.getCell(2).getStringCellValue());
                 else if(row.getCell(2).getCellType()==CellType.NUMERIC) {
