@@ -1,6 +1,7 @@
 package com.exam.cbt.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -9,12 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.exam.cbt.entity.QuestionMaster;
 import com.exam.cbt.entity.Student;
+import com.exam.cbt.pojo.QuestionMasterResponse;
+import com.exam.cbt.service.impl.QuestionMasterServiceImpl;
 import com.exam.cbt.service.impl.StudentServiceImpl;
 
 @RestController
@@ -26,6 +31,9 @@ public class StudentController {
 
 	@Autowired
 	StudentServiceImpl stuService;
+
+	@Autowired
+	QuestionMasterServiceImpl questionMasterServ;
 
 	/*
 	 * @PostMapping(path="/create") public ResponseEntity<Student>
@@ -76,6 +84,30 @@ public class StudentController {
 			mp.put("Message", "Password is empty");
 			mp.put("CODE", HttpStatus.BAD_REQUEST.getReasonPhrase());
 			return mp;
+
+		}		
+
+	}
+	
+	@RequestMapping(value = "/getQuestions/{registrationNumber}", method = RequestMethod.GET)
+	public QuestionMasterResponse getQuestions(@PathVariable Integer registrationNumber) {
+		
+		QuestionMasterResponse res = new QuestionMasterResponse();
+		HashMap<String, String> retCode = new HashMap<>(); 
+		
+		if (registrationNumber != null) {
+			
+			HashMap<String, List<QuestionMaster>> hm = questionMasterServ.getAllQuestions();
+			retCode.put("CODE", HttpStatus.ACCEPTED.getReasonPhrase());
+			res.setQuestionList(hm);
+			res.setResponseCode(retCode);
+			return res;
+			
+		} else {
+			
+			retCode.put("CODE", HttpStatus.BAD_REQUEST.getReasonPhrase());
+			res.setResponseCode(retCode);
+			return res;
 
 		}		
 
