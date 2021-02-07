@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.exam.cbt.entity.QuestionMaster;
 import com.exam.cbt.entity.Student;
-import com.exam.cbt.entity.StudentResponse;
 import com.exam.cbt.pojo.QuestionMasterResponse;
 import com.exam.cbt.service.StudentResponseService;
 import com.exam.cbt.service.impl.QuestionMasterServiceImpl;
@@ -40,54 +39,45 @@ public class StudentController {
 	@Autowired
 	StudentResponseService stuRespServ;
 
-	/*
-	 * @PostMapping(path="/create") public ResponseEntity<Student>
-	 * createStudent(@RequestBody Student student) {
-	 * 
-	 * if (student !=null && student.getPassword() != null &&
-	 * student.getStudentName()!= null) { return new
-	 * ResponseEntity<>(stuService.createStudent(student), HttpStatus.CREATED);
-	 * 
-	 * } else { return new ResponseEntity<>(new Student(), HttpStatus.BAD_REQUEST);
-	 * 
-	 * }
-	 * 
-	 * 
-	 * }
-	 */
-
 	@GetMapping(path = "/checkStatus")
 	public String checkAppStatus() { 	
 
 		String str = "App is running";
-
+		log.info(str);
+		log.info("Exiting checkAppStatus{}");
 		return str;
 
 	}
 
-	//@PostMapping(path = "/login")
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Map<String,String> login(@RequestBody Student student) {
 		
-		Map<String,String> mp = new HashMap<String,String>();
+		log.info("Inside login{} with inout student : "+student);
 		
+		Map<String,String> mp = new HashMap<String,String>();
 
 		if (student.getPassword() != null) {
-			
+			log.info("Calling stuService.getStudent{} ");
 			String str = stuService.getStudent(student.getRegistrationNo(), student.getPassword());
 			if(str != null && str.equalsIgnoreCase("AUTHENTICATED")) {
+				log.info("Authenticated:  " +student.getRegistrationNo());
 				mp.put("Message", str);
 				mp.put("CODE", HttpStatus.FOUND.getReasonPhrase());
 			}else {
 				mp.put("Message", str);
 				mp.put("CODE", HttpStatus.NOT_FOUND.getReasonPhrase());
+				log.info("Not Found:  " +student.getRegistrationNo());
+				
 			}
+			log.info("Exiting login{}");
 			return mp;
 			
 			
 		} else {
 			mp.put("Message", "Password is empty");
 			mp.put("CODE", HttpStatus.BAD_REQUEST.getReasonPhrase());
+			log.info("Password is emptyfor registrationNumber:  " +student.getRegistrationNo());
+			log.info("Exiting login{}");
 			return mp;
 
 		}		
@@ -97,21 +87,27 @@ public class StudentController {
 	@RequestMapping(value = "/getQuestions/{registrationNumber}", method = RequestMethod.GET)
 	public QuestionMasterResponse getQuestions(@PathVariable Integer registrationNumber) {
 		
+		log.info("Inside getQuestions{} with registrationNo: " +registrationNumber);
+		
 		QuestionMasterResponse res = new QuestionMasterResponse();
 		HashMap<String, String> retCode = new HashMap<>(); 
 		
 		if (registrationNumber != null) {
-			
+			log.info("Calling questionMasterServ.getAllQuestions{}");
 			HashMap<String, List<QuestionMaster>> hm = questionMasterServ.getAllQuestions();
 			retCode.put("CODE", HttpStatus.ACCEPTED.getReasonPhrase());
 			res.setQuestionList(hm);
 			res.setResponseCode(retCode);
+			log.info(retCode.get("CODE"));
+			log.info("Exiting getQuestions{}");
 			return res;
 			
 		} else {
 			
 			retCode.put("CODE", HttpStatus.BAD_REQUEST.getReasonPhrase());
 			res.setResponseCode(retCode);
+			log.info(retCode.get("CODE"));
+			log.info("Exiting getQuestions{}");
 			return res;
 
 		}		
@@ -121,17 +117,21 @@ public class StudentController {
 	@RequestMapping(value = "/submitExam", method = RequestMethod.PUT)
 	public HashMap<String,String> submitExam(@RequestBody com.exam.cbt.pojo.StudentResponse studentResp) {
 		
+		
 		HashMap<String, String> retCode = new HashMap<>(); 
 		
 		if (studentResp != null) {
-			
+			log.info("Inside submitExam{} for registrationNo : " + studentResp.getRegistrationNo());
 			stuRespServ.saveStudentExam(studentResp.getResp());
 			retCode.put("CODE", HttpStatus.CREATED.getReasonPhrase());
+			log.info("Exiting submitExam{} for registrationNo : " +studentResp.getRegistrationNo() );
 			return retCode;
 			
 		} else {
 			
 			retCode.put("CODE", HttpStatus.BAD_REQUEST.getReasonPhrase());
+			log.info(retCode.get("CODE"));
+			log.info("Exiting submitExam{} ");
 			return retCode;
 
 		}		

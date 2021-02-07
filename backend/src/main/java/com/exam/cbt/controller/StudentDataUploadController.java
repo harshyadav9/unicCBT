@@ -8,6 +8,8 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,7 @@ import com.exam.cbt.service.impl.UploadDataServiceImpl;
 @RequestMapping("/upload")
 //@CrossOrigin(origins = "http://localhost:8080")
 public class StudentDataUploadController {
+	Logger log = LoggerFactory.getLogger(StudentDataUploadController.class); 
 	
 	@Autowired
 	UploadDataServiceImpl uploadDataService;
