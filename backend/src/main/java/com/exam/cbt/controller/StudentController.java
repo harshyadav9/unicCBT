@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.exam.cbt.entity.QuestionMaster;
 import com.exam.cbt.entity.Student;
+import com.exam.cbt.entity.StudentResponse;
 import com.exam.cbt.pojo.QuestionMasterResponse;
+import com.exam.cbt.service.StudentResponseService;
 import com.exam.cbt.service.impl.QuestionMasterServiceImpl;
 import com.exam.cbt.service.impl.StudentServiceImpl;
 
@@ -34,6 +36,9 @@ public class StudentController {
 
 	@Autowired
 	QuestionMasterServiceImpl questionMasterServ;
+	
+	@Autowired
+	StudentResponseService stuRespServ;
 
 	/*
 	 * @PostMapping(path="/create") public ResponseEntity<Student>
@@ -113,6 +118,25 @@ public class StudentController {
 
 	}
 
+	@RequestMapping(value = "/submitExam", method = RequestMethod.PUT)
+	public HashMap<String,String> submitExam(@RequestBody com.exam.cbt.pojo.StudentResponse studentResp) {
+		
+		HashMap<String, String> retCode = new HashMap<>(); 
+		
+		if (studentResp != null) {
+			
+			stuRespServ.saveStudentExam(studentResp.getResp());
+			retCode.put("CODE", HttpStatus.CREATED.getReasonPhrase());
+			return retCode;
+			
+		} else {
+			
+			retCode.put("CODE", HttpStatus.BAD_REQUEST.getReasonPhrase());
+			return retCode;
+
+		}		
+
+	}
 	// @GetMapping("/authenticate/{id}")
 //	public ResponseEntity<Student> authenticateStudentId(@PathVariable(required = true) Integer id) {
 //		
