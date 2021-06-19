@@ -82,7 +82,6 @@ export default class Timer extends Component {
         clearInterval(this.myInterval)
     }
 
-
     render() {
         const { minutes, seconds, hours } = this.state
         return (
