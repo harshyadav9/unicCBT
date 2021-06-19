@@ -6,6 +6,8 @@ import Instructions from './instructions/instructions';
 import NewWindow from 'react-new-window'
 // import Header from './header/header';
 import Test from './Test';
+import Header from './header/header';
+
 function App() {
   return (
     <div className="App">
@@ -14,6 +16,7 @@ function App() {
         {/* <MuiThemeProvider theme={theme}> */}
 
         {/* <div className="App"> */}
+        {/* <Header /> */}
         <Switch>
           <Route exact path="/" component={Login} />
           {/* <NewWindow> */}

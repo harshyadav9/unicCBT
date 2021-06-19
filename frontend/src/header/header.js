@@ -4,6 +4,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
+import Timer from '../Timer';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,7 +36,7 @@ function Header() {
                     <Typography variant="h6">
                         CBT-Exam
                 </Typography>
-                    <div className="timer-wrapper">
+                    {/* <div className="timer-wrapper">
                         <CountdownCircleTimer
                             isPlaying
                             duration={115}
@@ -45,8 +46,8 @@ function Header() {
                         >
                             {childrenFunc}
                         </CountdownCircleTimer>
-                    </div>
-
+                    </div> */}
+                    <Timer />
                     {/* <Typography color="inherit" >Time: 123 </Typography> */}
                 </Toolbar>
 

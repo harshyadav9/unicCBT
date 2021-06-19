@@ -150,12 +150,12 @@ const useStyles = makeStyles((theme) => ({
 function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
 
 
-    console.log(arrLen, questionInfo);
+    console.log("ButtonsGroup*******", arrLen, questionInfo);
 
     useEffect(() => {
         console.log("useEffect");
         let tempArr = [];
-        if (questionInfo.id === "") {
+        if (questionInfo.id == "") {
             const createArr = () => {
                 for (let i = 0; i < arrLen; i++) {
                     let obj = {};
@@ -168,8 +168,9 @@ function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
                     tempArr.push(obj);
 
                 }
-                setnewArr([...newArr, ...tempArr]);
-                console.log("newArr123", newArr)
+                console.log("newArr123", [...newArr, ...tempArr])
+                setnewArr(prevArrValues => ([...prevArrValues, ...tempArr]))
+                // setnewArr([...newArr, ...tempArr]);
             }
             createArr();
         } else {
