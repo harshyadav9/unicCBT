@@ -4,6 +4,10 @@ import java.util.List;
 
 public class StudentResponse {
 	
+private Integer registrationNo;
+	
+	private List<com.exam.cbt.entity.StudentResponse> resp;
+	
 	public Integer getRegistrationNo() {
 		return registrationNo;
 	}
@@ -20,8 +24,6 @@ public class StudentResponse {
 		this.resp = resp;
 	}
 
-	private Integer registrationNo;
 	
-	private List<com.exam.cbt.entity.StudentResponse> resp;
 
 }
