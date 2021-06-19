@@ -20,16 +20,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.exam.cbt.entity.Student;
-import com.exam.cbt.service.impl.UploadDataServiceImpl;  
+import com.exam.cbt.service.impl.UploadStudentDataServiceImpl;  
 
 @RestController
 @RequestMapping("/upload")
 //@CrossOrigin(origins = "http://localhost:8080")
-public class StudentDataUploadController {
-	Logger log = LoggerFactory.getLogger(StudentDataUploadController.class); 
+public class DataUploadController {
+	Logger log = LoggerFactory.getLogger(DataUploadController.class); 
 	
 	@Autowired
-	UploadDataServiceImpl uploadDataService;
+	UploadStudentDataServiceImpl uploadStudentDataService;
 	
 	@PostMapping(value = "/import-excel")
 	ResponseEntity<List<Student>> importExcelFile(@RequestParam("file") MultipartFile files) throws IOException {
@@ -59,7 +59,7 @@ public class StudentDataUploadController {
         }
 
         //insert into db
-        uploadDataService.uploadStudents(stuList);
+        uploadStudentDataService.uploadStudents(stuList);
 		
         return new ResponseEntity<>(stuList, status);
     }

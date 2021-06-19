@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 
 import com.exam.cbt.dao.StudentRepository;
 import com.exam.cbt.entity.Student;
-import com.exam.cbt.service.UploadDataService;
+import com.exam.cbt.service.UploadStudentDataService;
 
 @Service
-public class UploadDataServiceImpl implements UploadDataService{
+public class UploadStudentDataServiceImpl implements UploadStudentDataService{
 	
-	Logger log = LoggerFactory.getLogger(UploadDataServiceImpl.class); 
+	Logger log = LoggerFactory.getLogger(UploadStudentDataServiceImpl.class); 
 	
 	 @Autowired
 	 private StudentRepository studentRepository;
