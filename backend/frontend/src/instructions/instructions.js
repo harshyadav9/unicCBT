@@ -8,6 +8,7 @@ import Divider from '@material-ui/core/Divider';
 import ButtonsGroup from '../buttonsGroup/buttonsGroup';
 import Header from '../header/header';
 
+
 // import image from '../../public/'
 const useStyles = makeStyles((theme) => ({
     root: {

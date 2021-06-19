@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -14,6 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Footer from '../footer/footer';
 import Header from '../header/header';
+import axios from 'axios';
 const useStyles = makeStyles((theme) => ({
 
   root: {
@@ -70,25 +71,36 @@ export default function Login() {
   const [ispassValid, setisPassValid] = useState(false)
 
 
+  useEffect(() => {
+
+    axios.get('/student/checkStatus', {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
+    }).then(res => {
+      console.log(res);
+    })
+  }, []);
+
   const onSubmit = (e) => {
     console.group(e.value);
   };
 
   const regNoChangeEvent = (e) => {
 
-    if (e.target.value == "") {
-      setregNoErr("Empty Registration Number");
-      setisRegValid(false)
-      return;
-    }
-    if (e.target.value.trim() !== "123") {
-      setregNoErr("Incorrect Registration Number");
-      setisRegValid(false)
-      return;
-    }
-    setisRegValid(true)
+    // if (e.target.value == "") {
+    //   setregNoErr("Empty Registration Number");
+    //   setisRegValid(false)
+    //   return;
+    // }
+    // if (e.target.value.trim() !== "123") {
+    //   setregNoErr("Incorrect Registration Number");
+    //   setisRegValid(false)
+    //   return;
+    // }
+    // setisRegValid(true)
     setregNo(e.target.value);
-    setregNoErr("");
+    // setregNoErr("");
 
 
   };
@@ -97,23 +109,46 @@ export default function Login() {
   const submitLoginForm = (e) => {
     e.preventDefault();
     console.log(regNo, password);
+    let obj = {
+      registrationNo: regNo,
+      password: password
+    };
+    let obj1 = {
+      "registrationNo": 2,
+      "resp": [
+        {
+          "id": {
+            "registrationNo": 2,
+            "questionId": 2,
+            "yearOfExam": 2020
+          },
+          "selectedAnswer": "option1,option2"
+        }
+      ]
+
+
+
+    };
+    axios.put('/student/submitExam', obj1).then(res => {
+      console.log("res", res);
+    })
   }
 
   const passChangeEvent = (e) => {
 
-    if (e.target.value == "") {
-      setpasswordErr("Empty Password");
-      setisPassValid(false)
-      return;
-    }
-    if (e.target.value.trim() !== "123") {
-      setpasswordErr("Incorrect Password");
-      setisPassValid(false)
-      return;
-    }
-    setisPassValid(true)
+    // if (e.target.value == "") {
+    //   setpasswordErr("Empty Password");
+    //   setisPassValid(false)
+    //   return;
+    // }
+    // if (e.target.value.trim() !== "123") {
+    //   setpasswordErr("Incorrect Password");
+    //   setisPassValid(false)
+    //   return;
+    // }
+    // setisPassValid(true)
     setpassword(e.target.value);
-    setpasswordErr("");
+    // setpasswordErr("");
 
 
   };
@@ -166,7 +201,7 @@ export default function Login() {
             />
             <Button
               type="submit"
-              disabled={(isregValid === true && ispassValid === true) === true ? false : true}
+              //disabled={(isregValid === true && ispassValid === true) === true ? false : true}
               fullWidth
               onClick={submitLoginForm}
               variant="contained"

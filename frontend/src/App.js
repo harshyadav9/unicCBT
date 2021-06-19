@@ -16,7 +16,7 @@ function App() {
         {/* <MuiThemeProvider theme={theme}> */}
 
         {/* <div className="App"> */}
-        {/* <Header /> */}
+        <Header />
         <Switch>
           <Route exact path="/" component={Login} />
           {/* <NewWindow> */}

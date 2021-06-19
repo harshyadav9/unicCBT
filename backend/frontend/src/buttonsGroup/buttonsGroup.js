@@ -5,9 +5,10 @@ import Button from '@material-ui/core/Button';
 import classNames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
 import Brightness1Icon from '@material-ui/icons/Brightness1';
+import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-
+import { green, red, grey } from '@material-ui/core/colors';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -52,10 +53,11 @@ const useStyles = makeStyles((theme) => ({
         // margin: '12px',
         borderRadius: '50%',
         padding: '14px 0px',
-        backgroundColor: '#8bb58b',
-        color: '#fff',
+        color: theme.palette.getContrastText(green[900]),
+        backgroundColor: green[900],
+        // color: '#fff',
         "&:hover": {
-            backgroundColor: '#8bb58b',
+            backgroundColor: green[900]
         }
     },
 
@@ -63,20 +65,20 @@ const useStyles = makeStyles((theme) => ({
         margin: '12px',
         borderRadius: '50%',
         padding: '14px 0px',
-        backgroundColor: 'red',
-        color: '#fff',
+        color: theme.palette.getContrastText(green[400]),
+        backgroundColor: green[400],
         "&:hover": {
-            backgroundColor: 'red',
+            backgroundColor: green[400]
         }
     },
     reviewUnAnsweredColor: {
         margin: '12px',
         borderRadius: '50%',
         padding: '14px 0px',
-        backgroundColor: 'rgb(239 180 180)',
-        color: '#fff',
+        color: theme.palette.getContrastText(red[200]),
+        backgroundColor: red[200],
         "&:hover": {
-            backgroundColor: '#rgb(239 180 180)',
+            backgroundColor: red[200],
         }
     },
     unansweredColor: {
@@ -121,19 +123,39 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: '7px',
         margin: '4px'
 
+    },
+    answeredSample: {
+        color: theme.palette.getContrastText(green[900]),
+        backgroundColor: green[900]
+    },
+    unansweredSample: {
+        color: theme.palette.getContrastText(red[500]),
+        backgroundColor: red[500]
+    },
+    reviewansweredSample: {
+        color: theme.palette.getContrastText(green[400]),
+        backgroundColor: green[400]
+    },
+    reviewunansweredSample: {
+        color: theme.palette.getContrastText(red[200]),
+        backgroundColor: red[200]
+    },
+    unvisitedSample: {
+        color: theme.palette.getContrastText(grey[500]),
+        backgroundColor: grey[500]
     }
 }));
 
 
-function ButtonsGroup({ arrLen, questionInfo }) {
+function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
 
 
-    console.log(arrLen, questionInfo);
+    console.log("ButtonsGroup*******", arrLen, questionInfo);
 
     useEffect(() => {
         console.log("useEffect");
         let tempArr = [];
-        if (questionInfo.id === "") {
+        if (questionInfo.id == "") {
             const createArr = () => {
                 for (let i = 0; i < arrLen; i++) {
                     let obj = {};
@@ -146,8 +168,9 @@ function ButtonsGroup({ arrLen, questionInfo }) {
                     tempArr.push(obj);
 
                 }
-                setnewArr([...newArr, ...tempArr]);
-                console.log("newArr123", newArr)
+                console.log("newArr123", [...newArr, ...tempArr])
+                setnewArr(prevArrValues => ([...prevArrValues, ...tempArr]))
+                // setnewArr([...newArr, ...tempArr]);
             }
             createArr();
         } else {
@@ -196,11 +219,27 @@ function ButtonsGroup({ arrLen, questionInfo }) {
 
     const classes = useStyles();
     const [itemClicked, setitemClicked] = useState(-1);
-    const [answersCount, setanswersCount] = useState({ unanswered: 0, answered: 0, reviewA: 0, reviewU: 0 });
+    // const [answersCount, setanswersCount] = useState({ unanswered: 0, answered: 0, reviewA: 0, reviewU: 0 });
     const [newArr, setnewArr] = useState([]);
+    let unansweredQuestions = totalQues;
+    let answeredQuestions = 0;
+    let reviewUnQuestions = 0;
+    let reviewAnQuestions = 0;
+    let unvisitedQuestions = 0;
 
+    let reviewquestionsObj = JSON.parse(localStorage.getItem('reviewQuestionNo'));
+    let answeredQuestionsObj = JSON.parse(localStorage.getItem('questionNo'));
 
-
+    console.log("reviewquestionsObj", reviewquestionsObj);
+    console.log("answeredQuestionsObj", answeredQuestionsObj);
+    if (reviewquestionsObj !== null) {
+        reviewUnQuestions = reviewquestionsObj['reviewU'].length;
+        reviewAnQuestions = reviewquestionsObj['reviewA'].length;
+    }
+    if (answeredQuestionsObj !== null) {
+        answeredQuestions = answeredQuestionsObj.length;
+    }
+    unansweredQuestions = totalQues - (answeredQuestions + reviewAnQuestions + reviewUnQuestions)
     const [isAnsweredColor, setisAnsweredColor] = useState(false);
     // if (id !== undefined) {
     //     updateButtons(id);
@@ -229,19 +268,26 @@ function ButtonsGroup({ arrLen, questionInfo }) {
                     </Card> */}
             <div className={classes.legendContainer}>
                 <div className={classes.legends} style={{ width: '50%' }}>
-                    <Brightness1Icon style={{ color: 'green' }} />
+                    {/* <Brightness1Icon style={{ color: 'green' }} />1 */}
+                    <Avatar className={classes.answeredSample}>{answeredQuestions}</Avatar>
                     <span> Answered Questions</span>
                 </div>
                 <div className={classes.legends} style={{ width: '44%' }}>
-                    <Brightness1Icon style={{ color: 'red' }} />
+                    <Avatar className={classes.unansweredSample}>{unansweredQuestions}</Avatar>
                     <span> Unanswered Questions</span>
                 </div>
+
+                <div className={classes.legends} style={{ width: '44%' }}>
+                    <Avatar className={classes.unvisitedSample}>{unvisitedQuestions}</Avatar>
+                    <span> Unvisited Questions</span>
+                </div>
+
                 <div className={classes.legends} style={{ width: '50%' }}>
-                    <Brightness1Icon style={{ color: 'red' }} />
+                    <Avatar className={classes.reviewansweredSample}>{reviewAnQuestions}</Avatar>
                     <span> Review Answered Question</span>
                 </div>
                 <div className={classes.legends} style={{ width: '50%' }}>
-                    <Brightness1Icon style={{ color: 'rgb(239 180 180)' }} />
+                    <Avatar className={classes.reviewunansweredSample}>{reviewUnQuestions}</Avatar>
                     <span> Review Unanswered Question</span>
                 </div>
 
@@ -261,7 +307,7 @@ function ButtonsGroup({ arrLen, questionInfo }) {
                     newArr.map((val, key) => {
                         // console.log(val, key);
                         return (
-                            <Button key={key} className={classNames({
+                            <Button key={key} onClick={() => { changeStep(key) }} className={classNames({
                                 [classes.buttonDefault]: (val.default === true ? true : false),
                                 [classes.unansweredColor]: (val.unanswered === true ? true : false),
                                 [classes.answeredColor]: (val.answered === true ? true : false),
