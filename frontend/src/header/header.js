@@ -29,6 +29,7 @@ function Header() {
             // return <div className="timer">Your time is over...</div>;
         } else return `${minutes}:${seconds}`;
     };
+
     return (
         <div className={classes.root}>
             <AppBar position="fixed" color="grey">
