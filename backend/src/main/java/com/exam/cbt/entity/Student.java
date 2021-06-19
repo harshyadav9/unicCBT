@@ -17,8 +17,9 @@ public class Student {
 		super();
 	}
 
-	@Column(name= "studentName")
-	private String studentName;
+	/*
+	 * @Column(name= "studentName") private String studentName;
+	 */
 
 	@Column(name = "password")
 	private String password;
@@ -39,17 +40,15 @@ public class Student {
 		this.registrationNo = registrationNo;
 	}
 
-	public String getStudentName() {
-		return studentName;
-	}
-
-	public void setStudentName(String studentName) {
-		this.studentName = studentName;
-	}
-
+	/*
+	 * public String getStudentName() { return studentName; }
+	 * 
+	 * public void setStudentName(String studentName) { this.studentName =
+	 * studentName; }
+	 */
 	
 	 @Override public String toString() { return "Student [registrationNo=" + registrationNo +
-	 ", studentName=" + studentName + ", password=" + password + "]"; }
+	 ", password=" + password + "]"; }
 	
 
 }
