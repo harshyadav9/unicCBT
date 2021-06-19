@@ -15,6 +15,7 @@ import Container from '@material-ui/core/Container';
 import Footer from '../footer/footer';
 import Header from '../header/header';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 const useStyles = makeStyles((theme) => ({
 
   root: {
@@ -70,7 +71,7 @@ export default function Login() {
   const [isregValid, setisRegValid] = useState(false)
   const [ispassValid, setisPassValid] = useState(false)
 
-
+  const history = useHistory();
   useEffect(() => {
 
     axios.get('/student/checkStatus', {
@@ -130,7 +131,9 @@ export default function Login() {
 
     };
     axios.put('/student/submitExam', obj1).then(res => {
-      console.log("res", res);
+      if (res.status === 200) {
+        history.push('/instructions');
+      }
     })
   }
 
