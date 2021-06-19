@@ -22,6 +22,8 @@ public class StudentServiceImpl implements StudentService{
 	 @Autowired
 	 private StudentRepository studentRepository;
 	 
+	 
+	 
 	@Override
 	public Student createStudent(Student student) {
 		if (student != null) {
@@ -55,6 +57,10 @@ public class StudentServiceImpl implements StudentService{
 			return "Not Authenticated";
 		}
 		
+	}
+	
+	public Student findStudentWithId(Integer id) {
+		return studentRepository.getOne(id);
 	}
 
 	@Override

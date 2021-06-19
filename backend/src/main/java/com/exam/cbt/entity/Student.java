@@ -5,11 +5,21 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "student")
-//@NamedNativeQuery(name = "Student.findById", query = "select * from student where id = ?1", resultClass = Student.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Student {
 	
+	public String getExamCd() {
+		return examCd;
+	}
+
+	public void setExamCd(String examCd) {
+		this.examCd = examCd;
+	}
+
 	@Id
 	private int registrationNo;
 
@@ -23,6 +33,9 @@ public class Student {
 
 	@Column(name = "password")
 	private String password;
+	
+	@Column(name = "ExamCd")
+	private String examCd;
 
 	public String getPassword() {
 		return password;
@@ -47,8 +60,8 @@ public class Student {
 	 * studentName; }
 	 */
 	
-	 @Override public String toString() { return "Student [registrationNo=" + registrationNo +
-	 ", password=" + password + "]"; }
-	
-
+	@Override
+	public String toString() {
+		return "Student [registrationNo=" + registrationNo + ", password=" + password + ", examCd=" + examCd + "]";
+	}
 }

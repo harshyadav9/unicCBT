@@ -95,8 +95,11 @@ public class StudentController {
 		if (registrationNumber != null) {
 			log.info("Calling questionMasterServ.getAllQuestions{}");
 			HashMap<String, List<QuestionMaster>> hm = questionMasterServ.getAllQuestions();
+			Student student = stuService.findStudentWithId(registrationNumber);
+			
 			retCode.put("CODE", HttpStatus.ACCEPTED.getReasonPhrase());
 			res.setQuestionList(hm);
+			res.setExamCd(student.getExamCd());
 			res.setResponseCode(retCode);
 			log.info(retCode.get("CODE"));
 			log.info("Exiting getQuestions{}");
