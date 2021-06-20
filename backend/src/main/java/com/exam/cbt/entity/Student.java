@@ -12,14 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Student {
 	
-	public String getExamCd() {
-		return examCd;
-	}
-
-	public void setExamCd(String examCd) {
-		this.examCd = examCd;
-	}
-
 	@Id
 	private int registrationNo;
 
@@ -53,6 +45,13 @@ public class Student {
 		this.registrationNo = registrationNo;
 	}
 
+	public String getExamCd() {
+		return examCd;
+	}
+
+	public void setExamCd(String examCd) {
+		this.examCd = examCd;
+	}
 	/*
 	 * public String getStudentName() { return studentName; }
 	 * 

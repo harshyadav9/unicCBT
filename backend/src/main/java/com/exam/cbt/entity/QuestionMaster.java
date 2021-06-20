@@ -54,7 +54,62 @@ public class QuestionMaster {
 	
 	@Column(name = "Option5")
 	private String option5;
+	
+	@Column(name = "CorrectAns")
+	private String correctAnswer;
+	
+	@Column(name = "CorrectAnsWeightage")
+	private Float correctAnsWeightage;
+	
+	@Column(name = "WrongAnsWeightage")
+	private Float wrongAnsWeightage;
+	
+	@Column(name = "UnattemptedAnsWeightage")
+	private Float unattemptedAnsWeightage;
+	
+	@Column(name = "PartialAnsWeightage")
+	private Float partialAnsWeightage;
+	
+	public Float getCorrectAnsWeightage() {
+		return correctAnsWeightage;
+	}
 
+	public void setCorrectAnsWeightage(Float correctAnsWeightage) {
+		this.correctAnsWeightage = correctAnsWeightage;
+	}
+
+	public Float getWrongAnsWeightage() {
+		return wrongAnsWeightage;
+	}
+
+	public void setWrongAnsWeightage(Float wrongAnsWeightage) {
+		this.wrongAnsWeightage = wrongAnsWeightage;
+	}
+
+	public Float getUnattemptedAnsWeightage() {
+		return unattemptedAnsWeightage;
+	}
+
+	public void setUnattemptedAnsWeightage(Float unattemptedAnsWeightage) {
+		this.unattemptedAnsWeightage = unattemptedAnsWeightage;
+	}
+
+	public Float getPartialAnsWeightage() {
+		return partialAnsWeightage;
+	}
+
+	public void setPartialAnsWeightage(Float partialAnsWeightage) {
+		this.partialAnsWeightage = partialAnsWeightage;
+	}
+	
+	public String getCorrectAnswer() {
+		return correctAnswer;
+	}
+
+	public void setCorrectAnswer(String correctAnswer) {
+		this.correctAnswer = correctAnswer;
+	}
+	
 	public int getQuestionID() {
 		return questionID;
 	}

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,7 +51,7 @@ public class StudentController {
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public Map<String,String> login(@RequestBody Student student) {
+	public ResponseEntity<String> login(@RequestBody Student student) {
 		
 		log.info("Inside login{} with inout student : "+student);
 		
@@ -63,23 +64,17 @@ public class StudentController {
 				log.info("Authenticated:  " +student.getRegistrationNo());
 				mp.put("Message", str);
 				mp.put("CODE", HttpStatus.FOUND.getReasonPhrase());
+				return new ResponseEntity<>("Authenticated", HttpStatus.FOUND);
 			}else {
-				mp.put("Message", str);
-				mp.put("CODE", HttpStatus.NOT_FOUND.getReasonPhrase());
 				log.info("Not Found:  " +student.getRegistrationNo());
+				return new ResponseEntity<>("Not Authenticated", HttpStatus.NOT_FOUND);
 				
 			}
-			log.info("Exiting login{}");
-			return mp;
-			
 			
 		} else {
-			mp.put("Message", "Password is empty");
-			mp.put("CODE", HttpStatus.BAD_REQUEST.getReasonPhrase());
 			log.info("Password is emptyfor registrationNumber:  " +student.getRegistrationNo());
 			log.info("Exiting login{}");
-			return mp;
-
+			return new ResponseEntity<>("Bad Request", HttpStatus.BAD_REQUEST);
 		}		
 
 	}
