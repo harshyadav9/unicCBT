@@ -25,7 +25,7 @@ public class StudentServiceImpl implements StudentService{
 	@Override
 	public String getStudent(Integer registrationNo, String password) {
 		
-		Optional<Student> student =  studentRepository.findByRegistrationNo(registrationNo);
+		Optional<Student> student =  studentRepository.findById(registrationNo);
 		
 		if (student.isPresent()) {
 			if (student.get().getPassword().equals(password)) {
