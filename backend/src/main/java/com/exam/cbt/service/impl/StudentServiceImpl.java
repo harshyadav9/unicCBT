@@ -22,22 +22,6 @@ public class StudentServiceImpl implements StudentService{
 	 @Autowired
 	 private StudentRepository studentRepository;
 	 
-	 
-	 
-	@Override
-	public Student createStudent(Student student) {
-		if (student != null) {
-			/*
-			 * BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-			 * encoder.matches(password, user.getPassword());
-			 */
-			
-			//student.setPassword(BCrypt.gensalt(password));
-			
-		}
-		 return studentRepository.save(student);
-	}
-
 	@Override
 	public String getStudent(Integer registrationNo, String password) {
 		
@@ -91,9 +75,5 @@ public class StudentServiceImpl implements StudentService{
 	public long countStudents() {
 		return studentRepository.count();
 	}
-	
-	
-	
-	
 
 }

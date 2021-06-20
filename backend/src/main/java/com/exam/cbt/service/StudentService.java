@@ -6,7 +6,6 @@ import com.exam.cbt.entity.Student;
 
 public interface StudentService {
 	
-	Student createStudent(Student student);
 	String getStudent(Integer id,String password);
     void deleteStudent(Student student);
     void deleteStudent(Integer id);

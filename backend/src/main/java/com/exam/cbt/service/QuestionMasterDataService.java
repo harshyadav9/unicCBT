@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.exam.cbt.entity.QuestionMaster;
 
-public interface UploadQuestionDataService {
+public interface QuestionMasterDataService {
 	
-	void uploadQuestions(List<QuestionMaster> questions);
+	int uploadQuestionMaster(List<QuestionMaster> questions);
 	
 }
