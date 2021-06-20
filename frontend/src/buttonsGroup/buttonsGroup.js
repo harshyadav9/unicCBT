@@ -97,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
         width: 'calc(100% - 17%)',
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginLeft: '44px',
+        marginLeft: '30px',
         maxHeight: '600px',
         overflowY: 'scroll',
         boxShadow: '0px 4px 13px -1px rgba(0,0,0,0.2), 0px 1px 10px 0px rgba(0,0,0,0.14), 0px 1px 20px 0px rgba(0,0,0,0.19)',
@@ -113,7 +113,8 @@ const useStyles = makeStyles((theme) => ({
     legendContainer: {
         display: 'flex',
         flexWrap: 'wrap',
-        width: '100%'
+        width: '100%',
+        marginTop: 76
     },
     legends: {
         alignItems: 'center',
@@ -150,14 +151,14 @@ const useStyles = makeStyles((theme) => ({
 function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
 
 
-    console.log("ButtonsGroup*******", arrLen, questionInfo);
+    console.log("ButtonsGroup*******", arrLen, questionInfo, totalQues, changeStep);
 
     useEffect(() => {
         console.log("useEffect");
         let tempArr = [];
         if (questionInfo.id == "") {
             const createArr = () => {
-                for (let i = 0; i < arrLen; i++) {
+                for (let i = 0; i < arrLen.length; i++) {
                     let obj = {};
                     obj['answered'] = false;
                     obj['default'] = true;
@@ -178,7 +179,7 @@ function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
         }
 
 
-    }, [questionInfo]);
+    }, [arrLen]);
 
 
 
@@ -267,26 +268,26 @@ function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
                         }
                     </Card> */}
             <div className={classes.legendContainer}>
-                <div className={classes.legends} style={{ width: '50%' }}>
+                <div className={classes.legends} style={{ width: '45%' }}>
                     {/* <Brightness1Icon style={{ color: 'green' }} />1 */}
                     <Avatar className={classes.answeredSample}>{answeredQuestions}</Avatar>
                     <span> Answered Questions</span>
                 </div>
-                <div className={classes.legends} style={{ width: '44%' }}>
+                <div className={classes.legends} style={{ width: '45%' }}>
                     <Avatar className={classes.unansweredSample}>{unansweredQuestions}</Avatar>
                     <span> Unanswered Questions</span>
                 </div>
 
-                <div className={classes.legends} style={{ width: '44%' }}>
+                <div className={classes.legends} style={{ width: '45%' }}>
                     <Avatar className={classes.unvisitedSample}>{unvisitedQuestions}</Avatar>
                     <span> Unvisited Questions</span>
                 </div>
 
-                <div className={classes.legends} style={{ width: '50%' }}>
+                <div className={classes.legends} style={{ width: '45%' }}>
                     <Avatar className={classes.reviewansweredSample}>{reviewAnQuestions}</Avatar>
                     <span> Review Answered Question</span>
                 </div>
-                <div className={classes.legends} style={{ width: '50%' }}>
+                <div className={classes.legends} style={{ width: '45%' }}>
                     <Avatar className={classes.reviewunansweredSample}>{reviewUnQuestions}</Avatar>
                     <span> Review Unanswered Question</span>
                 </div>

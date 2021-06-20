@@ -16,6 +16,7 @@ import Footer from '../footer/footer';
 import Header from '../header/header';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
+import NavigationPrompt from "react-router-navigation-prompt";
 const useStyles = makeStyles((theme) => ({
 
   root: {
@@ -126,13 +127,13 @@ export default function Login() {
           "selectedAnswer": "option1,option2"
         }
       ]
-
-
-
     };
     axios.put('/student/submitExam', obj1).then(res => {
       if (res.status === 200) {
-        history.push('/instructions');
+        // window.open('/instructions', "_blank", 'height=600,width=400,menubar=no,resizable=no,scrollbars=no,status=no,location=no');
+        // history.push('/instructions');
+        const modalTitle = "Awesome Modal";
+        window.open("/instructions", "_blank");
       }
     })
   }
@@ -161,6 +162,13 @@ export default function Login() {
 
 
     <div className={classes.root}>
+
+      <NavigationPrompt>
+        {({ onConfirm, onCancel }) => {
+          console.log("onConfirm, onCancel", onConfirm, onCancel);
+          return <div>This is probably an anti-pattern but ya know...</div>;
+        }}
+      </NavigationPrompt>
       {/* header start */}
       {/* <Header/> */}
       {/*  header end */}

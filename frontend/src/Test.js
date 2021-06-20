@@ -16,6 +16,7 @@ import MobileStepper from '@material-ui/core/MobileStepper';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import axios from 'axios';
+import { useHistory, Prompt } from 'react-router-dom';
 const useStyles = theme => ({
     root: {
         flexGrow: 1
@@ -27,6 +28,7 @@ const useStyles = theme => ({
         width: '100%',
         paddingLeft: theme.spacing.unit * 5,
         marginBottom: 20,
+        marginTop: 77,
         backgroundColor: theme.palette.background.default,
     },
     leftContainer: {
@@ -105,7 +107,10 @@ const useStyles = theme => ({
     legendContainer: {
         display: 'flex',
         flexWrap: 'wrap',
-        width: '100%'
+        width: '96%',
+        marginTop: 76,
+        marginLeft: 19,
+        boxShadow: '0px 4px 13px -1px rgb(0 0 0 / 20%), 0px 1px 10px 0px rgb(0 0 0 / 14%), 0px 1px 20px 0px rgb(0 0 0 / 19%)'
     },
     legends: {
         alignItems: 'center',
@@ -138,15 +143,77 @@ function Test(props) {
     const maxSteps = Questions.length;
     const { classes, theme } = props;
     let quesNo = '';
+
     const [question, setquestion] = useState(0);
     const [questionList, setquestionList] = useState([]);
     const [resetData, setResetData] = useState([]);
+    const history = useHistory();
     const [questionNo, setquestionNo] = useState({ id: '', type: 'unanswered' });
     useEffect(() => {
+        let keys = {};
         axios.get('/student/getQuestions/1').then(res => {
             setquestionList(res.data.questionList.Questions);
             populateResultSet(res.data.questionList.Questions);
-        })
+        });
+
+
+
+
+
+
+
+        window.onbeforeunload = (event) => {
+            const e = event || window.event;
+            // Cancel the event
+            e.preventDefault();
+            if (e) {
+                e.returnValue = ''; // Legacy method for cross browser support
+            }
+            return ''; // Legacy method for cross browser support
+            // return "Are you sure you want to navigate away?";
+        };
+
+        document.addEventListener('keydown', (e) => {
+            console.log(e.which);
+            // if (e.which === 91 || e.key === "Tab")
+            keys[e.which] = true;
+            e.preventDefault();
+
+        });
+
+
+        document.addEventListener('contextmenu', (e) => {
+            console.log(e.which);
+
+            e.preventDefault();
+        });
+    }, []);
+
+
+    // useEffect(() => {
+    //     const unblock = history.block((location, action) => {
+    //         // if (checkBlockingCondition) {
+    //         alert("called");
+    //         return window.confirm("Navigate Back?");
+    //         // }
+    //         // return true;
+    //     });
+    //     return () => {
+    //         unblock();
+    //     }
+    // }, [])
+
+    useEffect(() => {
+        const unblock = history.block((location, action) => {
+
+            return window.confirm("Navigate Back?");
+
+            // return true;
+        });
+
+        return () => {
+            unblock();
+        };
     }, [])
 
 
@@ -154,24 +221,27 @@ function Test(props) {
 
         let resultSet = [];
         let resetSet = [];
+        let resultSetObj = { "registrationNo": 2, resp: [] };
         for (let i = 0; i < dataSet.length; i++) {
-            resultSet.push({
-                "registrationNo": 2,
-                "resp": [
-                    {
-                        "id": {
-                            "registrationNo": 2,
-                            "questionId": dataSet[i]['questionID'],
-                            "yearOfExam": 2020
-                        },
-                        "selectedAnswer": ""
-                    }
-                ]
-            });
+            // resultSet.push({
+            //     "registrationNo": 2,
+            //     "resp": [
+            //         {
+            //             "id": {
+            //                 "registrationNo": 2,
+            //                 "questionId": dataSet[i]['questionID'],
+            //                 "yearOfExam": 2020
+            //             },
+            //             "selectedAnswer": ""
+            //         }
+            //     ]
+            // });
+
+            // resultSetObj
             resetSet.push({ [i]: false });
         }
         setResetData([...resetSet]);
-        setfinalData([...resultSet]);
+        // setfinalData([...resultSet]);
     }
     const saveQuestion = (e) => {
         console.log(e);
@@ -209,10 +279,12 @@ function Test(props) {
         // for(let i = 1 ; i < questionList.length;i++){
         //     if(finalData() questionList[i])
         // }
-        axios.put('/student/submitExam', finalData).then(res => {
+        console.log(JSON.stringify(finalData));
+        let obj = { registrationNo: 2, resp: finalData };
+        axios.put('/student/submitExam', obj).then(res => {
             console.log("res", res);
         })
-        console.log("finalData", finalData);
+        console.log("obj", obj);
     }
 
     const reviewQuestion = () => {
@@ -302,7 +374,116 @@ function Test(props) {
     }
 
 
+
     const response = (event) => {
+        let index = -1;
+        let newAns = [];
+        if (event.isradio) {
+            let resData = [...finalData];
+
+
+
+            for (let i = 0; i < resData.length; i++) {
+                if (finalData[i]['id']['questionId'] == event.id) {
+                    // isUpdate = true;
+                    index = i;
+                    break;
+                }
+            }
+            newAns.push(event.option);
+            let option = newAns[0].trim();
+            if (index === -1) {
+                let obj = {
+                    "id": {
+                        registrationNo: 2,
+                        questionId: event.id,
+                        yearOfExam: 2020
+                    },
+                    selectedAnswer: option
+                }
+                resData = [...resData, obj];
+            } else {
+                resData[index].selectedAnswer = option;
+            }
+
+            //  if radio is checked
+
+            setfinalData(resData);
+        } else {
+            //  if checkbox is checked
+            let resData = [...finalData];
+            for (let i = 0; i < resData.length; i++) {
+                if (finalData[i]['id']['questionId'] == event.id) {
+                    // isUpdate = true;
+                    index = i;
+                    break;
+                }
+            }
+            if (index === -1) {
+                newAns.push(event.name);
+                let option = newAns[0].trim();
+                let obj = {
+                    "id": {
+                        registrationNo: 2,
+                        questionId: event.id,
+                        yearOfExam: 2020
+                    },
+                    selectedAnswer: option
+                }
+                resData = [...resData, obj];
+                setfinalData(resData);
+            } else {
+                let selectedOptionObj = resData[index];
+                let isElemPresent = false;
+                let prevAns = selectedOptionObj['selectedAnswer'];
+                // if (prevAns === "") {
+                //     newAns.push(event.name);
+                // } else {
+                newAns = prevAns === "" ? [] : prevAns.split(",");
+                // }
+                // if (newAns.length === 0) {
+                //     newAns.push(event.name);
+                // } else {
+                for (let i = 0; i < newAns.length; i++) {
+                    if (newAns[i].trim() == event.name.trim()) {
+                        isElemPresent = true;
+                        // if checked flag is turn to false
+                        if (event.isChecked === false) {
+                            newAns.splice(i, 1);
+                            i--;
+                        }
+                    }
+                }
+                if (!isElemPresent) {
+                    // if checked flag is turned to true
+                    newAns.push(event.name);
+                }
+                if (newAns.length === 0) {
+                    resData[index].selectedAnswer = "";
+                } else {
+                    // let obj = {
+                    //     "id": {
+                    //         registrationNo: 2,
+                    //         questionId: event.id,
+                    //         yearOfExam: 2020
+                    //     },
+                    //     selectedAnswer: (newAns.join(","))
+                    // }
+                    resData[index].selectedAnswer = (newAns.join(","));
+                    // resData = [...resData];
+                }
+
+
+                setfinalData(resData);
+                // }
+            }
+        }
+
+
+    }
+
+
+    const response1 = (event) => {
         let isUpdate = false;
         let index = 0;
         var obj1 = {};
@@ -460,6 +641,7 @@ function Test(props) {
     }
     return (
         <>
+
             <Grid container className={classes.container}>
                 <Grid container xs={12} md={8} lg={9} className={classes.leftContainer}>
                     <Paper square elevation={0} className={classes.header}>
@@ -467,6 +649,7 @@ function Test(props) {
                     </Paper>
 
                     {/* {Questions.map(question => ( */}
+
                     <div className={classes.swipableViews}>
                         <SwipeableViews
                             axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
@@ -493,8 +676,7 @@ function Test(props) {
                     </div>
 
                     {/* ))} */}
-
-                    <MobileStepper
+                    {/* <MobileStepper
                         steps={maxSteps}
                         position="static"
                         variant="progress"
@@ -513,21 +695,38 @@ function Test(props) {
             </Button>
 
                         }
-                    />
-                    <Button size="small" onClick={reviewQuestion} >
+                    /> */}
+                    <div>
 
-                        Review
+                        <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+
+                            Back
                     </Button>
+                        <Button size="small" onClick={reviewQuestion} >
 
-                    <Button size="small" onClick={resetQuestion} >
+                            Review
+                        </Button>
 
-                        Reset
+                        <Button size="small" onClick={resetQuestion} >
+
+                            Reset
+                        </Button>
+
+                        <Button size="small" onClick={submitAnswers} >
+
+                            Submit
+                        </Button>
+
+                        <Button size="small" onClick={handleNext} disabled={activeStep === maxSteps - 1}>
+
+                            Next
                     </Button>
+                    </div>
 
-                    <Button size="small" onClick={submitAnswers} >
 
-                        Submit
-                    </Button>
+
+
+
 
 
                     {/* <Button onClick={() => { saveQuestion('save') }} value="save" variant="contained">Save & Next</Button>
@@ -537,7 +736,7 @@ function Test(props) {
                 </Grid>
                 <Grid item xs={12} md={4} lg={3}>
 
-                    <ButtonsGroup arrLen={questionList.length} questionInfo={questionNo} totalQues={questionList.length} changeStep={changeActiveStep} />
+                    <ButtonsGroup arrLen={questionList} questionInfo={questionNo} totalQues={questionList.length} changeStep={changeActiveStep} />
 
 
                 </Grid>
