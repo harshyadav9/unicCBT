@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.exam.cbt.dao.StudentResponseRepository;
 import com.exam.cbt.entity.StudentResponse;
+import com.exam.cbt.entity.StudentResponseId;
 import com.exam.cbt.service.StudentResponseService;
 
 @Service
@@ -20,8 +21,23 @@ public class StudentResponseServiceImpl implements StudentResponseService {
 
 	@Override
 	public void saveStudentExam(List<StudentResponse> studResponse) {
-		List<StudentResponse> li = studentResponseRepository.saveAll(studResponse);
-		System.out.println(li);
+		
+		studResponse.forEach(resp -> {
+			StudentResponse studentResponse = null;
+			
+			if(studentResponseRepository.existsById(resp.getId())) {
+				studentResponseRepository.save(resp);
+			}
+			else {
+				studentResponse = resp;
+				studentResponseRepository.save(studentResponse);
+			}
+		   
+		});
+		
+		
+		//List<StudentResponse> li = studentResponseRepository.saveAll(studResponse);
+		//System.out.println(li);
 		
 	}
 

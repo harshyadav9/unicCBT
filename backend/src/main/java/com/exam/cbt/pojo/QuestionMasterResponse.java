@@ -9,6 +9,8 @@ public class QuestionMasterResponse {
 	
 	private HashMap<String,String> responseCode;
 	
+	private String ExamCd;
+	
 	private HashMap<String,List<QuestionMaster>> questionList;
 
 	public HashMap<String, String> getResponseCode() {
@@ -25,6 +27,14 @@ public class QuestionMasterResponse {
 
 	public void setQuestionList(HashMap<String, List<QuestionMaster>> questionList) {
 		this.questionList = questionList;
+	}
+	
+	public String getExamCd() {
+		return ExamCd;
+	}
+
+	public void setExamCd(String examCd) {
+		ExamCd = examCd;
 	}
 
 }
