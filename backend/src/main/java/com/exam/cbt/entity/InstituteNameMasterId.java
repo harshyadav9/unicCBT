@@ -6,51 +6,46 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class QuestionMasterId implements Serializable{
-
+public class InstituteNameMasterId implements Serializable{
+	
 	private static final long serialVersionUID = 1L;
 
-	@Column(name= "InstCd") 
+	@Column(name = "InstCd")
 	private String instCd;
 	
-	@Column(name= "ExamCd") 
+	@Column(name = "ExamCd")
 	private String examCd;
 	
-    @Column(name= "QuestionNo") 
-	private int questionNo;
-    
-    @Column(name= "Year") 
+	@Column(name = "Year")
 	private int year;
-	
+
 	public String getInstCd() {
 		return instCd;
 	}
+
 	public void setInstCd(String instCd) {
 		this.instCd = instCd;
 	}
+
 	public String getExamCd() {
 		return examCd;
 	}
+
 	public void setExamCd(String examCd) {
 		this.examCd = examCd;
 	}
-	public int getQuestionNo() {
-		return questionNo;
-	}
-	public void setQuestionNo(int questionNo) {
-		this.questionNo = questionNo;
-	}
+
 	public int getYear() {
 		return year;
 	}
+
 	public void setYear(int year) {
 		this.year = year;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "QuestionMasterId [instCd=" + instCd + ", examCd=" + examCd + ", questionNo=" + questionNo + ", year=" + year
-				+ "]";
+		return "InstituteMasterId [instCd=" + instCd + ", examCd=" + examCd + ", year="	+ year + "]";
 	}
-
+	
 }

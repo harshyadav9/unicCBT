@@ -17,12 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.exam.cbt.entity.CandidateMaster;
 import com.exam.cbt.entity.QuestionMaster;
-import com.exam.cbt.entity.Student;
+import com.exam.cbt.pojo.CandidateResponseUI;
 import com.exam.cbt.pojo.QuestionMasterResponse;
-import com.exam.cbt.service.StudentResponseService;
+import com.exam.cbt.service.CandidateResponseService;
+import com.exam.cbt.service.impl.CandidateServiceImpl;
 import com.exam.cbt.service.impl.QuestionMasterDataServiceImpl;
-import com.exam.cbt.service.impl.StudentServiceImpl;
 
 @RestController
 @RequestMapping("/student")
@@ -32,13 +33,13 @@ public class StudentController {
 	Logger log = LoggerFactory.getLogger(StudentController.class); 
 
 	@Autowired
-	StudentServiceImpl stuService;
+	CandidateServiceImpl candidateService;
 
 	@Autowired
 	QuestionMasterDataServiceImpl questionMasterServ;
 	
 	@Autowired
-	StudentResponseService stuRespServ;
+	CandidateResponseService candidateRespServ;
 
 	@GetMapping(path = "/checkStatus")
 	public String checkAppStatus() { 	
@@ -51,7 +52,7 @@ public class StudentController {
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public ResponseEntity<String> login(@RequestBody Student student) {
+	public ResponseEntity<String> login(@RequestBody CandidateMaster student) {
 		
 		log.info("Inside login{} with inout student : "+student);
 		
@@ -59,7 +60,7 @@ public class StudentController {
 
 		if (student.getPassword() != null) {
 			log.info("Calling stuService.getStudent{} ");
-			String str = stuService.getStudent(student.getRegistrationNo(), student.getPassword());
+			String str = candidateService.getStudent(student.getRegistrationNo(), student.getPassword());
 			if(str != null && str.equalsIgnoreCase("AUTHENTICATED")) {
 				log.info("Authenticated:  " +student.getRegistrationNo());
 				mp.put("Message", str);
@@ -80,16 +81,16 @@ public class StudentController {
 	}
 	
 	@RequestMapping(value = "/submitExam", method = RequestMethod.PUT)
-	public HashMap<String,String> submitExam(@RequestBody com.exam.cbt.pojo.StudentResponse studentResp) {
+	public HashMap<String,String> submitExam(@RequestBody CandidateResponseUI candidateResp) {
 		
 		
 		HashMap<String, String> retCode = new HashMap<>(); 
 		
-		if (studentResp != null) {
-			log.info("Inside submitExam{} for registrationNo : " + studentResp.getRegistrationNo());
-			stuRespServ.saveStudentExam(studentResp.getResp());
+		if (candidateResp != null) {
+			//log.info("Inside submitExam{} for registrationNo : " + candidateResp.getRegistrationNo());
+			candidateRespServ.saveCandidateExam(candidateResp.getResp());
 			retCode.put("CODE", HttpStatus.CREATED.getReasonPhrase());
-			log.info("Exiting submitExam{} for registrationNo : " +studentResp.getRegistrationNo() );
+			//log.info("Exiting submitExam{} for registrationNo : " +candidateResp.getRegistrationNo());
 			return retCode;
 			
 		} else {
@@ -114,7 +115,7 @@ public class StudentController {
 		if (registrationNumber != null) {
 			log.info("Calling questionMasterServ.getAllQuestions{}");
 			HashMap<String, List<QuestionMaster>> hm = questionMasterServ.getAllQuestions();
-			Student student = stuService.findStudentWithId(registrationNumber);
+			CandidateMaster student = candidateService.findStudentWithId(registrationNumber);
 			
 			retCode.put("CODE", HttpStatus.ACCEPTED.getReasonPhrase());
 			res.setQuestionList(hm);

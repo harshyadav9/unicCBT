@@ -3,20 +3,11 @@ package com.exam.cbt.entity;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "QuestionMaster")
 public class QuestionMaster {
-
-	public QuestionMasterId getId() {
-		return id;
-	}
-
-	public void setId(QuestionMasterId id) {
-		this.id = id;
-	}
 
 	@EmbeddedId
 	private QuestionMasterId id;
@@ -59,6 +50,14 @@ public class QuestionMaster {
 	
 	@Column(name = "PartialAnsWeightage")
 	private Float partialAnsWeightage;
+	
+	public QuestionMasterId getId() {
+		return id;
+	}
+
+	public void setId(QuestionMasterId id) {
+		this.id = id;
+	}
 	
 	public Float getCorrectAnsWeightage() {
 		return correctAnsWeightage;

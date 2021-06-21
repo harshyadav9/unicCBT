@@ -1,5 +1,7 @@
 package com.exam.cbt.entity;
 
+import java.sql.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -8,18 +10,18 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
-@Table(name = "student")
+@Table(name = "CandidateMaster")
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Student {
+public class CandidateMaster {
 	
 	@Id
-	@Column(name= "registrationNo") 
+	@Column(name= "RegistrationNo") 
 	private int registrationNo;
 	
-    @Column(name= "studentName") 
-    private String studentName;
+    @Column(name= "Name") 
+    private String name;
 	 
-	@Column(name = "password")
+	@Column(name = "Password")
 	private String password;
 	
 	@Column(name = "ExamCd")
@@ -31,17 +33,9 @@ public class Student {
 	@Column(name = "Year")
 	private int year;
 	
-	@Column(name = "DOB")
-	private String dob;
+	@Column(name = "Dob")
+	private Date dob;
 	
-	public String getStudentName() {
-		return studentName;
-	}
-
-	public void setStudentName(String studentName) {
-		this.studentName = studentName;
-	}
-
 	public String getInstCd() {
 		return instCd;
 	}
@@ -58,11 +52,11 @@ public class Student {
 		this.year = year;
 	}
 
-	public String getDob() {
+	public Date getDob() {
 		return dob;
 	}
 
-	public void setDob(String dob) {
+	public void setDob(Date dob) {
 		this.dob = dob;
 	}
 
@@ -89,11 +83,19 @@ public class Student {
 	public void setExamCd(String examCd) {
 		this.examCd = examCd;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 	
 	@Override
 	public String toString() {
-		return "Student [registrationNo=" + registrationNo + ", studentName=" + studentName + ", password=" + password
-				+ ", examCd=" + examCd + ", instCd=" + instCd + ", year=" + year + ", dob=" + dob + "]";
+		return "Student [registrationNo=" + registrationNo + ", name=" + name + ", password=" + password + ", examCd="
+				+ examCd + ", instCd=" + instCd + ", year=" + year + ", dob=" + dob + "]";
 	}
 	
 }
