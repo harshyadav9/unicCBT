@@ -22,8 +22,10 @@ function App() {
           {/* <NewWindow> */}
           <Route exact path="/" component={Login} />
           {/* <NewWindow copyStyles={true}> */}
-          <Route path="/instructions" component={Test} />
-          <Prompt message="Are you sure you want to go to /test?" />
+          {/* <NewWindow> */}
+          <Route exact path="/instructions" component={Test} />
+          {/* </NewWindow> */}
+          {/* <Prompt message="Are you sure you want to go to /test?" /> */}
           {/* </NewWindow> */}
 
           {/* </NewWindow> */}

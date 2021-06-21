@@ -17,6 +17,11 @@ import Header from '../header/header';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import NavigationPrompt from "react-router-navigation-prompt";
+import Snackbar from '@material-ui/core/Snackbar';
+import Test from '../Test'; import Modal from '@material-ui/core/Modal';
+import Dialog from '@material-ui/core/Dialog';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { useTheme } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme) => ({
 
   root: {
@@ -62,16 +67,20 @@ function Copyright() {
   )
 }
 
+
+
+
 export default function Login() {
   const classes = useStyles();
   const [regNo, setregNo] = useState("");
   const [password, setpassword] = useState("");
-
+  const [open, setOpen] = useState(false);
   const [regNoErr, setregNoErr] = useState("");
   const [passwordErr, setpasswordErr] = useState("");
   const [isregValid, setisRegValid] = useState(false)
-  const [ispassValid, setisPassValid] = useState(false)
-
+  const [ispassValid, setisPassValid] = useState(false);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('lg'));
   const history = useHistory();
   useEffect(() => {
 
@@ -83,6 +92,7 @@ export default function Login() {
       console.log(res);
     })
   }, []);
+
 
   const onSubmit = (e) => {
     console.group(e.value);
@@ -108,6 +118,7 @@ export default function Login() {
   };
 
 
+
   const submitLoginForm = (e) => {
     e.preventDefault();
     console.log(regNo, password);
@@ -128,14 +139,22 @@ export default function Login() {
         }
       ]
     };
-    axios.put('/student/submitExam', obj1).then(res => {
-      if (res.status === 200) {
-        // window.open('/instructions', "_blank", 'height=600,width=400,menubar=no,resizable=no,scrollbars=no,status=no,location=no');
-        // history.push('/instructions');
-        const modalTitle = "Awesome Modal";
-        window.open("/instructions", "_blank");
-      }
-    })
+    // axios.post('/student/login', obj).then(res => {
+    //   console.log("res", res);
+    //   if (res.status === 200) {
+    // window.open('/instructions', "_blank", 'height=600,width=400,menubar=no,resizable=no,scrollbars=no,status=no,location=no');
+    // history.push('/instructions');
+    // setOpen(true);
+    // const modalTitle = "Awesome Modal";
+    window.open("/instructions", "_blank", 'menubar=no,left=100,screenX=200,resizable,scrollbars,status');
+    // }
+    // })
+  }
+
+
+
+  const handleClose = () => {
+    setOpen(false);
   }
 
   const passChangeEvent = (e) => {
@@ -169,6 +188,8 @@ export default function Login() {
           return <div>This is probably an anti-pattern but ya know...</div>;
         }}
       </NavigationPrompt>
+
+
       {/* header start */}
       {/* <Header/> */}
       {/*  header end */}
@@ -181,7 +202,6 @@ export default function Login() {
           <Typography component="h1" variant="h5">
             Sign in
         </Typography>
-
 
           <form className={classes.form} noValidate>
             <TextField
@@ -221,6 +241,7 @@ export default function Login() {
             >
               Sign In
           </Button>
+            <a href="/instructions" rel="popup">Here is my link</a>
             <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body1">
@@ -229,8 +250,17 @@ export default function Login() {
               </Grid>
 
             </Grid>
+            {/* <Alert severity="error">This is an error alert — check it out!</Alert> */}
+
           </form>
         </div>
+
+        <Dialog fullScreen={fullScreen} onClose={handleClose} aria-labelledby="simple-dialog-title" open={open}>
+          <Test />
+        </Dialog>
+
+
+
 
         <Box mt={8}>
           <Copyright />

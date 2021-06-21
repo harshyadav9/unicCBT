@@ -165,28 +165,30 @@ function Test(props) {
         window.onbeforeunload = (event) => {
             const e = event || window.event;
             // Cancel the event
+            var msg = '';
+            e = e || window.event;
             e.preventDefault();
             if (e) {
-                e.returnValue = ''; // Legacy method for cross browser support
+                e.returnValue = msg; // Legacy method for cross browser support
             }
-            return ''; // Legacy method for cross browser support
+            return msg; // Legacy method for cross browser support
             // return "Are you sure you want to navigate away?";
         };
 
-        document.addEventListener('keydown', (e) => {
-            console.log(e.which);
-            // if (e.which === 91 || e.key === "Tab")
-            keys[e.which] = true;
-            e.preventDefault();
+        // document.addEventListener('keydown', (e) => {
+        //     console.log(e.which);
+        //     // if (e.which === 91 || e.key === "Tab")
+        //     keys[e.which] = true;
+        //     e.preventDefault();
 
-        });
+        // });
 
 
-        document.addEventListener('contextmenu', (e) => {
-            console.log(e.which);
+        // document.addEventListener('contextmenu', (e) => {
+        //     console.log(e.which);
 
-            e.preventDefault();
-        });
+        //     e.preventDefault();
+        // });
     }, []);
 
 
