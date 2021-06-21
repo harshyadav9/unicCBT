@@ -1,6 +1,7 @@
 package com.exam.cbt.entity;
 
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -9,21 +10,16 @@ import javax.persistence.Table;
 @Table(name = "QuestionMaster")
 public class QuestionMaster {
 
-	@Id
-	private int questionID;
-
-	public QuestionMaster() {
-		super();
+	public QuestionMasterId getId() {
+		return id;
 	}
 
-	@Column(name = "InstCd")
-	private String instCd;
-	
-	@Column(name = "examCd")
-	private String examCd;
+	public void setId(QuestionMasterId id) {
+		this.id = id;
+	}
 
-	@Column(name = "questionNo")
-	private Integer questionNo;
+	@EmbeddedId
+	private QuestionMasterId id;
 	
 	@Column(name = "Question")
 	private String question;
@@ -33,9 +29,6 @@ public class QuestionMaster {
 	
 	@Column(name = "QuestionHint")
 	private String questionHint;
-	
-	@Column(name = "Single")
-	private String single;
 	
 	@Column(name = "Multiple")
 	private String multiple;
@@ -52,41 +45,61 @@ public class QuestionMaster {
 	@Column(name = "Option4")
 	private String option4;
 	
-	@Column(name = "Option5")
-	private String option5;
-
-	public int getQuestionID() {
-		return questionID;
+	@Column(name = "CorrectAns")
+	private String correctAnswer;
+	
+	@Column(name = "CorrectAnsWeightage")
+	private Float correctAnsWeightage;
+	
+	@Column(name = "WrongAnsWeightage")
+	private Float wrongAnsWeightage;
+	
+	@Column(name = "UnattemptedAnsWeightage")
+	private Float unattemptedAnsWeightage;
+	
+	@Column(name = "PartialAnsWeightage")
+	private Float partialAnsWeightage;
+	
+	public Float getCorrectAnsWeightage() {
+		return correctAnsWeightage;
 	}
 
-	public void setQuestionID(int questionID) {
-		this.questionID = questionID;
+	public void setCorrectAnsWeightage(Float correctAnsWeightage) {
+		this.correctAnsWeightage = correctAnsWeightage;
 	}
 
-	public String getInstCd() {
-		return instCd;
+	public Float getWrongAnsWeightage() {
+		return wrongAnsWeightage;
 	}
 
-	public void setInstCd(String instCd) {
-		this.instCd = instCd;
+	public void setWrongAnsWeightage(Float wrongAnsWeightage) {
+		this.wrongAnsWeightage = wrongAnsWeightage;
 	}
 
-	public String getExamCd() {
-		return examCd;
+	public Float getUnattemptedAnsWeightage() {
+		return unattemptedAnsWeightage;
 	}
 
-	public void setExamCd(String examCd) {
-		this.examCd = examCd;
+	public void setUnattemptedAnsWeightage(Float unattemptedAnsWeightage) {
+		this.unattemptedAnsWeightage = unattemptedAnsWeightage;
 	}
 
-	public Integer getQuestionNo() {
-		return questionNo;
+	public Float getPartialAnsWeightage() {
+		return partialAnsWeightage;
 	}
 
-	public void setQuestionNo(Integer questionNo) {
-		this.questionNo = questionNo;
+	public void setPartialAnsWeightage(Float partialAnsWeightage) {
+		this.partialAnsWeightage = partialAnsWeightage;
+	}
+	
+	public String getCorrectAnswer() {
+		return correctAnswer;
 	}
 
+	public void setCorrectAnswer(String correctAnswer) {
+		this.correctAnswer = correctAnswer;
+	}
+	
 	public String getQuestion() {
 		return question;
 	}
@@ -109,14 +122,6 @@ public class QuestionMaster {
 
 	public void setQuestionHint(String questionHint) {
 		this.questionHint = questionHint;
-	}
-
-	public String getSingle() {
-		return single;
-	}
-
-	public void setSingle(String single) {
-		this.single = single;
 	}
 
 	public String getMultiple() {
@@ -157,23 +162,6 @@ public class QuestionMaster {
 
 	public void setOption4(String option4) {
 		this.option4 = option4;
-	}
-
-	public String getOption5() {
-		return option5;
-	}
-
-	public void setOption5(String option5) {
-		this.option5 = option5;
-	}
-
-	@Override
-	public String toString() {
-		return "QuestionMaster [questionID=" + questionID + ", instCd=" + instCd + ", examCd=" + examCd
-				+ ", questionNo=" + questionNo + ", question=" + question + ", questionDescription="
-				+ questionDescription + ", questionHint=" + questionHint + ", single=" + single + ", multiple="
-				+ multiple + ", option1=" + option1 + ", option2=" + option2 + ", option3=" + option3 + ", option4="
-				+ option4 + ", option5=" + option5 + "]";
 	}
 
 }

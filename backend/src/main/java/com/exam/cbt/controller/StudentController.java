@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +21,7 @@ import com.exam.cbt.entity.QuestionMaster;
 import com.exam.cbt.entity.Student;
 import com.exam.cbt.pojo.QuestionMasterResponse;
 import com.exam.cbt.service.StudentResponseService;
-import com.exam.cbt.service.impl.QuestionMasterServiceImpl;
+import com.exam.cbt.service.impl.QuestionMasterDataServiceImpl;
 import com.exam.cbt.service.impl.StudentServiceImpl;
 
 @RestController
@@ -34,7 +35,7 @@ public class StudentController {
 	StudentServiceImpl stuService;
 
 	@Autowired
-	QuestionMasterServiceImpl questionMasterServ;
+	QuestionMasterDataServiceImpl questionMasterServ;
 	
 	@Autowired
 	StudentResponseService stuRespServ;
@@ -50,7 +51,7 @@ public class StudentController {
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public Map<String,String> login(@RequestBody Student student) {
+	public ResponseEntity<String> login(@RequestBody Student student) {
 		
 		log.info("Inside login{} with inout student : "+student);
 		
@@ -62,23 +63,41 @@ public class StudentController {
 			if(str != null && str.equalsIgnoreCase("AUTHENTICATED")) {
 				log.info("Authenticated:  " +student.getRegistrationNo());
 				mp.put("Message", str);
-				mp.put("CODE", HttpStatus.FOUND.getReasonPhrase());
+				mp.put("CODE", HttpStatus.OK.getReasonPhrase());
+				return new ResponseEntity<>("Authenticated", HttpStatus.OK);
 			}else {
-				mp.put("Message", str);
-				mp.put("CODE", HttpStatus.NOT_FOUND.getReasonPhrase());
 				log.info("Not Found:  " +student.getRegistrationNo());
+				return new ResponseEntity<>("Not Authenticated", HttpStatus.NOT_FOUND);
 				
 			}
-			log.info("Exiting login{}");
-			return mp;
-			
 			
 		} else {
-			mp.put("Message", "Password is empty");
-			mp.put("CODE", HttpStatus.BAD_REQUEST.getReasonPhrase());
 			log.info("Password is emptyfor registrationNumber:  " +student.getRegistrationNo());
 			log.info("Exiting login{}");
-			return mp;
+			return new ResponseEntity<>("Bad Request", HttpStatus.BAD_REQUEST);
+		}		
+
+	}
+	
+	@RequestMapping(value = "/submitExam", method = RequestMethod.PUT)
+	public HashMap<String,String> submitExam(@RequestBody com.exam.cbt.pojo.StudentResponse studentResp) {
+		
+		
+		HashMap<String, String> retCode = new HashMap<>(); 
+		
+		if (studentResp != null) {
+			log.info("Inside submitExam{} for registrationNo : " + studentResp.getRegistrationNo());
+			stuRespServ.saveStudentExam(studentResp.getResp());
+			retCode.put("CODE", HttpStatus.CREATED.getReasonPhrase());
+			log.info("Exiting submitExam{} for registrationNo : " +studentResp.getRegistrationNo() );
+			return retCode;
+			
+		} else {
+			
+			retCode.put("CODE", HttpStatus.BAD_REQUEST.getReasonPhrase());
+			log.info(retCode.get("CODE"));
+			log.info("Exiting submitExam{} ");
+			return retCode;
 
 		}		
 
@@ -116,35 +135,5 @@ public class StudentController {
 		}		
 
 	}
-
-	@RequestMapping(value = "/submitExam", method = RequestMethod.PUT)
-	public HashMap<String,String> submitExam(@RequestBody com.exam.cbt.pojo.StudentResponse studentResp) {
-		
-		
-		HashMap<String, String> retCode = new HashMap<>(); 
-		
-		if (studentResp != null) {
-			log.info("Inside submitExam{} for registrationNo : " + studentResp.getRegistrationNo());
-			stuRespServ.saveStudentExam(studentResp.getResp());
-			retCode.put("CODE", HttpStatus.CREATED.getReasonPhrase());
-			log.info("Exiting submitExam{} for registrationNo : " +studentResp.getRegistrationNo() );
-			return retCode;
-			
-		} else {
-			
-			retCode.put("CODE", HttpStatus.BAD_REQUEST.getReasonPhrase());
-			log.info(retCode.get("CODE"));
-			log.info("Exiting submitExam{} ");
-			return retCode;
-
-		}		
-
-	}
-	// @GetMapping("/authenticate/{id}")
-//	public ResponseEntity<Student> authenticateStudentId(@PathVariable(required = true) Integer id) {
-//		
-//		return new ResponseEntity<>(stuService.getStudent(id), HttpStatus.OK);
-//		
-//	}
 
 }
