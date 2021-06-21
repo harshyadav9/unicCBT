@@ -1,5 +1,6 @@
 package com.exam.cbt.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.exam.cbt.dao.QuestionMasterRepository;
 import com.exam.cbt.entity.QuestionMaster;
-import com.exam.cbt.entity.StudentResponse;
 import com.exam.cbt.service.QuestionMasterDataService;
 
 @Service
@@ -25,9 +25,7 @@ public class QuestionMasterDataServiceImpl implements QuestionMasterDataService 
 		
 		questionMasterDataList.forEach(question -> {
 			QuestionMaster questionMaster = null;
-//			List<QuestionMaster> questionList  = questionMasterRepository.findByinstCdAndExamCdAndYearAndQuestionAndQuestionNo(question.getInstCd(), 
-//					question.getExamCd(), question.getYear(), question.getQuestion(), question.getQuestionNo());
-//			
+
 			if(questionMasterRepository.existsById(question.getId())) {
 				questionMasterRepository.save(question);
 			}
@@ -35,16 +33,20 @@ public class QuestionMasterDataServiceImpl implements QuestionMasterDataService 
 				questionMaster = question;
 				questionMasterRepository.save(questionMaster);
 			}
-		
-			
 		   
 		});
 		
-		
-		
-		
 		questionMasterRepository.saveAll(questionMasterDataList);
 		return questionMasterDataList.size();
+	}
+	
+	@Override
+	public HashMap<String, List<QuestionMaster>> getAllQuestions() {
+
+		HashMap<String, List<QuestionMaster>> hm = new HashMap<String, List<QuestionMaster>>();
+		List<QuestionMaster> questions = questionMasterRepository.findAll();
+		hm.put("Questions", questions);
+		return hm;
 	}
 
 }

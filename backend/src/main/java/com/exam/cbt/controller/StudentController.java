@@ -1,6 +1,7 @@
 package com.exam.cbt.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -10,12 +11,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.exam.cbt.entity.QuestionMaster;
 import com.exam.cbt.entity.Student;
+import com.exam.cbt.pojo.QuestionMasterResponse;
 import com.exam.cbt.service.StudentResponseService;
 import com.exam.cbt.service.impl.QuestionMasterDataServiceImpl;
 import com.exam.cbt.service.impl.StudentServiceImpl;
@@ -94,6 +98,39 @@ public class StudentController {
 			log.info(retCode.get("CODE"));
 			log.info("Exiting submitExam{} ");
 			return retCode;
+
+		}		
+
+	}
+	
+	@RequestMapping(value = "/getQuestions/{registrationNumber}", method = RequestMethod.GET)
+	public QuestionMasterResponse getQuestions(@PathVariable Integer registrationNumber) {
+		
+		log.info("Inside getQuestions{} with registrationNo: " +registrationNumber);
+		
+		QuestionMasterResponse res = new QuestionMasterResponse();
+		HashMap<String, String> retCode = new HashMap<>(); 
+		
+		if (registrationNumber != null) {
+			log.info("Calling questionMasterServ.getAllQuestions{}");
+			HashMap<String, List<QuestionMaster>> hm = questionMasterServ.getAllQuestions();
+			Student student = stuService.findStudentWithId(registrationNumber);
+			
+			retCode.put("CODE", HttpStatus.ACCEPTED.getReasonPhrase());
+			res.setQuestionList(hm);
+			res.setExamCd(student.getExamCd());
+			res.setResponseCode(retCode);
+			log.info(retCode.get("CODE"));
+			log.info("Exiting getQuestions{}");
+			return res;
+			
+		} else {
+			
+			retCode.put("CODE", HttpStatus.BAD_REQUEST.getReasonPhrase());
+			res.setResponseCode(retCode);
+			log.info(retCode.get("CODE"));
+			log.info("Exiting getQuestions{}");
+			return res;
 
 		}		
 
