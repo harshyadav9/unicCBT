@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.exam.cbt.dao.ConfigRepository;
 import com.exam.cbt.entity.Config;
+import com.exam.cbt.entity.ConfigId;
 import com.exam.cbt.service.ConfigDataService;
 
 @Service
@@ -37,6 +38,11 @@ public class ConfigDataServiceImpl implements ConfigDataService {
 		
 		configRepository.saveAll(configList);
 		return configList.size();
+	}
+
+	@Override
+	public Config getConfig(ConfigId id) {
+		return configRepository.getOne(id);
 	}
 
 }

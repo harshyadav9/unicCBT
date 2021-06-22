@@ -3,6 +3,7 @@ package com.exam.cbt.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +19,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.exam.cbt.entity.CandidateMaster;
+import com.exam.cbt.entity.Config;
+import com.exam.cbt.entity.ConfigId;
 import com.exam.cbt.entity.QuestionMaster;
 import com.exam.cbt.pojo.CandidateResponseUI;
 import com.exam.cbt.pojo.QuestionMasterResponse;
 import com.exam.cbt.service.CandidateResponseService;
+import com.exam.cbt.service.ConfigDataService;
 import com.exam.cbt.service.impl.CandidateServiceImpl;
 import com.exam.cbt.service.impl.QuestionMasterDataServiceImpl;
 
@@ -40,14 +44,15 @@ public class StudentController {
 	
 	@Autowired
 	CandidateResponseService candidateRespServ;
+	
+	@Autowired
+	ConfigDataService configDataService;
 
 	@GetMapping(path = "/checkStatus")
-	public String checkAppStatus() { 	
+	public ResponseEntity<String> checkAppStatus() { 	
 
-		String str = "App is running";
-		log.info(str);
 		log.info("Exiting checkAppStatus{}");
-		return str;
+		return new ResponseEntity<>("App is Up and Running", HttpStatus.OK);
 
 	}
 
@@ -81,60 +86,65 @@ public class StudentController {
 	}
 	
 	@RequestMapping(value = "/submitExam", method = RequestMethod.PUT)
-	public HashMap<String,String> submitExam(@RequestBody CandidateResponseUI candidateResp) {
-		
-		
-		HashMap<String, String> retCode = new HashMap<>(); 
+	public ResponseEntity<String> submitExam(@RequestBody CandidateResponseUI candidateResp) {
 		
 		if (candidateResp != null) {
-			//log.info("Inside submitExam{} for registrationNo : " + candidateResp.getRegistrationNo());
+			log.info("Exiting submitExam{} ");
 			candidateRespServ.saveCandidateExam(candidateResp.getResp());
-			retCode.put("CODE", HttpStatus.CREATED.getReasonPhrase());
-			//log.info("Exiting submitExam{} for registrationNo : " +candidateResp.getRegistrationNo());
-			return retCode;
+			return new ResponseEntity<>("Exam Submitted Successfully", HttpStatus.OK);
 			
 		} else {
 			
-			retCode.put("CODE", HttpStatus.BAD_REQUEST.getReasonPhrase());
-			log.info(retCode.get("CODE"));
 			log.info("Exiting submitExam{} ");
-			return retCode;
-
+			return new ResponseEntity<>("Bad Request", HttpStatus.BAD_REQUEST);
 		}		
-
 	}
 	
 	@RequestMapping(value = "/getQuestions/{registrationNumber}", method = RequestMethod.GET)
-	public QuestionMasterResponse getQuestions(@PathVariable Integer registrationNumber) {
+	public ResponseEntity<QuestionMasterResponse> getQuestions(@PathVariable Integer registrationNumber) {
 		
 		log.info("Inside getQuestions{} with registrationNo: " +registrationNumber);
 		
 		QuestionMasterResponse res = new QuestionMasterResponse();
-		HashMap<String, String> retCode = new HashMap<>(); 
 		
 		if (registrationNumber != null) {
-			log.info("Calling questionMasterServ.getAllQuestions{}");
-			HashMap<String, List<QuestionMaster>> hm = questionMasterServ.getAllQuestions();
-			CandidateMaster student = candidateService.findStudentWithId(registrationNumber);
-			
-			retCode.put("CODE", HttpStatus.ACCEPTED.getReasonPhrase());
-			res.setQuestionList(hm);
-			res.setExamCd(student.getExamCd());
-			res.setResponseCode(retCode);
-			log.info(retCode.get("CODE"));
+			res = populatequestionMasterResponse(registrationNumber);
+			if (res==null){
+				return new ResponseEntity<>(res, HttpStatus.NOT_FOUND);
+			}
 			log.info("Exiting getQuestions{}");
-			return res;
+			return new ResponseEntity<>(res, HttpStatus.OK);
 			
 		} else {
 			
-			retCode.put("CODE", HttpStatus.BAD_REQUEST.getReasonPhrase());
-			res.setResponseCode(retCode);
-			log.info(retCode.get("CODE"));
 			log.info("Exiting getQuestions{}");
-			return res;
-
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}		
-
 	}
-
+	
+	private QuestionMasterResponse populatequestionMasterResponse(int registrationNumber) {
+		
+		QuestionMasterResponse res = null;
+		
+		HashMap<String, List<QuestionMaster>> hm = questionMasterServ.getAllQuestions();
+		Optional<CandidateMaster> candidateMaster = candidateService.findCandidateWithId(registrationNumber);
+		
+		if(candidateMaster.isPresent()) {
+			res = new QuestionMasterResponse();
+			ConfigId id = new ConfigId();
+			id.setExamCd(candidateMaster.get().getExamCd());
+			id.setInstCd(candidateMaster.get().getInstCd());
+			id.setYear(candidateMaster.get().getYear());
+			Config config = configDataService.getConfig(id);
+			
+			res.setQuestionList(hm);
+			res.setCandidateName(candidateMaster.get().getName());
+			res.setDateOfExam(config.getDateOfExam());
+			res.setDurationHr(config.getDurationHr());
+			res.setDurationMin(config.getDurationMin());
+			res.setPhoto(candidateMaster.get().getPhoto());
+		}
+		
+		return res;
+	}
 }

@@ -43,8 +43,8 @@ public class CandidateServiceImpl implements CandidateService{
 		
 	}
 	
-	public CandidateMaster findStudentWithId(Integer id) {
-		return candidateRepository.getOne(id);
+	public Optional<CandidateMaster> findCandidateWithId(Integer id) {
+		return candidateRepository.findById(id);
 	}
 
 	@Override
