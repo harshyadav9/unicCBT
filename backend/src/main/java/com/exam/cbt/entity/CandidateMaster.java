@@ -36,6 +36,39 @@ public class CandidateMaster {
 	@Column(name = "Dob")
 	private Date dob;
 	
+	@Column(name = "Photo")
+	private String photo;
+	
+	@Column(name = "MobileNum")
+	private int mobileNum;
+	
+	@Column(name = "EmailId")
+	private String emailId;
+	
+	public int getMobileNum() {
+		return mobileNum;
+	}
+
+	public void setMobileNum(int mobileNum) {
+		this.mobileNum = mobileNum;
+	}
+
+	public String getEmailId() {
+		return emailId;
+	}
+
+	public void setEmailId(String emailId) {
+		this.emailId = emailId;
+	}
+
+	public String getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(String photo) {
+		this.photo = photo;
+	}
+
 	public String getInstCd() {
 		return instCd;
 	}
@@ -91,11 +124,12 @@ public class CandidateMaster {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "Student [registrationNo=" + registrationNo + ", name=" + name + ", password=" + password + ", examCd="
-				+ examCd + ", instCd=" + instCd + ", year=" + year + ", dob=" + dob + "]";
+		return "CandidateMaster [registrationNo=" + registrationNo + ", name=" + name + ", password=" + password
+				+ ", examCd=" + examCd + ", instCd=" + instCd + ", year=" + year + ", dob=" + dob + ", photo=" + photo
+				+ ", mobileNum=" + mobileNum + ", emailId=" + emailId + "]";
 	}
-	
+
 }

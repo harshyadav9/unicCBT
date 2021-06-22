@@ -11,6 +11,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,11 +34,26 @@ public class ReadExcelData {
 	List<ExamYearMaster> examYearMasterList = new ArrayList<ExamYearMaster>();
 	List<Config> configList = new ArrayList<Config>();
 	List<CandidateMaster> candidateMasterList = new ArrayList<CandidateMaster>();
-
+	
+	@Value( "${candidate.master.excel.sheet.inputName}" )
+	private String candidateMasterSheetName;
+	
+	@Value( "${config.excel.sheet.inputName}" )
+	private String configSheetName; 
+	
+	@Value( "${exam.master.excel.sheet.inputName}" )
+	private String examMasterSheetName;
+	
+	@Value( "${inst.master.excel.sheet.inputName}" )
+	private String instituteMasterSheetName;
+	
+	@Value( "${question.master.excel.sheet.inputName}" )
+	private String questionMasterSheetName;
+	
 	public List<QuestionMaster> readQuestionMasterData(MultipartFile file) throws IOException {
 
 		XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
-		XSSFSheet worksheet = workbook.getSheetAt(0);
+		XSSFSheet worksheet = workbook.getSheet(questionMasterSheetName);
 
 		for (int index = 0; index < worksheet.getPhysicalNumberOfRows(); index++) {
 			if (index > 0) {
@@ -51,23 +67,19 @@ public class ReadExcelData {
 
 					if (null != row.getCell(0).getStringCellValue()) {
 						id.setInstCd(String.valueOf(row.getCell(0).getStringCellValue()));
-						// questionMaster.setId();(String.valueOf(row.getCell(0).getStringCellValue()));
 					}
 					if (null != row.getCell(1).getStringCellValue()) {
 						id.setExamCd(row.getCell(1).getStringCellValue());
-						// questionMaster.setExamCd(row.getCell(1).getStringCellValue());
 					}
 
-					// questionMaster.setYear((int) row.getCell(2).getNumericCellValue());
 					id.setYear((int) row.getCell(2).getNumericCellValue());
 
 					if (null != row.getCell(3).getStringCellValue()) {
 						questionMaster.setMultiple(row.getCell(3).getStringCellValue());
 					}
-					//if (null != row.getCell(4).getStringCellValue()) {
-						id.setQuestionNo((int) row.getCell(4).getNumericCellValue());
-					//}
-					questionMaster.setId(id);
+					
+					id.setQuestionNo((int) row.getCell(4).getNumericCellValue());
+				    questionMaster.setId(id);
 
 					if (null != row.getCell(5).getStringCellValue()) {
 						questionMaster.setQuestion(row.getCell(5).getStringCellValue());
@@ -107,7 +119,7 @@ public class ReadExcelData {
 	public List<InstituteNameMaster> readInstituteMasterData(MultipartFile file) throws IOException {
 
 		XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
-		XSSFSheet worksheet = workbook.getSheetAt(0);
+		XSSFSheet worksheet = workbook.getSheet(instituteMasterSheetName);
 
 		for (int index = 0; index < worksheet.getPhysicalNumberOfRows(); index++) {
 			if (index > 0) {
@@ -124,7 +136,6 @@ public class ReadExcelData {
 					}
 					if (null != row.getCell(1).getStringCellValue()) {
 						id.setExamCd(row.getCell(1).getStringCellValue());
-						// questionMaster.setExamCd(row.getCell(1).getStringCellValue());
 					}
 
 					id.setYear((int) row.getCell(2).getNumericCellValue());
@@ -149,7 +160,7 @@ public class ReadExcelData {
 	public List<ExamYearMaster> readExamYearMasterData(MultipartFile file) throws IOException {
 
 		XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
-		XSSFSheet worksheet = workbook.getSheetAt(0);
+		XSSFSheet worksheet = workbook.getSheet(examMasterSheetName);
 
 		for (int index = 0; index < worksheet.getPhysicalNumberOfRows(); index++) {
 			if (index > 0) {
@@ -166,7 +177,6 @@ public class ReadExcelData {
 					}
 					if (null != row.getCell(1).getStringCellValue()) {
 						id.setExamCd(row.getCell(1).getStringCellValue());
-						// questionMaster.setExamCd(row.getCell(1).getStringCellValue());
 					}
 
 					id.setYear((int) row.getCell(2).getNumericCellValue());
@@ -177,9 +187,7 @@ public class ReadExcelData {
 					}
 
 					examYearMasterList.add(examYearMaster);
-
 				}
-
 			}
 		}
 		workbook.close();
@@ -191,7 +199,7 @@ public class ReadExcelData {
 	public List<Config> readConfigData(MultipartFile file) throws IOException {
 
 		XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
-		XSSFSheet worksheet = workbook.getSheetAt(0);
+		XSSFSheet worksheet = workbook.getSheet(configSheetName);
 
 		for (int index = 0; index < worksheet.getPhysicalNumberOfRows(); index++) {
 			if (index > 0) {
@@ -208,7 +216,6 @@ public class ReadExcelData {
 					}
 					if (null != row.getCell(1).getStringCellValue()) {
 						id.setExamCd(row.getCell(1).getStringCellValue());
-						// questionMaster.setExamCd(row.getCell(1).getStringCellValue());
 					}
 
 					id.setYear((int) row.getCell(2).getNumericCellValue());
@@ -225,9 +232,7 @@ public class ReadExcelData {
 						config.setDurationHr(fetchHour(row.getCell(4).getLocalDateTimeCellValue()));
 						config.setDurationMin(fetchMin(row.getCell(4).getLocalDateTimeCellValue()));
 					}
-
 					configList.add(config);
-
 				}
 
 			}
@@ -241,7 +246,7 @@ public class ReadExcelData {
 	public List<CandidateMaster> readCandidateMasterData(MultipartFile file) throws IOException {
 
 		XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
-		XSSFSheet worksheet = workbook.getSheetAt(0);
+		XSSFSheet worksheet = workbook.getSheet(candidateMasterSheetName);
 
 		for (int index = 0; index < worksheet.getPhysicalNumberOfRows(); index++) {
 			if (index > 0) {
@@ -260,6 +265,7 @@ public class ReadExcelData {
 					}
 
 					candidateMaster.setYear((int) row.getCell(2).getNumericCellValue());
+					
 					candidateMaster.setRegistrationNo((int) row.getCell(3).getNumericCellValue());
 
 					if (null != row.getCell(4).getStringCellValue()) {
@@ -275,28 +281,31 @@ public class ReadExcelData {
 						java.sql.Date sd = new java.sql.Date(d.getTime());
 						candidateMaster.setDob(sd);
 					}
+					
+					if (null != row.getCell(7).getStringCellValue()) {
+						candidateMaster.setPhoto(row.getCell(7).getStringCellValue());
+					}
+					
+					candidateMaster.setMobileNum((int) row.getCell(8).getNumericCellValue());
+					
+					if (null != row.getCell(9).getStringCellValue()) {
+						candidateMaster.setEmailId(row.getCell(9).getStringCellValue());
+					}
 
 					candidateMasterList.add(candidateMaster);
-
 				}
-
 			}
 		}
 		workbook.close();
 
 		return candidateMasterList;
-
 	}
 
 	private int fetchHour(LocalDateTime data) {
-
 		return data.getHour();
-
 	}
 
 	private int fetchMin(LocalDateTime data) {
-
 		return data.getMinute();
-
 	}
 }

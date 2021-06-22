@@ -1,6 +1,16 @@
 package com.exam.cbt.service.impl;
 
+import java.awt.Image;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
+
+import javax.swing.ImageIcon;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +32,14 @@ public class CandidateMasterDataServiceImpl implements CandidateMasterDataServic
 	@Override
 	public int uploadCandidateMasterData(List<CandidateMaster> candidateMasterList) {
 		
-		
-		
 		candidateMasterList.forEach(candidateMstr -> {
 			
 			CandidateMaster candidateMaster = null;
 
 			if(candidateMasterRepository.existsById(candidateMstr.getRegistrationNo())) {
-				candidateMasterRepository.save(candidateMstr);
+					
+					candidateMasterRepository.save(candidateMstr);
+			
 			}
 			else {
 				candidateMaster = candidateMstr;
