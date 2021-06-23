@@ -1,6 +1,7 @@
 package com.exam.cbt.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.exam.cbt.dao.ExamYearMasterRepository;
 import com.exam.cbt.entity.ExamYearMaster;
+import com.exam.cbt.entity.ExamYearMasterId;
 import com.exam.cbt.service.ExamYearMasterDataService;
 
 @Service
@@ -37,6 +39,11 @@ public class ExamYearMasterDataServiceImpl implements ExamYearMasterDataService 
 		
 		examYearMasterRepository.saveAll(examYearMasterList);
 		return (int) examYearMasterRepository.count();
+	}
+
+	@Override
+	public Optional<ExamYearMaster> getExamYearMasterDetail(ExamYearMasterId id) {
+		return examYearMasterRepository.findById(id);
 	}
 
 }

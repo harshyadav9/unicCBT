@@ -1,16 +1,7 @@
 package com.exam.cbt.service.impl;
 
-import java.awt.Image;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
-
-import javax.swing.ImageIcon;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +41,11 @@ public class CandidateMasterDataServiceImpl implements CandidateMasterDataServic
 		
 		candidateMasterRepository.saveAll(candidateMasterList);
 		return candidateMasterList.size();
+	}
+
+	@Override
+	public Optional<CandidateMaster> getCandidate(int regNo) {
+		return candidateMasterRepository.findById(regNo);
 	}
 
 }
