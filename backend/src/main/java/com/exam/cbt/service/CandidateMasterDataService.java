@@ -11,4 +11,6 @@ public interface CandidateMasterDataService {
 	
 	public Optional<CandidateMaster> getCandidate(int regNo);
 	
+	public void updatePhotoUrl(List<String> photoUrls);
+	
 }

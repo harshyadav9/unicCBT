@@ -1,7 +1,6 @@
 package com.exam.cbt.azure;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -9,9 +8,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobClientBuilder;
 import com.azure.storage.blob.models.BlobProperties;
 
@@ -22,23 +19,19 @@ public class AzureBlobAdapter {
     BlobClientBuilder client;
 
     
-    public List<String> upload(List<MultipartFile> files, String prefixName) {
+    public List<String> upload(File[] files) {
     	
     	List<String> fileNames = new ArrayList<>();
-       for (MultipartFile file:files) {
-    	   if(file != null && file.getSize() > 0) {
-               try {
-                   //implement your own file name logic.
-                   String fileName = prefixName+ file.getOriginalFilename();
-                   BlobClient str = client.blobName(fileName).buildClient();
-                   if (!str.exists()) {
-                	   client.blobName(fileName).buildClient().upload(file.getInputStream(),file.getSize());
-                   }
-                  
-                   fileNames.add(fileName);
-               } catch (IOException e) {
-                   e.printStackTrace();
-               }
+       for (File file:files) {
+    	   if(file != null && file.length() > 0) {
+               //implement your own file name logic.
+			   String fileName = file.getName();
+			  // BlobClient str = client.blobName(fileName).buildClient();
+			   //if (!str.exists()) {
+				   client.blobName(fileName).buildClient().uploadFromFile(file.getPath(), true);
+			   //}
+			  
+			   fileNames.add(fileName);
            }
     	   
        }
