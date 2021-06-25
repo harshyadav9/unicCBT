@@ -24,18 +24,18 @@ public class ExamYearMasterDataServiceImpl implements ExamYearMasterDataService 
 	@Override
 	public int uploadExamYearMasterData(List<ExamYearMaster> examYearMasterList) {
 		
-		examYearMasterList.forEach(exmYrMaster -> {
-			ExamYearMaster examYearMaster = null;
-
-			if(examYearMasterRepository.existsById(exmYrMaster.getId())) {
-				examYearMasterRepository.save(exmYrMaster);
-			}
-			else {
-				examYearMaster = exmYrMaster;
-				examYearMasterRepository.save(examYearMaster);
-			}
-		   
-		});
+//		examYearMasterList.forEach(exmYrMaster -> {
+//			ExamYearMaster examYearMaster = null;
+//
+//			//if(examYearMasterRepository.existsById(exmYrMaster.getId())) {
+//				//examYearMasterRepository.save(exmYrMaster);
+//			//}
+//			//else {
+//				//examYearMaster = exmYrMaster;
+//				//examYearMasterRepository.save(examYearMaster);
+//			//}
+//		   
+//		});
 		
 		examYearMasterRepository.saveAll(examYearMasterList);
 		return (int) examYearMasterRepository.count();

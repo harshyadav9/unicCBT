@@ -6,8 +6,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.exam.cbt.dao.CandidateRepository;
@@ -60,20 +58,19 @@ public class CandidateServiceImpl implements CandidateService{
 	}
 
 	@Override
-	public List<CandidateMaster> getAllStudents(int pageNumber, int pageSize) {
-		Pageable paging = PageRequest.of(pageNumber, pageSize);
-		 
-        return candidateRepository.findAll(paging).getContent();
-	}
-
-	@Override
 	public List<CandidateMaster> getAllStudents() {
-		 return candidateRepository.findAll();
+		 return (List<CandidateMaster>) candidateRepository.findAll();
 	}
 
 	@Override
 	public long countStudents() {
 		return candidateRepository.count();
+	}
+
+	@Override
+	public List<CandidateMaster> getAllStudents(int pageNumber, int pageSize) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

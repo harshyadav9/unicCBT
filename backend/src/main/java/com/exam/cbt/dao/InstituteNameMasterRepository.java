@@ -8,5 +8,7 @@ import com.exam.cbt.entity.InstituteNameMasterId;
 
 @Repository
 public interface InstituteNameMasterRepository extends JpaRepository<InstituteNameMaster, InstituteNameMasterId> {
+	
+	//Optional<InstituteNameMaster> findByRegistrationNo(Integer registrationNo);
 
 }

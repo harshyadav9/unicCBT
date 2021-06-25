@@ -40,7 +40,6 @@ import com.exam.cbt.service.impl.QuestionMasterDataServiceImpl;
 public class StudentController {
 	
 	Logger log = LoggerFactory.getLogger(StudentController.class); 
-	
 
 	@Autowired
 	SimpleTextMail simpleTextMail;
@@ -161,13 +160,16 @@ public class StudentController {
 			id.setExamCd(candidateMaster.get().getExamCd());
 			id.setInstCd(candidateMaster.get().getInstCd());
 			id.setYear(candidateMaster.get().getYear());
-			Config config = configDataService.getConfig(id);
+			Optional<Config> config = configDataService.getConfig(id);
 			
 			res.setQuestionList(hm);
 			res.setCandidateName(candidateMaster.get().getName());
-			res.setDateOfExam(config.getDateOfExam());
-			res.setDurationHr(config.getDurationHr());
-			res.setDurationMin(config.getDurationMin());
+			if (config.isPresent()) {
+				res.setDateOfExam(config.get().getDateOfExam());
+				res.setDurationHr(config.get().getDurationHr());
+				res.setDurationMin(config.get().getDurationMin());
+			}
+			
 			res.setPhoto(candidateMaster.get().getPhoto());
 		}
 		

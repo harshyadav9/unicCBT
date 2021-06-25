@@ -35,14 +35,14 @@ public class CandidateMasterDataServiceImpl implements CandidateMasterDataServic
 
 			CandidateMaster candidateMaster = null;
 
-			if (candidateMasterRepository.existsById(candidateMstr.getRegistrationNo())) {
-
-				candidateMasterRepository.save(candidateMstr);
-
-			} else {
-				candidateMaster = candidateMstr;
-				candidateMasterRepository.save(candidateMaster);
-			}
+//			if (candidateMasterRepository.existsById(candidateMstr.getRegistrationNo())) {
+//
+//				candidateMasterRepository.save(candidateMstr);
+//
+//			} else {
+//				candidateMaster = candidateMstr;
+//				candidateMasterRepository.save(candidateMaster);
+//			}
 
 		});
 

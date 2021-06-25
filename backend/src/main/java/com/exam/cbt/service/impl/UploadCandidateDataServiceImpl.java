@@ -12,18 +12,17 @@ import com.exam.cbt.entity.CandidateMaster;
 import com.exam.cbt.service.UploadCandidateDataService;
 
 @Service
-public class UploadCandidateDataServiceImpl implements UploadCandidateDataService{
-	
-	Logger log = LoggerFactory.getLogger(UploadCandidateDataServiceImpl.class); 
-	
-	 @Autowired
-	 private CandidateRepository candidateRepository;
+public class UploadCandidateDataServiceImpl implements UploadCandidateDataService {
+
+	Logger log = LoggerFactory.getLogger(UploadCandidateDataServiceImpl.class);
+
+	@Autowired
+	private CandidateRepository candidateRepository;
 
 	@Override
 	public void uploadCandidates(List<CandidateMaster> candidates) {
 		candidateRepository.saveAll(candidates);
-		
-	}
 
+	}
 
 }

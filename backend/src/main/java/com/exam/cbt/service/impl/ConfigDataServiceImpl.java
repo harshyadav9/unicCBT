@@ -1,6 +1,7 @@
 package com.exam.cbt.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,26 +24,26 @@ public class ConfigDataServiceImpl implements ConfigDataService {
 	@Override
 	public int uploadConfigData(List<Config> configList) {
 		
-		configList.forEach(config -> {
-			Config configObject = null;
-
-			if(configRepository.existsById(config.getId())) {
-				configRepository.save(config);
-			}
-			else {
-				configObject = config;
-				configRepository.save(configObject);
-			}
-		   
-		});
+//		configList.forEach(config -> {
+//			//Config configObject = null;
+//
+//			//if(configRepository.existsById(config.getId())) {
+//				configRepository.save(config);
+//			//}
+//			//else {
+//				//configObject = config;
+//				//configRepository.save(configObject);
+//			//}
+//		   
+//		});
 		
 		configRepository.saveAll(configList);
 		return configList.size();
 	}
 
 	@Override
-	public Config getConfig(ConfigId id) {
-		return configRepository.getOne(id);
+	public Optional<Config> getConfig(ConfigId id) {
+		return configRepository.findById(id);
 	}
 
 }

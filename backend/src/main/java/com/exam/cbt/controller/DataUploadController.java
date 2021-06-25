@@ -2,10 +2,10 @@ package com.exam.cbt.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -16,15 +16,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -111,9 +108,15 @@ public class DataUploadController {
 	@PostMapping(value = "/importQuestionMasterData")
 	ResponseEntity<String> importQuestionMasterData(@RequestParam("file") MultipartFile files) throws IOException {
 
+		Instant start = Instant.now();
 		List<QuestionMaster> questionMasterList = readExcelData.readQuestionMasterData(files);
 
 		int size = questionMasterDataServiceImpl.uploadQuestionMaster(questionMasterList);
+		Instant finish = Instant.now();
+		long timeElapsedMin = Duration.between(start, finish).toMinutes();
+		long timeElapsedHr = Duration.between(start, finish).toHours();
+		System.out.println("Time Elapsed in Minutes: " +timeElapsedMin); // Prints: Time Elapsed: 2501 
+		System.out.println("Time Elapsed in Hours: " +timeElapsedHr);
 
 		return new ResponseEntity<>(size + " Questions are Uploaded Successfully.", HttpStatus.CREATED);
 	}
@@ -171,11 +174,36 @@ public class DataUploadController {
 
 	@RequestMapping(value = "/imageFolder", method = RequestMethod.POST)
 	public String uploadFolder(@RequestParam(name = "folderName") String folderName) {
+		
+		Instant start = Instant.now();
 		File[] files = fetchFiles(folderName);
 
 		List<String> fileNames = azureAdapter.upload(files);
 		
-		updatePhotoUrl(fileNames);
+		//updatePhotoUrl(fileNames);
+		Instant finish = Instant.now();
+		long timeElapsedMin = Duration.between(start, finish).toMinutes();
+		long timeElapsedHr = Duration.between(start, finish).toHours();
+		System.out.println("Time Elapsed in Minutes: " +timeElapsedMin); // Prints: Time Elapsed: 2501 
+		System.out.println("Time Elapsed in Hours: " +timeElapsedHr);
+		// result.put("key", name);
+		return "";
+	}
+	
+	@RequestMapping(value = "/deleteImages", method = RequestMethod.POST)
+	public String deleteImages(@RequestParam(name = "folderName") String folderName) {
+		
+		Instant start = Instant.now();
+		File[] files = fetchFiles(folderName);
+
+		azureAdapter.del(files);
+		
+		//updatePhotoUrl(fileNames);
+		Instant finish = Instant.now();
+		long timeElapsedMin = Duration.between(start, finish).toMinutes();
+		long timeElapsedHr = Duration.between(start, finish).toHours();
+		System.out.println("Time Elapsed in Minutes: " +timeElapsedMin); // Prints: Time Elapsed: 2501 
+		System.out.println("Time Elapsed in Hours: " +timeElapsedHr);
 		// result.put("key", name);
 		return "";
 	}
@@ -202,12 +230,15 @@ public class DataUploadController {
 		// List of all files and directories
 		File filesList[] = directoryPath.listFiles();
 		System.out.println("List of files and directories in the specified directory:");
+		int counter = 0;
 		for (File file : filesList) {
-			
+			counter++;
 			System.out.println("File name: " + file.getName());
 			System.out.println("File path: " + file.getAbsolutePath());
 			System.out.println("Size :" + file.getTotalSpace());
+			System.out.println(counter + " file is retrieved.");
 			System.out.println(" ");
+			
 		}
 
 		return filesList;

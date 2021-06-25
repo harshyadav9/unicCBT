@@ -23,19 +23,6 @@ public class QuestionMasterDataServiceImpl implements QuestionMasterDataService 
 	@Override
 	public int uploadQuestionMaster(List<QuestionMaster> questionMasterDataList) {
 		
-		questionMasterDataList.forEach(question -> {
-			QuestionMaster questionMaster = null;
-
-			if(questionMasterRepository.existsById(question.getId())) {
-				questionMasterRepository.save(question);
-			}
-			else {
-				questionMaster = question;
-				questionMasterRepository.save(questionMaster);
-			}
-		   
-		});
-		
 		questionMasterRepository.saveAll(questionMasterDataList);
 		return questionMasterDataList.size();
 	}
@@ -44,8 +31,8 @@ public class QuestionMasterDataServiceImpl implements QuestionMasterDataService 
 	public HashMap<String, List<QuestionMaster>> getAllQuestions() {
 
 		HashMap<String, List<QuestionMaster>> hm = new HashMap<String, List<QuestionMaster>>();
-		List<QuestionMaster> questions = questionMasterRepository.findAll();
-		hm.put("Questions", questions);
+		Iterable<QuestionMaster> questions = questionMasterRepository.findAll();
+		hm.put("Questions", (List<QuestionMaster>) questions);
 		return hm;
 	}
 

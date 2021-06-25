@@ -30,7 +30,7 @@ public class CandidateResponseServiceImpl implements CandidateResponseService {
 	public void saveCandidateExam(List<CandidateResponse> candidateResponses) {
 		
 		candidateResponses.forEach(resp -> {
-			CandidateResponse candidateResponse = null;
+			//CandidateResponse candidateResponse = null;
 			QuestionMasterId questionMasterId = new QuestionMasterId();
 			questionMasterId.setExamCd(resp.getExamCd());
 			questionMasterId.setInstCd(resp.getInstCd());
@@ -38,19 +38,16 @@ public class CandidateResponseServiceImpl implements CandidateResponseService {
 			questionMasterId.setYear(resp.getId().getYear());
 			
 			resp = determineAnswerSelection(questionMasterId,resp);
-			if(candidateResponseRepository.existsById(resp.getId())) {
+			//if(candidateResponseRepository.existsById(resp.getId())) {
 				
 				candidateResponseRepository.save(resp);
-			}
-			else {
-				candidateResponse = resp;
-				candidateResponseRepository.save(candidateResponse);
-			}
+//			}
+//			else {
+//				candidateResponse = resp;
+//				candidateResponseRepository.save(candidateResponse);
+//			}
 		   
 		});
-		
-		//List<StudentResponse> li = studentResponseRepository.saveAll(studResponse);
-		//System.out.println(li);
 		
 	}
 	

@@ -22,19 +22,19 @@ public class InstituteNameMasterDataServiceImpl implements InstituteNameMasterDa
 	@Override
 	public int uploadInstituteNameMasterData(List<InstituteNameMaster> instituteNameMasterList) {
 		
-		instituteNameMasterList.forEach(instMaster -> {
-			InstituteNameMaster instituteNameMaster = null;
-
-			if(instituteNameMasterRepository.existsById(instMaster.getId())) {
-				instituteNameMasterRepository.save(instMaster);
-			}
-			else {
-				instituteNameMaster = instMaster;
-				instituteNameMasterRepository.save(instituteNameMaster);
-			}
-		   
-		});
-		
+//		instituteNameMasterList.forEach(instMaster -> {
+//			InstituteNameMaster instituteNameMaster = null;
+//
+//			if(instituteNameMasterRepository.existsById(instMaster.getId())) {
+//				instituteNameMasterRepository.save(instMaster);
+//			}
+//			else {
+//				instituteNameMaster = instMaster;
+//				instituteNameMasterRepository.save(instituteNameMaster);
+//			}
+//		   
+//		});
+//		
 		instituteNameMasterRepository.saveAll(instituteNameMasterList);
 		return instituteNameMasterList.size();
 	}
