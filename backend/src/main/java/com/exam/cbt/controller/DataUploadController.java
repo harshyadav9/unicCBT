@@ -1,6 +1,5 @@
 package com.exam.cbt.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
@@ -14,10 +13,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -176,73 +173,127 @@ public class DataUploadController {
 	public String uploadFolder(@RequestParam(name = "folderName") String folderName) {
 		
 		Instant start = Instant.now();
-		File[] files = fetchFiles(folderName);
-
-		List<String> fileNames = azureAdapter.upload(files);
-		
-		//updatePhotoUrl(fileNames);
-		Instant finish = Instant.now();
-		long timeElapsedMin = Duration.between(start, finish).toMinutes();
-		long timeElapsedHr = Duration.between(start, finish).toHours();
-		System.out.println("Time Elapsed in Minutes: " +timeElapsedMin); // Prints: Time Elapsed: 2501 
-		System.out.println("Time Elapsed in Hours: " +timeElapsedHr);
-		// result.put("key", name);
-		return "";
-	}
-	
-	@RequestMapping(value = "/deleteImages", method = RequestMethod.POST)
-	public String deleteImages(@RequestParam(name = "folderName") String folderName) {
-		
-		Instant start = Instant.now();
-		File[] files = fetchFiles(folderName);
-
-		azureAdapter.del(files);
-		
-		//updatePhotoUrl(fileNames);
-		Instant finish = Instant.now();
-		long timeElapsedMin = Duration.between(start, finish).toMinutes();
-		long timeElapsedHr = Duration.between(start, finish).toHours();
-		System.out.println("Time Elapsed in Minutes: " +timeElapsedMin); // Prints: Time Elapsed: 2501 
-		System.out.println("Time Elapsed in Hours: " +timeElapsedHr);
-		// result.put("key", name);
-		return "";
-	}
-
-	@GetMapping(path = "/download")
-	public ResponseEntity<ByteArrayResource> uploadFile(@RequestParam(value = "file") String file) throws IOException {
-		byte[] data = azureAdapter.getFile(file);
-		ByteArrayResource resource = new ByteArrayResource(data);
-
-		return ResponseEntity.ok().contentLength(data.length).header("Content-type", "application/octet-stream")
-				.header("Content-disposition", "attachment; filename=\"" + file + "\"").body(resource);
-
-	}
-	
-	private void updatePhotoUrl(List<String> filesNames) {
-		
-		candidateMasterDataServiceImpl.updatePhotoUrl(filesNames);;
-		
-	}
-
-	private File[] fetchFiles(String folderName) {
-
-		File directoryPath = new File(folderName);
-		// List of all files and directories
-		File filesList[] = directoryPath.listFiles();
-		System.out.println("List of files and directories in the specified directory:");
-		int counter = 0;
-		for (File file : filesList) {
-			counter++;
-			System.out.println("File name: " + file.getName());
-			System.out.println("File path: " + file.getAbsolutePath());
-			System.out.println("Size :" + file.getTotalSpace());
-			System.out.println(counter + " file is retrieved.");
-			System.out.println(" ");
-			
+//		File[] files = fetchFiles(folderName);
+//		List<String> fileNames = new ArrayList<>();
+//		for(File f:files) {
+//			fileNames.add(f.getName());
+//			
+//		}
+//
+		try {
+			azureAdapter.upload(folderName);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
-		return filesList;
-
+//		
+		//updatePhotoUrl(fileNames);
+		Instant finish = Instant.now();
+		long timeElapsedMin = Duration.between(start, finish).toMinutes();
+		long timeElapsedHr = Duration.between(start, finish).toHours();
+		
+		System.out.println("Time Elapsed in Minutes: " +timeElapsedMin); // Prints: Time Elapsed: 2501 
+		System.out.println("Time Elapsed in Hours: " +timeElapsedHr);
+		// result.put("key", name);
+		return "";
 	}
+	
+//	@RequestMapping(value = "/deleteImages", method = RequestMethod.POST)
+//	public String deleteImages(@RequestParam(name = "folderName") String folderName) {
+//		
+//		Instant start = Instant.now();
+//		File[] files = fetchFiles(folderName);
+//
+//		azureAdapter.del(files);
+//		
+//		//updatePhotoUrl(fileNames);
+//		Instant finish = Instant.now();
+//		long timeElapsedMin = Duration.between(start, finish).toMinutes();
+//		long timeElapsedHr = Duration.between(start, finish).toHours();
+//		System.out.println("Time Elapsed in Minutes: " +timeElapsedMin); // Prints: Time Elapsed: 2501 
+//		System.out.println("Time Elapsed in Hours: " +timeElapsedHr);
+//		// result.put("key", name);
+//		return "";
+//	}
 
+//	@GetMapping(path = "/download")
+//	public ResponseEntity<ByteArrayResource> uploadFile(@RequestParam(value = "file") String file) throws IOException {
+//		byte[] data = azureAdapter.getFile(file);
+//		ByteArrayResource resource = new ByteArrayResource(data);
+//
+//		return ResponseEntity.ok().contentLength(data.length).header("Content-type", "application/octet-stream")
+//				.header("Content-disposition", "attachment; filename=\"" + file + "\"").body(resource);
+//
+//	}
+	
+//	private void updatePhotoUrl(List<String> filesNames) {
+//		
+//		candidateMasterDataServiceImpl.updatePhotoUrl(filesNames);;
+//		
+//	}
+
+//	private File[] fetchFiles(String folderName) {
+//
+//		File directoryPath = new File(folderName);
+//		// List of all files and directories
+//		File filesList[] = directoryPath.listFiles();
+//		System.out.println("List of files and directories in the specified directory:");
+//		int counter = 0;
+//		for (File file : filesList) {
+//			counter++;
+//			System.out.println("File name: " + file.getName());
+//			System.out.println("File path: " + file.getAbsolutePath());
+//			System.out.println("Size :" + file.getTotalSpace());
+//			System.out.println(counter + " file is retrieved.");
+//			System.out.println(" ");
+//			
+//		}
+//
+//		return filesList;
+//
+//	}
+	
+	
+//	@RequestMapping(value = "/azCopyFolder", method = RequestMethod.POST)
+//	public String azCopyFolder(@RequestParam(name = "imagesFolderLocation") String imagesFolderLocation) {
+//		uploadFilesAZCopy(imagesFolderLocation);
+//		
+//		return "Done";
+//	}
+//	
+//	private void uploadFilesAZCopy(String folderPath) {
+//		String command="C:\\Users\\admin\\Downloads\\azcopy\\azcopy copy " +folderPath+" sp=r&st=2021-06-23T09:35:14Z&se=2021-06-23T17:35:14Z&spr=https&sv=2020-02-10&sr=c&sig=h%2BLq6PWEwCghbzYDI7N68Rg10s2A7HbBCLCS3Vx8evc%3D --recursive";
+//		try {
+//		    Process process = Runtime.getRuntime().exec(command);
+//		 
+//		    BufferedReader reader = new BufferedReader(
+//		            new InputStreamReader(process.getInputStream()));
+//		    String line;
+//		    String numberOfFileTransfers = null;
+//		    String numberOfTransfersCompleted = null;
+//		    String finalStatus = null;
+//		    	
+//		    while ((line = reader.readLine()) != null) {
+//		    	if (line.contains("Number of File Transfers:")) {
+//		    		numberOfFileTransfers = line;
+//		    		
+//		    	}
+//		    	if (line.contains("Number of Transfers Completed:")) {
+//		    		numberOfTransfersCompleted = line;
+//		    	}
+//		    	if (line.contains("Final Job Status:")) {
+//		    		finalStatus = line;
+//		    	}
+//		        System.out.println(line);
+//		    }
+//		    
+//		    
+//		 
+//		    reader.close();
+//		 
+//		} catch (IOException e) {
+//		    e.printStackTrace();
+//		}
+//	}
+	
 }

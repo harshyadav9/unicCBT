@@ -1,21 +1,26 @@
 package com.exam.cbt.azure;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import com.azure.storage.blob.BlobClientBuilder;
-import com.azure.storage.blob.models.BlobProperties;
-import com.exam.cbt.entity.ImageUploadStatus;
+import com.exam.cbt.service.impl.CandidateMasterDataServiceImpl;
 import com.exam.cbt.service.impl.ImageUploadStatusServiceImpl;
 
 @Service
@@ -28,137 +33,154 @@ public class AzureBlobAdapter {
 	BlobClientBuilder client;
 
 	@Autowired
+	CandidateMasterDataServiceImpl candidateMasterDataServiceImpl;
+
+	@Autowired
 	ThreadPoolTaskExecutor executorPool;
+	
+	@Value("${azure.storage.blob-endpoint}")
+    String photoUrlPrefix;
+	
+	@Value("${azure.token}")
+    String photoUrlToken;
+	
+	public void upload(String dir) throws IOException{
 
-	int counter = 0;
+		uploadFilesAZCopy(dir);
 
-	public List<String> upload(File[] files) {
+		List<String> fileNames;
+		Map<String,String> finalFiles = new HashMap<String,String>();
 		
 		
-
-		List<String> fileNames = new ArrayList<>();
-		List<CompletableFuture<Void>> completableFutures = new LinkedList<>();
-
-//       for (File file:files) {
-//    	   if(file != null && file.length() > 0) {
-//    		   counter++;
-//               //implement your own file name logic.
-//			   String fileName = file.getName();
-//			  // if (fileName.matches("[0-9]+")) {
-//				   client.blobName(fileName).buildClient().uploadFromFile(file.getPath(), true);
-//				   System.out.println(fileName + " is uploaded in Azure Cloud.");
-//				   System.out.println(counter + " file is uploaded.");
-//			  // }
-//			 //  else {
-//				//  System.out.println("Input File contains alphabets.Skipping this file.");
-//			 //  }
-//			  // BlobClient str = client.blobName(fileName).buildClient();
-//			   //if (!str.exists()) {
-//				   
-//			   //}
-//			 
-//			  
-//			   fileNames.add(fileName);
-//           }
-//    	   
-//       }
-		List<ImageUploadStatus> impList = new ArrayList<>();
-		Arrays.asList(files).forEach(file -> {
-
-			if (file != null && file.length() > 0) {
-				// counter++;
-				// implement your own file name logic.
-				String fileName = file.getName();
-				// if (fileName.matches("[0-9]+")) {
-
-				// client.blobName(fileName).buildClient().uploadFromFile(file.getPath(), true);
-				ImageUploadStatus imp = new ImageUploadStatus();
-				imp.setImageName(fileName);
-
-				// System.out.println(fileName + " is uploaded in Azure Cloud.");
-				// System.out.println(counter + " file is uploaded.");
-				// }
-				// else {
-				// System.out.println("Input File contains alphabets.Skipping this file.");
-				// }
-				// BlobClient str = client.blobName(fileName).buildClient();
-				// if (!str.exists()) {
-
-				// }
-
-				fileNames.add(fileName);
-				impList.add(imp);
-//				completableFutures.add(CompletableFuture.runAsync(()->{
-//					test(fileName,file);
-//				}));
-
-				executorPool.submit(() -> test(fileName, file));
-
+		try {
+			fileNames = listFilesUsingFilesList(dir).stream().map(f->photoUrlPrefix.concat("/").concat(f).
+					concat("?").concat(photoUrlToken)).filter(file -> (checkIfFileExists(file) == 200))
+					.collect(Collectors.toList());
+			
+			for (String fileName: listFilesUsingFilesList(dir)) {
+				finalFiles.put(fileName, photoUrlPrefix.concat("/").concat(fileName).concat("?").concat(photoUrlToken));
+				
 			}
+			finalFiles.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,entry->photoUrlPrefix.concat("/").concat(entry.getValue()).concat("?").concat(photoUrlToken)));
+			candidateMasterDataServiceImpl.updatePhotoUrl(finalFiles);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-		});
+//	private void test(String fileName, File file) {
+//
+//		client.blobName(fileName).buildClient().uploadFromFile(file.getPath(), true);
+//		//if (getFile(fileName) != null) {
+//			counter++;
+//			System.out.println("Counter : " + counter);
+//			System.out.println(Thread.currentThread().getName() + "uploaded " + fileName);
+//
+//		//}
+//		
+//		
+//	}
 
-		// CompletableFuture.allOf(completableFutures.toArray(new
-		// CompletableFuture[completableFutures.size()])).join();
-		// System.out.println("All files are added successfully!");
-//		if(impList.size() > 0) {
-//			System.out.println("Inserting Records in db : " +impList.size());
-//			//imageUploadStatusServiceImpl.saveAllImagesDetails(impList);
-//			System.out.println("Inserted Records in db : " +impList.size());
+//	public void del(File[] files) {
+//
+//		Arrays.asList(files).parallelStream().forEach(file -> {
+//			System.out.println("Deleting File: " + file.getName());
+//
+//			deleteFile(file.getName());
+//		});
+//
+//		System.out.println("Files are deleted from Azure");
+//	}
+
+	public int checkIfFileExists(String fileName){
+		fileName="https://stcbt.blob.core.windows.net/images/images12/2.jpg?sv=2020-04-08&st=2021-07-03T14%3A22%3A34Z&se=2050-12-31T14%3A22%3A00Z&sr=c&sp=racwdl&sig=y5kMepXkTzi10Vc2B8wsHxmVUonhtfPWAtdtWF4VK4Q%3D";
+		 URL u=null;
+		try {
+			u = new URL(fileName);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		    HttpURLConnection huc=null;
+			try {
+				huc = (HttpURLConnection)  u.openConnection();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		    try {
+				huc.setRequestMethod("GET");
+			} catch (ProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		    try {
+				huc.connect();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		    try {
+				return huc.getResponseCode();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		    return 0;
+	}
+
+//	public boolean deleteFile(String name) {
+//		try {
+//
+//			if (client.blobName(name).buildClient().exists()) {
+//				client.blobName(name).buildClient().delete();
+//			}
+//			return true;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return false;
 //		}
-		
-		
-		return fileNames;
-	}
+//
+//	}
 
-	private void test(String fileName, File file) {
-
-		client.blobName(fileName).buildClient().uploadFromFile(file.getPath(), true);
-		//if (getFile(fileName) != null) {
-			counter++;
-			System.out.println("Counter : " + counter);
-			System.out.println(Thread.currentThread().getName() + "uploaded " + fileName);
-
-		//}
-		
-		
-	}
-
-	public void del(File[] files) {
-
-		Arrays.asList(files).parallelStream().forEach(file -> {
-			System.out.println("Deleting File: " + file.getName());
-
-			deleteFile(file.getName());
-		});
-
-		System.out.println("Files are deleted from Azure");
-	}
-
-	public byte[] getFile(String name) {
+	private void uploadFilesAZCopy(String folderPath) {
+		String command = "C:\\Users\\admin\\Downloads\\azcopy\\azcopy copy " + folderPath
+				+ " https://stcbt.blob.core.windows.net/images?sv=2020-04-08&st=2021-07-03T14%3A22%3A34Z&se=2050-12-31T14%3A22%3A00Z&sr=c&sp=racwdl&sig=y5kMepXkTzi10Vc2B8wsHxmVUonhtfPWAtdtWF4VK4Q%3D --recursive";
 		try {
-			File temp = new File("https://stcbt.blob.core.windows.net/images/folder1/" + name);
-			BlobProperties properties = client.blobName(name).buildClient().downloadToFile(temp.getPath());
-			byte[] content = Files.readAllBytes(Paths.get(temp.getPath()));
-			//temp.delete();
-			return content;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+			Process process = Runtime.getRuntime().exec(command);
 
-	public boolean deleteFile(String name) {
-		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line;
+			String numberOfFileTransfers = null;
+			String numberOfTransfersCompleted = null;
+			String finalStatus = null;
 
-			if (client.blobName(name).buildClient().exists()) {
-				client.blobName(name).buildClient().delete();
+			while ((line = reader.readLine()) != null) {
+				if (line.contains("Number of File Transfers:")) {
+					numberOfFileTransfers = line;
+
+				}
+				if (line.contains("Number of Transfers Completed:")) {
+					numberOfTransfersCompleted = line;
+				}
+				if (line.contains("Final Job Status:")) {
+					finalStatus = line;
+				}
+				System.out.println(line);
 			}
-			return true;
-		} catch (Exception e) {
+
+			reader.close();
+
+		} catch (IOException e) {
 			e.printStackTrace();
-			return false;
 		}
+	}
+
+	public List<String> listFilesUsingFilesList(String dir) throws IOException {
+
+		return Stream.of(new File(dir).listFiles()).filter(file -> !file.isDirectory()).map(File::getName)
+				.collect(Collectors.toList());
 
 	}
 

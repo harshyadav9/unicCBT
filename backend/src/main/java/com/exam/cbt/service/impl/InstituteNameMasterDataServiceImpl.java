@@ -1,6 +1,7 @@
 package com.exam.cbt.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.exam.cbt.dao.InstituteNameMasterRepository;
 import com.exam.cbt.entity.InstituteNameMaster;
+import com.exam.cbt.entity.InstituteNameMasterId;
 import com.exam.cbt.service.InstituteNameMasterDataService;
 
 @Service
@@ -38,5 +40,13 @@ public class InstituteNameMasterDataServiceImpl implements InstituteNameMasterDa
 		instituteNameMasterRepository.saveAll(instituteNameMasterList);
 		return instituteNameMasterList.size();
 	}
+
+	@Override
+	public Optional<InstituteNameMaster> getInstituteDetail(InstituteNameMasterId id) {
+		
+		return instituteNameMasterRepository.findById(id);
+	}
+	
+	
 
 }

@@ -23,6 +23,8 @@ import com.exam.cbt.entity.Config;
 import com.exam.cbt.entity.ConfigId;
 import com.exam.cbt.entity.ExamYearMaster;
 import com.exam.cbt.entity.ExamYearMasterId;
+import com.exam.cbt.entity.InstituteNameMaster;
+import com.exam.cbt.entity.InstituteNameMasterId;
 import com.exam.cbt.entity.QuestionMaster;
 import com.exam.cbt.mail.SimpleTextMail;
 import com.exam.cbt.pojo.CandidateResponseUI;
@@ -32,6 +34,7 @@ import com.exam.cbt.service.ConfigDataService;
 import com.exam.cbt.service.impl.CandidateMasterDataServiceImpl;
 import com.exam.cbt.service.impl.CandidateServiceImpl;
 import com.exam.cbt.service.impl.ExamYearMasterDataServiceImpl;
+import com.exam.cbt.service.impl.InstituteNameMasterDataServiceImpl;
 import com.exam.cbt.service.impl.QuestionMasterDataServiceImpl;
 
 @RestController
@@ -49,6 +52,9 @@ public class StudentController {
 
 	@Autowired
 	QuestionMasterDataServiceImpl questionMasterServ;
+	
+	@Autowired
+	InstituteNameMasterDataServiceImpl instituteNameMasterDataServiceImpl;
 	
 	@Autowired
 	CandidateResponseService candidateRespServ;
@@ -134,6 +140,7 @@ public class StudentController {
 		
 		if (registrationNumber != null) {
 			res = populatequestionMasterResponse(registrationNumber);
+			
 			if (res==null){
 				return new ResponseEntity<>(res, HttpStatus.NOT_FOUND);
 			}
@@ -161,7 +168,16 @@ public class StudentController {
 			id.setInstCd(candidateMaster.get().getInstCd());
 			id.setYear(candidateMaster.get().getYear());
 			Optional<Config> config = configDataService.getConfig(id);
+			InstituteNameMasterId instituteNameMasterId = new InstituteNameMasterId();
+			instituteNameMasterId.setExamCd(candidateMaster.get().getExamCd());
+			instituteNameMasterId.setInstCd(candidateMaster.get().getInstCd());
+			instituteNameMasterId.setYear(candidateMaster.get().getYear());
+			Optional<InstituteNameMaster> instituteNameMaster = instituteNameMasterDataServiceImpl.getInstituteDetail(instituteNameMasterId);
 			
+			if(instituteNameMaster.isPresent()) {
+				res.setInstituteName(instituteNameMaster.get().getInstName());
+				
+			}
 			res.setQuestionList(hm);
 			res.setCandidateName(candidateMaster.get().getName());
 			if (config.isPresent()) {
@@ -171,6 +187,7 @@ public class StudentController {
 			}
 			
 			res.setPhoto(candidateMaster.get().getPhoto());
+			res.setRegistrationNo(registrationNumber);
 		}
 		
 		return res;

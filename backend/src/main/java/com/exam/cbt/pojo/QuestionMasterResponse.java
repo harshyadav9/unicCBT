@@ -10,6 +10,8 @@ public class QuestionMasterResponse {
 	
 	private String ExamCd;
 	
+	private String instituteName;
+	
 	private String candidateName;
 	
 	private int durationHr;
@@ -20,6 +22,16 @@ public class QuestionMasterResponse {
 	
 	private String photo;
 	
+	private int registrationNo;
+	
+	public int getRegistrationNo() {
+		return registrationNo;
+	}
+
+	public void setRegistrationNo(int registrationNo) {
+		this.registrationNo = registrationNo;
+	}
+
 	private HashMap<String,List<QuestionMaster>> questionList;
 
 	public HashMap<String, List<QuestionMaster>> getQuestionList() {
@@ -78,11 +90,20 @@ public class QuestionMasterResponse {
 		this.photo = photo;
 	}
 
+	public String getInstituteName() {
+		return instituteName;
+	}
+
+	public void setInstituteName(String instituteName) {
+		this.instituteName = instituteName;
+	}
+
 	@Override
 	public String toString() {
-		return "QuestionMasterResponse [ExamCd=" + ExamCd + ", candidateName="
+		return "QuestionMasterResponse [ExamCd=" + ExamCd + ", instituteName=" + instituteName + ", candidateName="
 				+ candidateName + ", durationHr=" + durationHr + ", durationMin=" + durationMin + ", dateOfExam="
-				+ dateOfExam + ", photo=" + photo + ", questionList=" + questionList + "]";
+				+ dateOfExam + ", photo=" + photo + ", registrationNo=" + registrationNo + ", questionList="
+				+ questionList + "]";
 	}
 
 }

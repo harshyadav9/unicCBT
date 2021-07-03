@@ -2,6 +2,7 @@ package com.exam.cbt.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -56,15 +57,14 @@ public class CandidateMasterDataServiceImpl implements CandidateMasterDataServic
 	}
 
 	@Override
-	public void updatePhotoUrl(List<String> photoUrls) {
+	public void updatePhotoUrl(Map<String,String> photoUrlsMap) {
 		List<CandidateMaster> candidateMasterList = new ArrayList<>();
 
-		photoUrls.forEach(photoUrl -> {
-			Optional<CandidateMaster> candidateMaster = candidateMasterRepository
-					.findById(Integer.parseInt(photoUrl.substring(0, photoUrl.length() - 4)));
+		photoUrlsMap.entrySet().stream().forEach(map -> {
+			Optional<CandidateMaster> candidateMaster = candidateMasterRepository.findById(Integer.parseInt(map.getKey().substring(0,map.getKey().length()-4)));
 
 			if (candidateMaster.isPresent()) {
-				candidateMaster.get().setPhoto(photoPrefix.concat(photoUrl).concat("?").concat(photoAccessToken));
+				candidateMaster.get().setPhoto(map.getValue());
 				candidateMasterList.add(candidateMaster.get());
 			}
 		});
