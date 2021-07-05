@@ -36,6 +36,17 @@ public class CandidateMaster {
 	@Column(name = "Dob")
 	private Date dob;
 	
+	@Column(name = "SetNo")
+	private int setNo;
+	
+	public int getSetNo() {
+		return setNo;
+	}
+
+	public void setSetNo(int setNo) {
+		this.setNo = setNo;
+	}
+
 	@Column(name = "Photo")
 	private String photo;
 	
@@ -128,8 +139,8 @@ public class CandidateMaster {
 	@Override
 	public String toString() {
 		return "CandidateMaster [registrationNo=" + registrationNo + ", name=" + name + ", password=" + password
-				+ ", examCd=" + examCd + ", instCd=" + instCd + ", year=" + year + ", dob=" + dob + ", photo=" + photo
-				+ ", mobileNum=" + mobileNum + ", emailId=" + emailId + "]";
+				+ ", examCd=" + examCd + ", instCd=" + instCd + ", year=" + year + ", dob=" + dob + ", setNo=" + setNo
+				+ ", photo=" + photo + ", mobileNum=" + mobileNum + ", emailId=" + emailId + "]";
 	}
 
 }

@@ -24,19 +24,6 @@ public class ConfigDataServiceImpl implements ConfigDataService {
 	@Override
 	public int uploadConfigData(List<Config> configList) {
 		
-//		configList.forEach(config -> {
-//			//Config configObject = null;
-//
-//			//if(configRepository.existsById(config.getId())) {
-//				configRepository.save(config);
-//			//}
-//			//else {
-//				//configObject = config;
-//				//configRepository.save(configObject);
-//			//}
-//		   
-//		});
-		
 		configRepository.saveAll(configList);
 		return configList.size();
 	}

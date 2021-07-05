@@ -23,6 +23,28 @@ public class Config {
 	@Column(name = "DurationMin")
 	private int durationMin;
 	
+	@Column(name = "NoOfSet")
+	private int noOfSet;
+	
+	@Column(name = "SetStart")
+	private int setStart;
+	
+	public int getSetStart() {
+		return setStart;
+	}
+
+	public void setSetStart(int setStart) {
+		this.setStart = setStart;
+	}
+
+	public int getNoOfSet() {
+		return noOfSet;
+	}
+
+	public void setNoOfSet(int noOfSet) {
+		this.noOfSet = noOfSet;
+	}
+
 	public ConfigId getId() {
 		return id;
 	}
@@ -58,7 +80,7 @@ public class Config {
 	@Override
 	public String toString() {
 		return "Config [id=" + id + ", dateOfExam=" + dateOfExam + ", durationHr=" + durationHr + ", durationMin="
-				+ durationMin + "]";
+				+ durationMin + ", noOfSet=" + noOfSet + ", setStart=" + setStart + "]";
 	}
 
 }

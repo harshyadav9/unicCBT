@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,10 +26,12 @@ import org.springframework.web.multipart.MultipartFile;
 import com.exam.cbt.azure.AzureBlobAdapter;
 import com.exam.cbt.entity.CandidateMaster;
 import com.exam.cbt.entity.Config;
+import com.exam.cbt.entity.ConfigId;
 import com.exam.cbt.entity.ExamYearMaster;
 import com.exam.cbt.entity.InstituteNameMaster;
 import com.exam.cbt.entity.QuestionMaster;
 import com.exam.cbt.helper.ReadExcelData;
+import com.exam.cbt.pojo.CandidateResponseUI;
 import com.exam.cbt.service.impl.CandidateMasterDataServiceImpl;
 import com.exam.cbt.service.impl.ConfigDataServiceImpl;
 import com.exam.cbt.service.impl.ExamYearMasterDataServiceImpl;
@@ -295,5 +298,12 @@ public class DataUploadController {
 //		    e.printStackTrace();
 //		}
 //	}
-	
+	@RequestMapping(value = "/allocateSets", method = RequestMethod.POST)
+	public ResponseEntity<String> allocateSetToCandidateMaster(@RequestBody ConfigId id) {
+		
+		candidateMasterDataServiceImpl.updateSetToCandidates(id);
+		
+		return new ResponseEntity<>("Set Nos are updated successfully in Candidate Master", HttpStatus.OK);
+
+	}
 }

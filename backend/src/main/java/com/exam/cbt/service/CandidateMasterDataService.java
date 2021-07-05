@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.exam.cbt.entity.CandidateMaster;
+import com.exam.cbt.entity.ConfigId;
 
 public interface CandidateMasterDataService {
 	
@@ -14,4 +15,5 @@ public interface CandidateMasterDataService {
 	
 	public void updatePhotoUrl(Map<String,String> photoUrls);
 	
+	public void updateSetToCandidates(ConfigId id);
 }

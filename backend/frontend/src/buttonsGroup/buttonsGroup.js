@@ -6,11 +6,10 @@ import classNames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
 import Brightness1Icon from '@material-ui/icons/Brightness1';
 import Avatar from '@material-ui/core/Avatar';
+import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { green, red, grey } from '@material-ui/core/colors';
-import {
-    Fab, Box , Typography,Divider} from '@material-ui/core';
-import Timer from '../Timer';
+
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1
@@ -54,7 +53,6 @@ const useStyles = makeStyles((theme) => ({
         // margin: '12px',
         borderRadius: '50%',
         padding: '14px 0px',
-        margin: '12px',
         color: theme.palette.getContrastText(green[900]),
         backgroundColor: green[900],
         // color: '#fff',
@@ -95,30 +93,22 @@ const useStyles = makeStyles((theme) => ({
     },
 
     buttonContainer: {
-        // display: 'flex',
-        // width: 'calc(100% - 17%)',
-        // flexDirection: 'row',
-        // flexWrap: 'wrap',
-        // marginLeft: '30px',
-        // maxHeight: '600px',
-        // overflowY: 'scroll',
-        // boxShadow: '0px 4px 13px -1px rgba(0,0,0,0.2), 0px 1px 10px 0px rgba(0,0,0,0.14), 0px 1px 20px 0px rgba(0,0,0,0.19)',
-        // borderRadius: '4px',
-        // border: '2px solid  rgba(0,0,0,0.2)',
-        // padding: '11px',
-        // "& button": {
-        //     margin: '5px',
-        //     height: '43px',
-        //     minWidth: '41px'
-        // }
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        placeContent: 'start',
-        justifyItems: 'center',
-        padding: '8px 15px 30px',
-        height: 'calc(100vh - 420px)',
-        overflowY: 'auto',
-        
+        display: 'flex',
+        width: 'calc(100% - 17%)',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginLeft: '30px',
+        maxHeight: '600px',
+        overflowY: 'scroll',
+        boxShadow: '0px 4px 13px -1px rgba(0,0,0,0.2), 0px 1px 10px 0px rgba(0,0,0,0.14), 0px 1px 20px 0px rgba(0,0,0,0.19)',
+        borderRadius: '4px',
+        border: '2px solid  rgba(0,0,0,0.2)',
+        padding: '11px',
+        "& button": {
+            margin: '5px',
+
+            minWidth: '50px'
+        }
     },
     legendContainer: {
         display: 'flex',
@@ -132,12 +122,8 @@ const useStyles = makeStyles((theme) => ({
         height: '40px',
         boxShadow: '0px 4px 13px -1px rgba(0,0,0,0.2), 0px 1px 10px 0px rgba(0,0,0,0.14), 0px 1px 20px 0px rgba(0,0,0,0.19)',
         borderRadius: '7px',
-        margin: '4px',
-        height: 'auto'
+        margin: '4px'
 
-    },
-    buttonCls:{
-        marginTop: '35px'
     },
     answeredSample: {
         color: theme.palette.getContrastText(green[900]),
@@ -158,16 +144,6 @@ const useStyles = makeStyles((theme) => ({
     unvisitedSample: {
         color: theme.palette.getContrastText(grey[500]),
         backgroundColor: grey[500]
-    },
-    buttonGroupText: {
-        lineHeight: '12px',
-        fontSize: ' 12px',
-        fontWeight: 'bold'
-    },
-    footer: {
-        padding: 10,
-        display: 'flex',
-        justifyContent: 'space-between'
     }
 }));
 
@@ -175,10 +151,10 @@ const useStyles = makeStyles((theme) => ({
 function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
 
 
-    // console.log("ButtonsGroup*******", arrLen, questionInfo, totalQues, changeStep);
+    console.log("ButtonsGroup*******", arrLen, questionInfo, totalQues, changeStep);
 
     useEffect(() => {
-        // console.log("useEffect");
+        console.log("useEffect");
         let tempArr = [];
         if (questionInfo.id == "") {
             const createArr = () => {
@@ -193,27 +169,37 @@ function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
                     tempArr.push(obj);
 
                 }
-                // console.log("newArr123", [...newArr, ...tempArr])
+                console.log("newArr123", [...newArr, ...tempArr])
                 setnewArr(prevArrValues => ([...prevArrValues, ...tempArr]))
                 // setnewArr([...newArr, ...tempArr]);
             }
-            if (newArr.length == 0) {
-                createArr();
-            }
-
+            createArr();
         } else {
             updateButtons(questionInfo);
         }
 
 
-    }, [arrLen, changeStep]);
+    }, [arrLen]);
 
 
 
     const updateButtons = (questionInfo) => {
         let obj = {};
+        // for (let i = 0; i < newArr.length; i++) {
+        //     if (newArr[i]['id'] == id) {
+
+        //         obj['answered'] = true;
+        //         obj['unanswered'] = false;
+        //         obj['review'] = false;
+        //         obj['id'] = id;
+
+        //     }
+
+        //     // tempArr.push(obj);
+
+        // }
         setnewArr(state => {
-            // console.log("state", state);
+            console.log("state", state);
             const newArr = state.map(item => {
                 if (item.id == questionInfo.id) {
                     item.answered = false;
@@ -236,32 +222,31 @@ function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
     const [itemClicked, setitemClicked] = useState(-1);
     // const [answersCount, setanswersCount] = useState({ unanswered: 0, answered: 0, reviewA: 0, reviewU: 0 });
     const [newArr, setnewArr] = useState([]);
-    // let unansweredQuestions = totalQues;
-    // let answeredQuestions = 0;
-    // let reviewUnQuestions = 0;
-    // let reviewAnQuestions = 0;
-    // let unvisitedQuestions = 0;
+    let unansweredQuestions = totalQues;
+    let answeredQuestions = 0;
+    let reviewUnQuestions = 0;
+    let reviewAnQuestions = 0;
+    let unvisitedQuestions = 0;
 
-    // let reviewquestionsObj = JSON.parse(localStorage.getItem('reviewQuestionNo'));
-    // let answeredQuestionsObj = JSON.parse(localStorage.getItem('questionNo'));
-    // let unvisitedQuestions = JSON.parse(localStorage.getItem('unvisitedQues')) === null ? 0 : JSON.parse(localStorage.getItem('unvisitedQues')).length;
+    let reviewquestionsObj = JSON.parse(localStorage.getItem('reviewQuestionNo'));
+    let answeredQuestionsObj = JSON.parse(localStorage.getItem('questionNo'));
 
-    // console.log("unvisitedQuestions", unvisitedQuestions);
-    // console.log("answeredQuestionsObj", answeredQuestionsObj);
-    // if (reviewquestionsObj !== null) {
-    //     reviewUnQuestions = reviewquestionsObj['reviewU'].length;
-    //     reviewAnQuestions = reviewquestionsObj['reviewA'].length;
-    // }
-    // if (answeredQuestionsObj !== null) {
-    //     answeredQuestions = answeredQuestionsObj.length;
-    // }
-    // unansweredQuestions = totalQues - (answeredQuestions)
-    // const [isAnsweredColor, setisAnsweredColor] = useState(false);
+    console.log("reviewquestionsObj", reviewquestionsObj);
+    console.log("answeredQuestionsObj", answeredQuestionsObj);
+    if (reviewquestionsObj !== null) {
+        reviewUnQuestions = reviewquestionsObj['reviewU'].length;
+        reviewAnQuestions = reviewquestionsObj['reviewA'].length;
+    }
+    if (answeredQuestionsObj !== null) {
+        answeredQuestions = answeredQuestionsObj.length;
+    }
+    unansweredQuestions = totalQues - (answeredQuestions + reviewAnQuestions + reviewUnQuestions)
+    const [isAnsweredColor, setisAnsweredColor] = useState(false);
     // if (id !== undefined) {
     //     updateButtons(id);
     // }
 
-    // console.log("newArr", newArr);
+    console.log("newArr", newArr);
 
     const clicked = (val) => {
         let clickedVal = parseInt(val.target.innerText.trim() - 1);
@@ -282,46 +267,46 @@ function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
                             })
                         }
                     </Card> */}
-
-                    <Timer/>
-            {/* <div className={classes.legendContainer}>
+            <div className={classes.legendContainer}>
                 <div className={classes.legends} style={{ width: '45%' }}>
-                  
+                    {/* <Brightness1Icon style={{ color: 'green' }} />1 */}
                     <Avatar className={classes.answeredSample}>{answeredQuestions}</Avatar>
-                    <span className={classes.buttonGroupText}> Answered Questions</span>
+                    <span> Answered Questions</span>
                 </div>
                 <div className={classes.legends} style={{ width: '45%' }}>
                     <Avatar className={classes.unansweredSample}>{unansweredQuestions}</Avatar>
-                    <span className={classes.buttonGroupText}> Unanswered Questions</span>
+                    <span> Unanswered Questions</span>
                 </div>
 
                 <div className={classes.legends} style={{ width: '45%' }}>
                     <Avatar className={classes.unvisitedSample}>{unvisitedQuestions}</Avatar>
-                    <span className={classes.buttonGroupText}> Unvisited Questions</span>
+                    <span> Unvisited Questions</span>
                 </div>
 
                 <div className={classes.legends} style={{ width: '45%' }}>
                     <Avatar className={classes.reviewansweredSample}>{reviewAnQuestions}</Avatar>
-                    <span className={classes.buttonGroupText}> Review Answered Question</span>
+                    <span> Review Answered Question</span>
                 </div>
                 <div className={classes.legends} style={{ width: '45%' }}>
                     <Avatar className={classes.reviewunansweredSample}>{reviewUnQuestions}</Avatar>
-                    <span className={classes.buttonGroupText}> Review Unanswered Question</span>
+                    <span> Review Unanswered Question</span>
                 </div>
 
-            </div> */}
+            </div>
 
 
 
-            {/* <div style={{ width: '100%' }}>
+            <div style={{ width: '100%' }}>
                 <h3>Question Numbers</h3>
-            </div> */}
-            {/* <div className={classes.buttonContainer}>
+            </div>
+            <div className={classes.buttonContainer}>
 
 
                 <br />
+                {/* <Card className={classes.card}> */}
                 {
                     newArr.map((val, key) => {
+                        // console.log(val, key);
                         return (
                             <Button key={key} onClick={() => { changeStep(key) }} className={classNames({
                                 [classes.buttonDefault]: (val.default === true ? true : false),
@@ -334,36 +319,14 @@ function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
                             </Button>)
                     })
                 }
-            </div> */}
+                {/* </Card> */}
+            </div>
 
-            <Paper elevation={3} className={classes.buttonCls}>
-                <Typography variant="h6" gutterBottom className={classes.padding}>
-                    Question Numbers
-            </Typography>
-                <Divider />
-                <Box component="div" className={classes.buttonContainer}>
-                    {
-                        newArr.map((val, key) => {
-                            // console.log(val, key);
-                            return (
-                                <Fab key={key} onClick={() => { changeStep(key) }} className={classNames({
-                                    [classes.buttonDefault]: (val.default === true ? true : false),
-                                    [classes.unansweredColor]: (val.unanswered === true ? true : false),
-                                    [classes.answeredColor]: (val.answered === true ? true : false),
-                                    [classes.reviewAnsweredColor]: (val.reviewA === true ? true : false),
-                                    [classes.reviewUnAnsweredColor]: (val.reviewU === true ? true : false)
-                                })} variant="contained" color="primary">
-                                    {key + 1}
-                                </Fab>)
-                        })
-                    }
-                </Box>
-                <Divider />
-                <Typography variant="h6" gutterBottom className={classes.footer} >
-           
-           </Typography>
-            </Paper>
-            
+
+
+            {/* </Grid> */}
+            {/* </Grid> */}
+
         </>
     )
 }

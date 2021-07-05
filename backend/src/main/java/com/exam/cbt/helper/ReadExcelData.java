@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -34,53 +38,66 @@ public class ReadExcelData {
 	List<ExamYearMaster> examYearMasterList = new ArrayList<ExamYearMaster>();
 	List<Config> configList = new ArrayList<Config>();
 	List<CandidateMaster> candidateMasterList = new ArrayList<CandidateMaster>();
-	
-	@Value( "${candidate.master.excel.sheet.inputName}" )
+
+	@Value("${candidate.master.excel.sheet.inputName}")
 	private String candidateMasterSheetName;
-	
-	@Value( "${config.excel.sheet.inputName}" )
-	private String configSheetName; 
-	
-	@Value( "${exam.master.excel.sheet.inputName}" )
+
+	@Value("${config.excel.sheet.inputName}")
+	private String configSheetName;
+
+	@Value("${exam.master.excel.sheet.inputName}")
 	private String examMasterSheetName;
-	
-	@Value( "${inst.master.excel.sheet.inputName}" )
+
+	@Value("${inst.master.excel.sheet.inputName}")
 	private String instituteMasterSheetName;
-	
-	@Value( "${question.master.excel.sheet.inputName}" )
+
+	@Value("${question.master.excel.sheet.inputName}")
 	private String questionMasterSheetName;
-	
+
 	public List<QuestionMaster> readQuestionMasterData(MultipartFile file) throws IOException {
 
 		XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
-		XSSFSheet worksheet = workbook.getSheet(questionMasterSheetName);
+		XSSFSheet sheet = workbook.getSheet(questionMasterSheetName);
+		Iterator<Row> rows = sheet.rowIterator();
 
-		for (int index = 0; index < worksheet.getPhysicalNumberOfRows(); index++) {
-			if (index > 0) {
+		// for (int index = 0; index < worksheet.getPhysicalNumberOfRows(); index++) {
+		while (rows.hasNext()) {
+			Row row = rows.next();
+			if (row.getRowNum() == 0) {
+				continue;
+			}
+			// if (index > 0) {
 
-				log.info("Processing row :" + index);
+			log.info("Processing row :" + row.getRowNum());
 
-				QuestionMaster questionMaster = new QuestionMaster();
-				XSSFRow row = worksheet.getRow(index);
-				if (null != row && null != row.getCell(0)) {
-					QuestionMasterId id = new QuestionMasterId();
+			QuestionMaster questionMaster = new QuestionMaster();
+			// XSSFRow row = worksheet.getRow(index);
+			if (null != row && null != row.getCell(0)) {
+				QuestionMasterId id = new QuestionMasterId();
 
-					if (null != row.getCell(0).getStringCellValue()) {
-						id.setInstCd(String.valueOf(row.getCell(0).getStringCellValue()));
-					}
-					if (null != row.getCell(1).getStringCellValue()) {
-						id.setExamCd(row.getCell(1).getStringCellValue());
-					}
+				if (null != row.getCell(0).getStringCellValue()) {
+					id.setInstCd(String.valueOf(row.getCell(0).getStringCellValue()));
+				}
+				if (null != row.getCell(1).getStringCellValue()) {
+					id.setExamCd(row.getCell(1).getStringCellValue());
+				}
+				// if ((int) row.getCell(2).getNumericCellValue() != 0) {
+				id.setYear((int) row.getCell(2).getNumericCellValue());
+				// }
 
-					id.setYear((int) row.getCell(2).getNumericCellValue());
+				if (null != row.getCell(3).getStringCellValue()) {
+					questionMaster.setMultiple(row.getCell(3).getStringCellValue());
+				}
 
-					if (null != row.getCell(3).getStringCellValue()) {
-						questionMaster.setMultiple(row.getCell(3).getStringCellValue());
-					}
-					
-					id.setQuestionNo((int) row.getCell(4).getNumericCellValue());
-				    questionMaster.setId(id);
+				id.setQuestionNo((int) row.getCell(4).getNumericCellValue());
 
+//						if (id != null && id.getExamCd() != null & id.getExamCd() != ""
+//								&& id.getInstCd() != null & id.getInstCd() != "" && id.getYear() != 0) {
+
+				questionMaster.setId(id);
+				// }
+
+				if (id != null) {
 					if (null != row.getCell(5).getStringCellValue()) {
 						questionMaster.setQuestion(row.getCell(5).getStringCellValue());
 					}
@@ -109,9 +126,14 @@ public class ReadExcelData {
 				}
 
 			}
+
 		}
+		// }
 		workbook.close();
 
+		// }
+
+		// }
 		return questionMasterList;
 
 	}
@@ -131,24 +153,29 @@ public class ReadExcelData {
 				if (null != row && null != row.getCell(0)) {
 					InstituteNameMasterId id = new InstituteNameMasterId();
 
-					if (null != row.getCell(0).getStringCellValue()) {
+					if (null != row.getCell(0).getStringCellValue() && row.getCell(0).getStringCellValue() != "") {
 						id.setInstCd(String.valueOf(row.getCell(0).getStringCellValue()));
 					}
-					if (null != row.getCell(1).getStringCellValue()) {
+					if (null != row.getCell(1).getStringCellValue() && row.getCell(1).getStringCellValue() != "") {
 						id.setExamCd(row.getCell(1).getStringCellValue());
 					}
 
-					id.setYear((int) row.getCell(2).getNumericCellValue());
-					instituteNameMaster.setId(id);
+					if ((int) row.getCell(2).getNumericCellValue() != 0) {
+						id.setYear((int) row.getCell(2).getNumericCellValue());
+					}
+
+					if (id != null && id.getExamCd() != null & id.getExamCd() != ""
+							&& id.getInstCd() != null & id.getInstCd() != "" && id.getYear() != 0) {
+
+						instituteNameMaster.setId(id);
+					}
 
 					if (null != row.getCell(3).getStringCellValue()) {
 						instituteNameMaster.setInstName(row.getCell(3).getStringCellValue());
 					}
 
 					instituteNameMasterList.add(instituteNameMaster);
-
 				}
-
 			}
 		}
 		workbook.close();
@@ -172,15 +199,22 @@ public class ReadExcelData {
 				if (null != row && null != row.getCell(0)) {
 					ExamYearMasterId id = new ExamYearMasterId();
 
-					if (null != row.getCell(0).getStringCellValue()) {
+					if (null != row.getCell(0).getStringCellValue() && row.getCell(0).getStringCellValue() != "") {
 						id.setInstCd(String.valueOf(row.getCell(0).getStringCellValue()));
 					}
-					if (null != row.getCell(1).getStringCellValue()) {
+					if (null != row.getCell(1).getStringCellValue() && row.getCell(1).getStringCellValue() != "") {
 						id.setExamCd(row.getCell(1).getStringCellValue());
 					}
 
-					id.setYear((int) row.getCell(2).getNumericCellValue());
-					examYearMaster.setId(id);
+					if ((int) row.getCell(2).getNumericCellValue() != 0) {
+						id.setYear((int) row.getCell(2).getNumericCellValue());
+					}
+
+					if (id != null && id.getExamCd() != null & id.getExamCd() != ""
+							&& id.getInstCd() != null & id.getInstCd() != "" && id.getYear() != 0) {
+
+						examYearMaster.setId(id);
+					}
 
 					if (null != row.getCell(3).getStringCellValue()) {
 						examYearMaster.setExamName(row.getCell(3).getStringCellValue());
@@ -211,28 +245,42 @@ public class ReadExcelData {
 				if (null != row && null != row.getCell(0)) {
 					ConfigId id = new ConfigId();
 
-					if (null != row.getCell(0).getStringCellValue()) {
+					if (null != row.getCell(0).getStringCellValue() && row.getCell(0).getStringCellValue() != "") {
 						id.setInstCd(String.valueOf(row.getCell(0).getStringCellValue()));
 					}
-					if (null != row.getCell(1).getStringCellValue()) {
+					if (null != row.getCell(1).getStringCellValue() && row.getCell(1).getStringCellValue() != "") {
 						id.setExamCd(row.getCell(1).getStringCellValue());
 					}
 
-					id.setYear((int) row.getCell(2).getNumericCellValue());
-					config.setId(id);
+					//if ((int) row.getCell(2).getNumericCellValue() != 0) {
+						id.setYear((int) row.getCell(2).getNumericCellValue());
+					//}
 
-					if (null != row.getCell(3).getDateCellValue()) {
-						Date d = row.getCell(3).getDateCellValue();
-						java.sql.Date sd = new java.sql.Date(d.getTime());
-						config.setDateOfExam(sd);
+					if (id != null && id.getExamCd() != null & id.getExamCd() != ""
+							&& id.getInstCd() != null & id.getInstCd() != "") {
+
+						config.setId(id);
 					}
 
-					if (null != row.getCell(4).getLocalDateTimeCellValue()) {
+					if (id != null) {
+						if (null != row.getCell(3).getDateCellValue()) {
+							Date d = row.getCell(3).getDateCellValue();
+							java.sql.Date sd = new java.sql.Date(d.getTime());
+							config.setDateOfExam(sd);
+						}
 
-						config.setDurationHr(fetchHour(row.getCell(4).getLocalDateTimeCellValue()));
-						config.setDurationMin(fetchMin(row.getCell(4).getLocalDateTimeCellValue()));
+						if (null != row.getCell(4).getLocalDateTimeCellValue()) {
+
+							config.setDurationHr(fetchHour(row.getCell(4).getLocalDateTimeCellValue()));
+							config.setDurationMin(fetchMin(row.getCell(4).getLocalDateTimeCellValue()));
+						}
+						
+						config.setSetStart((int) row.getCell(6).getNumericCellValue());
+						config.setNoOfSet((int) row.getCell(5).getNumericCellValue());
+						configList.add(config);
+
 					}
-					configList.add(config);
+
 				}
 
 			}
@@ -242,7 +290,7 @@ public class ReadExcelData {
 		return configList;
 
 	}
-	
+
 	public List<CandidateMaster> readCandidateMasterData(MultipartFile file) throws IOException {
 
 		XSSFWorkbook workbook = new XSSFWorkbook(file.getInputStream());
@@ -265,29 +313,29 @@ public class ReadExcelData {
 					}
 
 					candidateMaster.setYear((int) row.getCell(2).getNumericCellValue());
-					
+
 					candidateMaster.setRegistrationNo((int) row.getCell(3).getNumericCellValue());
 
 					if (null != row.getCell(4).getStringCellValue()) {
 						candidateMaster.setName(row.getCell(4).getStringCellValue());
 					}
-					
+
 					if (null != row.getCell(5)) {
 						candidateMaster.setPassword(row.getCell(5).getStringCellValue());
 					}
-					
+
 					if (null != row.getCell(6).getDateCellValue()) {
 						Date d = row.getCell(6).getDateCellValue();
 						java.sql.Date sd = new java.sql.Date(d.getTime());
 						candidateMaster.setDob(sd);
 					}
-					
+
 					if (null != row.getCell(7).getStringCellValue()) {
 						candidateMaster.setPhoto(row.getCell(7).getStringCellValue());
 					}
-					
+
 					candidateMaster.setMobileNum((int) row.getCell(8).getNumericCellValue());
-					
+
 					if (null != row.getCell(9).getStringCellValue()) {
 						candidateMaster.setEmailId(row.getCell(9).getStringCellValue());
 					}

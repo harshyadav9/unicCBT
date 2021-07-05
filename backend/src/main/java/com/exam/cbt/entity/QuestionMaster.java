@@ -12,6 +12,11 @@ public class QuestionMaster {
 	@EmbeddedId
 	private QuestionMasterId id;
 	
+	public QuestionMaster() {
+		super();
+		
+	}
+
 	@Column(name = "Question")
 	private String question;
 	
