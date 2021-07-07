@@ -31,6 +31,7 @@ import com.exam.cbt.entity.ExamYearMaster;
 import com.exam.cbt.entity.InstituteNameMaster;
 import com.exam.cbt.entity.QuestionMaster;
 import com.exam.cbt.helper.ReadExcelData;
+import com.exam.cbt.service.ImportDataService;
 import com.exam.cbt.service.impl.CandidateMasterDataServiceImpl;
 import com.exam.cbt.service.impl.ConfigDataServiceImpl;
 import com.exam.cbt.service.impl.ExamYearMasterDataServiceImpl;
@@ -67,55 +68,50 @@ public class DataUploadController {
 
 	@Autowired
 	AzureBlobAdapter azureAdapter;
+	
+	@Autowired
+	ImportDataService importDataService;
 
-	@PostMapping(value = "/importRegisteredStudentData")
-	ResponseEntity<List<CandidateMaster>> importRegisteredStudentData(@RequestParam("file") MultipartFile files)
-			throws IOException {
-
-		HttpStatus status = HttpStatus.OK;
-		List<CandidateMaster> stuList = new ArrayList<>();
-
-		XSSFWorkbook workbook = new XSSFWorkbook(files.getInputStream());
-		XSSFSheet worksheet = workbook.getSheetAt(0);
-
-		for (int index = 0; index < worksheet.getPhysicalNumberOfRows(); index++) {
-			if (index > 0) {
-				CandidateMaster student = new CandidateMaster();
-
-				XSSFRow row = worksheet.getRow(index);
-				Integer id = (int) row.getCell(0).getNumericCellValue();
-
-				student.setRegistrationNo(id);
-				// student.setStudentName(row.getCell(1).getStringCellValue());
-				if (row.getCell(2).getCellType() == CellType.STRING)
-					student.setPassword(row.getCell(2).getStringCellValue());
-				else if (row.getCell(2).getCellType() == CellType.NUMERIC) {
-					student.setPassword(String.valueOf((int) row.getCell(2).getNumericCellValue()));
-				}
-
-				stuList.add(student);
-			}
-		}
-		workbook.close();
-
-		// insert into db
-		uploadStudentDataService.uploadCandidates(stuList);
-
-		return new ResponseEntity<>(stuList, status);
-	}
+//	@PostMapping(value = "/importRegisteredStudentData")
+//	ResponseEntity<List<CandidateMaster>> importRegisteredStudentData(@RequestParam("file") MultipartFile files)
+//			throws IOException {
+//
+//		HttpStatus status = HttpStatus.OK;
+//		List<CandidateMaster> stuList = new ArrayList<>();
+//
+//		XSSFWorkbook workbook = new XSSFWorkbook(files.getInputStream());
+//		XSSFSheet worksheet = workbook.getSheetAt(0);
+//
+//		for (int index = 0; index < worksheet.getPhysicalNumberOfRows(); index++) {
+//			if (index > 0) {
+//				CandidateMaster student = new CandidateMaster();
+//
+//				XSSFRow row = worksheet.getRow(index);
+//				Integer id = (int) row.getCell(0).getNumericCellValue();
+//
+//				student.setRegistrationNo(id);
+//				// student.setStudentName(row.getCell(1).getStringCellValue());
+//				if (row.getCell(2).getCellType() == CellType.STRING)
+//					student.setPassword(row.getCell(2).getStringCellValue());
+//				else if (row.getCell(2).getCellType() == CellType.NUMERIC) {
+//					student.setPassword(String.valueOf((int) row.getCell(2).getNumericCellValue()));
+//				}
+//
+//				stuList.add(student);
+//			}
+//		}
+//		workbook.close();
+//
+//		// insert into db
+//		uploadStudentDataService.uploadCandidates(stuList);
+//
+//		return new ResponseEntity<>(stuList, status);
+//	}
 
 	@PostMapping(value = "/importQuestionMasterData")
 	ResponseEntity<String> importQuestionMasterData(@RequestParam("file") MultipartFile files) throws IOException {
 
-		Instant start = Instant.now();
-		List<QuestionMaster> questionMasterList = readExcelData.readQuestionMasterData(files);
-
-		int size = questionMasterDataServiceImpl.uploadQuestionMaster(questionMasterList);
-		Instant finish = Instant.now();
-		long timeElapsedMin = Duration.between(start, finish).toMinutes();
-		long timeElapsedHr = Duration.between(start, finish).toHours();
-		System.out.println("Time Elapsed in Minutes: " +timeElapsedMin); // Prints: Time Elapsed: 2501 
-		System.out.println("Time Elapsed in Hours: " +timeElapsedHr);
+		int size = importDataService.importQuestionMaster(files);
 
 		return new ResponseEntity<>(size + " Questions are Uploaded Successfully.", HttpStatus.CREATED);
 	}
@@ -123,9 +119,7 @@ public class DataUploadController {
 	@PostMapping(value = "/importInstitutionMasterData")
 	ResponseEntity<String> importInstitutionMasterData(@RequestParam("file") MultipartFile files) throws IOException {
 
-		List<InstituteNameMaster> instituteNameMasterList = readExcelData.readInstituteMasterData(files);
-
-		int size = instituteNameMasterDataServiceImpl.uploadInstituteNameMasterData(instituteNameMasterList);
+		int size = importDataService.importInstMaster(files);
 
 		return new ResponseEntity<>(size + " Institute Master Data is Uploaded Successfully.", HttpStatus.CREATED);
 	}
@@ -133,10 +127,7 @@ public class DataUploadController {
 	@PostMapping(value = "/importExamYearMasterData")
 	ResponseEntity<String> importExamYearMasterData(@RequestParam("file") MultipartFile files) throws IOException {
 
-		List<ExamYearMaster> examYearMasterList = readExcelData.readExamYearMasterData(files);
-
-		int size = examYearMasterDataServiceImpl.uploadExamYearMasterData(examYearMasterList);
-
+		int size = importDataService.importExamMaster(files);
 		return new ResponseEntity<>(size + " Exam Year Master Data is Uploaded Successfully.", HttpStatus.CREATED);
 
 	}
@@ -144,9 +135,7 @@ public class DataUploadController {
 	@PostMapping(value = "/importConfigData")
 	ResponseEntity<String> importConfigData(@RequestParam("file") MultipartFile files) throws IOException {
 
-		List<Config> configList = readExcelData.readConfigData(files);
-
-		int size = configDataServiceImpl.uploadConfigData(configList);
+		int size = importDataService.importConfigData(files);
 
 		return new ResponseEntity<>(size + " Config Data is Uploaded Successfully.", HttpStatus.CREATED);
 
@@ -155,9 +144,7 @@ public class DataUploadController {
 	@PostMapping(value = "/importCandidateMasterData")
 	ResponseEntity<String> importCandidateMasterData(@RequestParam("file") MultipartFile files) throws IOException {
 
-		List<CandidateMaster> candidateMasterList = readExcelData.readCandidateMasterData(files);
-
-		int size = candidateMasterDataServiceImpl.uploadCandidateMasterData(candidateMasterList);
+		int size = importDataService.importCandidateMasterData(files);
 
 		return new ResponseEntity<>(size + " Candidate Master Data is Uploaded Successfully.", HttpStatus.CREATED);
 
