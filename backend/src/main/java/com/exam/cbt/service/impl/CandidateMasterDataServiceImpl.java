@@ -104,7 +104,7 @@ public class CandidateMasterDataServiceImpl implements CandidateMasterDataServic
 			int noOfSet = config.get().getNoOfSet();
 			int seriesLimitUpper = seriesLimitLower + noOfSet - 1;
 			
-			Page<CandidateMaster> page = candidateMasterRepository.findByExamCdAndInstCdAndYearSortByRegistrationAsc(id.getExamCd(), id.getInstCd(),
+			Page<CandidateMaster> page = candidateMasterRepository.findByExamCdAndInstCdAndYearOrderByRegistrationNoAsc(id.getExamCd(), id.getInstCd(),
 					id.getYear(),pageable);
 			int size = 0;//page.getTotalPages();
 			while(size <= page.getTotalPages()) {
@@ -134,7 +134,7 @@ public class CandidateMasterDataServiceImpl implements CandidateMasterDataServic
 
 	private Page<CandidateMaster> abc(int pageNo,int size,ConfigId id) {
 		Pageable pageable = PageRequest.of(pageNo, size);
-		Page<CandidateMaster> page = candidateMasterRepository.findByExamCdAndInstCdAndYearSortByRegistrationAsc(id.getExamCd(), id.getInstCd(),
+		Page<CandidateMaster> page = candidateMasterRepository.findByExamCdAndInstCdAndYearOrderByRegistrationNoAsc(id.getExamCd(), id.getInstCd(),
 				id.getYear(),pageable);
 		
 		return page;

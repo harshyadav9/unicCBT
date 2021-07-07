@@ -47,6 +47,17 @@ public class QuestionMaster {
 	@Column(name = "UnattemptedAnsWeightage")
 	private Float unattemptedAnsWeightage;
 	
+	@Column(name = "SetNo")
+	private int setNo;
+	
+	public int getSetNo() {
+		return setNo;
+	}
+
+	public void setSetNo(int setNo) {
+		this.setNo = setNo;
+	}
+
 	public QuestionMasterId getId() {
 		return id;
 	}
@@ -137,10 +148,10 @@ public class QuestionMaster {
 
 	@Override
 	public String toString() {
-		return "QuestionMaster [id=" + id + ", question=" + question + ", multiple=" + multiple + ", option1=" + option1 + ", option2="
-				+ option2 + ", option3=" + option3 + ", option4=" + option4 + ", correctAnswer=" + correctAnswer
-				+ ", correctAnsWeightage=" + correctAnsWeightage + ", wrongAnsWeightage=" + wrongAnsWeightage
-				+ ", unattemptedAnsWeightage=" + unattemptedAnsWeightage + "]";
+		return "QuestionMaster [id=" + id + ", question=" + question + ", multiple=" + multiple + ", option1=" + option1
+				+ ", option2=" + option2 + ", option3=" + option3 + ", option4=" + option4 + ", correctAnswer="
+				+ correctAnswer + ", correctAnsWeightage=" + correctAnsWeightage + ", wrongAnsWeightage="
+				+ wrongAnsWeightage + ", unattemptedAnsWeightage=" + unattemptedAnsWeightage + ", setNo=" + setNo + "]";
 	}
 
 }

@@ -158,7 +158,7 @@ public class StudentController {
 		
 		QuestionMasterResponse res = null;
 		
-		HashMap<String, List<QuestionMaster>> hm = questionMasterServ.getAllQuestions();
+		
 		Optional<CandidateMaster> candidateMaster = candidateService.findCandidateWithId(registrationNumber);
 		
 		if(candidateMaster.isPresent()) {
@@ -167,6 +167,7 @@ public class StudentController {
 			id.setExamCd(candidateMaster.get().getExamCd());
 			id.setInstCd(candidateMaster.get().getInstCd());
 			id.setYear(candidateMaster.get().getYear());
+			int setNo = candidateMaster.get().getSetNo();
 			Optional<Config> config = configDataService.getConfig(id);
 			InstituteNameMasterId instituteNameMasterId = new InstituteNameMasterId();
 			instituteNameMasterId.setExamCd(candidateMaster.get().getExamCd());
@@ -178,6 +179,9 @@ public class StudentController {
 				res.setInstituteName(instituteNameMaster.get().getInstName());
 				
 			}
+			
+			HashMap<String, List<QuestionMaster>> hm = questionMasterServ.getAllQuestions(setNo,id.getYear(), id.getInstCd(), id.getExamCd());
+			
 			res.setQuestionList(hm);
 			res.setCandidateName(candidateMaster.get().getName());
 			if (config.isPresent()) {

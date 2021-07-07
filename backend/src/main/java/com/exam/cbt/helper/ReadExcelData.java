@@ -6,9 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -91,13 +89,9 @@ public class ReadExcelData {
 
 				id.setQuestionNo((int) row.getCell(4).getNumericCellValue());
 
-//						if (id != null && id.getExamCd() != null & id.getExamCd() != ""
-//								&& id.getInstCd() != null & id.getInstCd() != "" && id.getYear() != 0) {
-
 				questionMaster.setId(id);
-				// }
 
-				if (id != null) {
+				//if (id != null) {
 					if (null != row.getCell(5).getStringCellValue()) {
 						questionMaster.setQuestion(row.getCell(5).getStringCellValue());
 					}
@@ -120,12 +114,13 @@ public class ReadExcelData {
 					questionMaster.setCorrectAnsWeightage(new Float(row.getCell(11).getNumericCellValue()));
 					questionMaster.setWrongAnsWeightage(new Float(row.getCell(12).getNumericCellValue()));
 					questionMaster.setUnattemptedAnsWeightage(new Float(row.getCell(13).getNumericCellValue()));
+					questionMaster.setSetNo((int) row.getCell(14).getNumericCellValue());
 
 					questionMasterList.add(questionMaster);
 
 				}
 
-			}
+			//}
 
 		}
 		// }

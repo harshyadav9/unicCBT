@@ -31,7 +31,6 @@ import com.exam.cbt.entity.ExamYearMaster;
 import com.exam.cbt.entity.InstituteNameMaster;
 import com.exam.cbt.entity.QuestionMaster;
 import com.exam.cbt.helper.ReadExcelData;
-import com.exam.cbt.pojo.CandidateResponseUI;
 import com.exam.cbt.service.impl.CandidateMasterDataServiceImpl;
 import com.exam.cbt.service.impl.ConfigDataServiceImpl;
 import com.exam.cbt.service.impl.ExamYearMasterDataServiceImpl;

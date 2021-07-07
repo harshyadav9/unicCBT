@@ -9,6 +9,6 @@ public interface QuestionMasterDataService {
 	
 	int uploadQuestionMaster(List<QuestionMaster> questions);
 	
-	HashMap<String,List<QuestionMaster>> getAllQuestions();
+	HashMap<String,List<QuestionMaster>> getAllQuestions(int setNo, int year, String instCd, String examCd);
 	
 }

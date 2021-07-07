@@ -24,7 +24,11 @@ public class QuestionMasterDataServiceImpl implements QuestionMasterDataService 
 
 	@Override
 	public int uploadQuestionMaster(List<QuestionMaster> questionMasterDataList) {
-		
+		for (QuestionMaster q:questionMasterDataList) {
+			if (q.getSetNo()!= 101 || q.getSetNo()!= 102 || q.getSetNo()!= 103 || q.getSetNo()!= 104){
+				System.out.println("Issue");
+			}
+		}
 		questionMasterRepository.saveAll(questionMasterDataList);
 		QuestionMasterId id = new QuestionMasterId();
 		id.setExamCd("");
@@ -40,10 +44,10 @@ public class QuestionMasterDataServiceImpl implements QuestionMasterDataService 
 	}
 	
 	@Override
-	public HashMap<String, List<QuestionMaster>> getAllQuestions() {
+	public HashMap<String, List<QuestionMaster>> getAllQuestions(int setNo, int year, String instCd, String examCd) {
 
 		HashMap<String, List<QuestionMaster>> hm = new HashMap<String, List<QuestionMaster>>();
-		Iterable<QuestionMaster> questions = questionMasterRepository.findAll();
+		Iterable<QuestionMaster> questions = questionMasterRepository.findBySetNoAndIdYearAndIdInstCdAndIdExamCdOrderByIdQuestionNoAsc(setNo,year,instCd,examCd);
 		hm.put("Questions", (List<QuestionMaster>) questions);
 		return hm;
 	}
