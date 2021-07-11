@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/styles';
-import { Paper, Typography, Divider, 
-     List, ListItem, ListItemText } from '@material-ui/core';
-    
+import {
+    Paper, Typography, Divider,
+    List, ListItem, ListItemText
+} from '@material-ui/core';
+
 const useStyles = theme => ({
 
     padding: {
@@ -27,7 +29,7 @@ const useStyles = theme => ({
                     fontSize: '2rem'
                 },
                 '& p': {
-                color: '#fff',
+                    color: '#fff',
 
                 }
             }
@@ -45,28 +47,28 @@ class Timer extends Component {
         hours: 0,
         count: 0,
         showWarning: false
-    }   
+    }
 
 
     //  1 hr 2 min
     //  1min 10 sec
 
-    componentWillUnmount(){
-        if(this.myInterval)
-        clearInterval( this.myInterval);
+    componentWillUnmount() {
+        if (this.myInterval)
+            clearInterval(this.myInterval);
     }
 
 
-    getTime(){
+    getTime() {
         if (this.state.seconds > 0) {
-            this.setState(({ seconds , count }) => ({
+            this.setState(({ seconds, count }) => ({
                 seconds: seconds - 1,
-                count:count+1
+                count: count + 1
             }))
-            if(this.state.count == 20){
-                console.log("this.state>>>>>>>>>>>>>>>>>" , this.state);
+            if (this.state.count == 20) {
+                console.log("this.state>>>>>>>>>>>>>>>>>", this.state);
                 this.setState({
-                    showWarning:true
+                    showWarning: true
                 })
             }
         } else
@@ -114,18 +116,18 @@ class Timer extends Component {
     }
 
 
-    componentDidUpdate(prevProps){
-        console.log("componentDidUpdate called" , prevProps);
-        const { hours,seconds,minutes } =  this.props;
-        console.log("1",hours);
-        console.log("2",prevProps.hours);
+    componentDidUpdate(prevProps) {
+        console.log("componentDidUpdate called", prevProps);
+        const { hours, seconds, minutes } = this.props;
+        console.log("1", hours);
+        console.log("2", prevProps.hours);
 
-        if(prevProps.hours !== hours){
+        if (prevProps.hours !== hours) {
             this.setState({
-                seconds:seconds,
-                hours:hours,
-                minutes:minutes
-               });
+                seconds: seconds,
+                hours: hours,
+                minutes: minutes
+            });
         }
         // if(this.state.hours == 0 && this.state.minutes == 0  && this.state.seconds  < 30){
         //     this.setState({
@@ -135,9 +137,9 @@ class Timer extends Component {
     }
 
     componentDidMount() {
-        const {hours , minutes , seconds} =  this.props;
-        this.myInterval = setInterval(() => {this.getTime()},1000);
-       
+        const { hours, minutes, seconds } = this.props;
+        this.myInterval = setInterval(() => { this.getTime() }, 1000);
+
     }
 
 
@@ -150,7 +152,7 @@ class Timer extends Component {
         // const { minutes, hours  , seconds = 60} = this.state;
         // console.log("this.state", this.state);
         const { classes } = this.props;
-        console.log("time in timer",this.props);
+        console.log("time in timer", this.props);
         // console.log("classes",classes)
         // return (
         //     <div>
@@ -166,25 +168,24 @@ class Timer extends Component {
 
         return (
             <>
-            <Paper elevation={3}>
-                <Typography variant="h6" gutterBottom className={classes.padding}>
-                    Time Remaining :
+                <Paper elevation={3}>
+                    <Typography variant="h6" gutterBottom className={classes.padding}>
+                        Time Remaining :
                 </Typography>
-                <Divider />
-                <List className={classes.timerStyle}>
-                <p>{this.state.showWarning  ? true : false}</p>
-                    <ListItem>
-                        
-                        <ListItemText primary={this.state.hours < 10 ? `0${this.state.hours}` : `${this.state.hours}`} secondary="HOURS" />
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary={this.state.minutes < 10 ? `0${this.state.minutes}` : `${this.state.minutes}`} secondary="MINUTES" />
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary={this.state.seconds < 10 ? `0${this.state.seconds}` : `${this.state.seconds}`} secondary="SECONDS" />
-                    </ListItem>
-                </List>
-            </Paper>
+                    <Divider />
+                    <List className={classes.timerStyle}>
+                        <ListItem>
+
+                            <ListItemText primary={this.state.hours < 10 ? `0${this.state.hours}` : `${this.state.hours}`} secondary="HOURS" />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemText primary={this.state.minutes < 10 ? `0${this.state.minutes}` : `${this.state.minutes}`} secondary="MINUTES" />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemText primary={this.state.seconds < 10 ? `0${this.state.seconds}` : `${this.state.seconds}`} secondary="SECONDS" />
+                        </ListItem>
+                    </List>
+                </Paper>
             </>
         )
     }
