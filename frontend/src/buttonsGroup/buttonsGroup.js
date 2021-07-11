@@ -120,7 +120,6 @@ const useStyles = makeStyles((theme) => ({
         padding: '8px 15px 30px',
         height: 'calc(100vh - 420px)',
         overflowY: 'auto',
-
     },
     legendContainer: {
         display: 'flex',
@@ -294,7 +293,6 @@ function ButtonsGroup({ arrLen, questionInfo, changeStep }) {
     // }
 
     // console.log("newArr", newArr);
-
 
     return (
         <>

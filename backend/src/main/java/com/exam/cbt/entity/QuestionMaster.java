@@ -3,32 +3,22 @@ package com.exam.cbt.entity;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "QuestionMaster")
 public class QuestionMaster {
 
-	public QuestionMasterId getId() {
-		return id;
-	}
-
-	public void setId(QuestionMasterId id) {
-		this.id = id;
-	}
-
 	@EmbeddedId
 	private QuestionMasterId id;
 	
+	public QuestionMaster() {
+		super();
+		
+	}
+
 	@Column(name = "Question")
 	private String question;
-	
-	@Column(name = "QuestionDescription")
-	private String questionDescription;
-	
-	@Column(name = "QuestionHint")
-	private String questionHint;
 	
 	@Column(name = "Multiple")
 	private String multiple;
@@ -57,8 +47,24 @@ public class QuestionMaster {
 	@Column(name = "UnattemptedAnsWeightage")
 	private Float unattemptedAnsWeightage;
 	
-	@Column(name = "PartialAnsWeightage")
-	private Float partialAnsWeightage;
+	@Column(name = "SetNo")
+	private int setNo;
+	
+	public int getSetNo() {
+		return setNo;
+	}
+
+	public void setSetNo(int setNo) {
+		this.setNo = setNo;
+	}
+
+	public QuestionMasterId getId() {
+		return id;
+	}
+
+	public void setId(QuestionMasterId id) {
+		this.id = id;
+	}
 	
 	public Float getCorrectAnsWeightage() {
 		return correctAnsWeightage;
@@ -84,14 +90,6 @@ public class QuestionMaster {
 		this.unattemptedAnsWeightage = unattemptedAnsWeightage;
 	}
 
-	public Float getPartialAnsWeightage() {
-		return partialAnsWeightage;
-	}
-
-	public void setPartialAnsWeightage(Float partialAnsWeightage) {
-		this.partialAnsWeightage = partialAnsWeightage;
-	}
-	
 	public String getCorrectAnswer() {
 		return correctAnswer;
 	}
@@ -106,22 +104,6 @@ public class QuestionMaster {
 
 	public void setQuestion(String question) {
 		this.question = question;
-	}
-
-	public String getQuestionDescription() {
-		return questionDescription;
-	}
-
-	public void setQuestionDescription(String questionDescription) {
-		this.questionDescription = questionDescription;
-	}
-
-	public String getQuestionHint() {
-		return questionHint;
-	}
-
-	public void setQuestionHint(String questionHint) {
-		this.questionHint = questionHint;
 	}
 
 	public String getMultiple() {
@@ -162,6 +144,14 @@ public class QuestionMaster {
 
 	public void setOption4(String option4) {
 		this.option4 = option4;
+	}
+
+	@Override
+	public String toString() {
+		return "QuestionMaster [id=" + id + ", question=" + question + ", multiple=" + multiple + ", option1=" + option1
+				+ ", option2=" + option2 + ", option3=" + option3 + ", option4=" + option4 + ", correctAnswer="
+				+ correctAnswer + ", correctAnsWeightage=" + correctAnsWeightage + ", wrongAnsWeightage="
+				+ wrongAnsWeightage + ", unattemptedAnsWeightage=" + unattemptedAnsWeightage + ", setNo=" + setNo + "]";
 	}
 
 }

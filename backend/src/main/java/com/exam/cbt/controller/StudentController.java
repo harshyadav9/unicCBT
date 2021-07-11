@@ -1,7 +1,6 @@
 package com.exam.cbt.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -17,41 +16,63 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.exam.cbt.entity.QuestionMaster;
-import com.exam.cbt.entity.Student;
+import com.exam.cbt.entity.CandidateMaster;
+import com.exam.cbt.pojo.CandidateResponseUI;
 import com.exam.cbt.pojo.QuestionMasterResponse;
-import com.exam.cbt.service.StudentResponseService;
+import com.exam.cbt.service.CandidateResponseService;
+import com.exam.cbt.service.ConfigDataService;
+import com.exam.cbt.service.QuestionService;
+import com.exam.cbt.service.SubmitExamService;
+import com.exam.cbt.service.impl.CandidateMasterDataServiceImpl;
+import com.exam.cbt.service.impl.CandidateServiceImpl;
+import com.exam.cbt.service.impl.ExamYearMasterDataServiceImpl;
+import com.exam.cbt.service.impl.InstituteNameMasterDataServiceImpl;
 import com.exam.cbt.service.impl.QuestionMasterDataServiceImpl;
-import com.exam.cbt.service.impl.StudentServiceImpl;
 
 @RestController
-@RequestMapping("/student")
+@RequestMapping("/cbt/student")
 @CrossOrigin(origins = "*")
 public class StudentController {
 	
 	Logger log = LoggerFactory.getLogger(StudentController.class); 
 
 	@Autowired
-	StudentServiceImpl stuService;
+	CandidateServiceImpl candidateService;
+	
+	@Autowired
+	QuestionService questionService;
 
 	@Autowired
 	QuestionMasterDataServiceImpl questionMasterServ;
 	
 	@Autowired
-	StudentResponseService stuRespServ;
+	InstituteNameMasterDataServiceImpl instituteNameMasterDataServiceImpl;
+	
+	@Autowired
+	CandidateResponseService candidateRespServ;
+	
+	@Autowired
+	ConfigDataService configDataService;
+	
+	@Autowired
+	CandidateMasterDataServiceImpl candidateMasterDataServiceImpl;
+	
+	@Autowired
+	ExamYearMasterDataServiceImpl examYearMasterDataServiceImpl;
+	
+	@Autowired
+	SubmitExamService submitExamService;
 
 	@GetMapping(path = "/checkStatus")
-	public String checkAppStatus() { 	
+	public ResponseEntity<String> checkAppStatus() { 	
 
-		String str = "App is running";
-		log.info(str);
 		log.info("Exiting checkAppStatus{}");
-		return str;
+		return new ResponseEntity<>("App is Up and Running", HttpStatus.OK);
 
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public ResponseEntity<String> login(@RequestBody Student student) {
+	public ResponseEntity<String> login(@RequestBody CandidateMaster student) {
 		
 		log.info("Inside login{} with inout student : "+student);
 		
@@ -59,7 +80,7 @@ public class StudentController {
 
 		if (student.getPassword() != null) {
 			log.info("Calling stuService.getStudent{} ");
-			String str = stuService.getStudent(student.getRegistrationNo(), student.getPassword());
+			String str = candidateService.getStudent(student.getRegistrationNo(), student.getPassword());
 			if(str != null && str.equalsIgnoreCase("AUTHENTICATED")) {
 				log.info("Authenticated:  " +student.getRegistrationNo());
 				mp.put("Message", str);
@@ -80,60 +101,42 @@ public class StudentController {
 	}
 	
 	@RequestMapping(value = "/submitExam", method = RequestMethod.PUT)
-	public HashMap<String,String> submitExam(@RequestBody com.exam.cbt.pojo.StudentResponse studentResp) {
+	public ResponseEntity<String> submitExam(@RequestBody CandidateResponseUI candidateResp) {
 		
-		
-		HashMap<String, String> retCode = new HashMap<>(); 
-		
-		if (studentResp != null) {
-			log.info("Inside submitExam{} for registrationNo : " + studentResp.getRegistrationNo());
-			stuRespServ.saveStudentExam(studentResp.getResp());
-			retCode.put("CODE", HttpStatus.CREATED.getReasonPhrase());
-			log.info("Exiting submitExam{} for registrationNo : " +studentResp.getRegistrationNo() );
-			return retCode;
+		if (candidateResp != null) {
+			submitExamService.submitCandidateExam(candidateResp);
+			
+			return new ResponseEntity<>("Exam Submitted Successfully", HttpStatus.OK);
 			
 		} else {
 			
-			retCode.put("CODE", HttpStatus.BAD_REQUEST.getReasonPhrase());
-			log.info(retCode.get("CODE"));
 			log.info("Exiting submitExam{} ");
-			return retCode;
-
+			return new ResponseEntity<>("Bad Request", HttpStatus.BAD_REQUEST);
 		}		
-
 	}
-	
+
 	@RequestMapping(value = "/getQuestions/{registrationNumber}", method = RequestMethod.GET)
-	public QuestionMasterResponse getQuestions(@PathVariable Integer registrationNumber) {
+	public ResponseEntity<QuestionMasterResponse> getQuestions(@PathVariable Integer registrationNumber) {
 		
 		log.info("Inside getQuestions{} with registrationNo: " +registrationNumber);
 		
 		QuestionMasterResponse res = new QuestionMasterResponse();
-		HashMap<String, String> retCode = new HashMap<>(); 
 		
 		if (registrationNumber != null) {
-			log.info("Calling questionMasterServ.getAllQuestions{}");
-			HashMap<String, List<QuestionMaster>> hm = questionMasterServ.getAllQuestions();
-			Student student = stuService.findStudentWithId(registrationNumber);
+			res = questionService.populatequestionMasterResponse(registrationNumber);
 			
-			retCode.put("CODE", HttpStatus.ACCEPTED.getReasonPhrase());
-			res.setQuestionList(hm);
-			res.setExamCd(student.getExamCd());
-			res.setResponseCode(retCode);
-			log.info(retCode.get("CODE"));
+			if (res==null){
+				return new ResponseEntity<>(res, HttpStatus.NOT_FOUND);
+			}
 			log.info("Exiting getQuestions{}");
-			return res;
+			return new ResponseEntity<>(res, HttpStatus.OK);
 			
 		} else {
 			
-			retCode.put("CODE", HttpStatus.BAD_REQUEST.getReasonPhrase());
-			res.setResponseCode(retCode);
-			log.info(retCode.get("CODE"));
 			log.info("Exiting getQuestions{}");
-			return res;
-
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		}		
-
 	}
-
+	
+	
 }

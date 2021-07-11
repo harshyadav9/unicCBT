@@ -1,15 +1,15 @@
 package com.exam.cbt.dao;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import com.exam.cbt.entity.QuestionMaster;
 import com.exam.cbt.entity.QuestionMasterId;
 
 @Repository
-public interface QuestionMasterRepository extends JpaRepository<QuestionMaster, QuestionMasterId>{
+public interface QuestionMasterRepository extends CrudRepository<QuestionMaster, QuestionMasterId> {
 	
-	//public List<QuestionMaster> findByinstCdAndExamCdAndYearAndQuestionAndQuestionNo(String instCd, String examCd, int year, String question, int quesNum);
-	
-
+	 List<QuestionMaster> findBySetNoAndIdYearAndIdInstCdAndIdExamCdOrderByIdQuestionNoAsc(int setNo, int year, String instCode, String examCd);
 }
