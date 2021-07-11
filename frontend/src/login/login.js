@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -16,22 +16,28 @@ import Footer from '../footer/footer';
 import Header from '../header/header';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
-import NavigationPrompt from "react-router-navigation-prompt";
+
 import Snackbar from '@material-ui/core/Snackbar';
 import Test from '../Test'; import Modal from '@material-ui/core/Modal';
 import Dialog from '@material-ui/core/Dialog';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from '@material-ui/core/styles';
+import { ExamDataContext } from '../context/ExamDataContext';
+// import {login} from '../../login.png';
 const useStyles = makeStyles((theme) => ({
 
   root: {
     display: 'flex',
     flexDirection: 'column',
-    minHeight: '100vh'
+    backgroundImage:`url(login.jpg)`,
+
+    backgroundSize:'cover',
+    backgroundRepeat:'no-repeat'
   },
 
   paper: {
     marginTop: theme.spacing(15),
+    background:'#fff',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -57,7 +63,7 @@ function Copyright() {
   return (
     <Typography variant="body1" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://www.unicsolutons.edu">
+      <Link color="primary" href="https://www.unicsolutons.edu">
         www.unicsolutons.edu
       </Link>{' '}
       {new Date().getFullYear()}
@@ -71,27 +77,29 @@ function Copyright() {
 
 
 export default function Login() {
+  const {state,dispatch} = useContext(ExamDataContext);
+  console.log("state,dispatch in header" , state,dispatch);
   const classes = useStyles();
   const [regNo, setregNo] = useState("");
   const [password, setpassword] = useState("");
   const [open, setOpen] = useState(false);
   const [regNoErr, setregNoErr] = useState("");
   const [passwordErr, setpasswordErr] = useState("");
-  const [isregValid, setisRegValid] = useState(false)
-  const [ispassValid, setisPassValid] = useState(false);
+  const [isregValid, setisRegValid] = useState(true)
+  const [ispassValid, setisPassValid] = useState(true);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('lg'));
   const history = useHistory();
-  useEffect(() => {
+  // useEffect(() => {
 
-    axios.get('/student/checkStatus', {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-      },
-    }).then(res => {
-      console.log(res);
-    })
-  }, []);
+  //   axios.get('/student/checkStatus', {
+  //     headers: {
+  //       'Access-Control-Allow-Origin': '*',
+  //     },
+  //   }).then(res => {
+  //     console.log(res);
+  //   })
+  // }, []);
 
 
   const onSubmit = (e) => {
@@ -100,18 +108,22 @@ export default function Login() {
 
   const regNoChangeEvent = (e) => {
 
-    // if (e.target.value == "") {
-    //   setregNoErr("Empty Registration Number");
-    //   setisRegValid(false)
-    //   return;
-    // }
+    if (e.target.value == "") {
+      setregNoErr("Empty Registration Number");
+      setisRegValid(true);
+    } else {
+      setisRegValid(false);
+
+    }
+  setregNo(e.target.value);
+    
     // if (e.target.value.trim() !== "123") {
     //   setregNoErr("Incorrect Registration Number");
     //   setisRegValid(false)
     //   return;
     // }
     // setisRegValid(true)
-    setregNo(e.target.value);
+  
     // setregNoErr("");
 
 
@@ -120,6 +132,7 @@ export default function Login() {
 
 
   const submitLoginForm = (e) => {
+    dispatch({type:'HANDLELOADING' ,isLoading:true});
     e.preventDefault();
     console.log(regNo, password);
     let obj = {
@@ -139,16 +152,44 @@ export default function Login() {
         }
       ]
     };
-    // axios.post('/student/login', obj).then(res => {
-    //   console.log("res", res);
-    //   if (res.status === 200) {
-    // window.open('/instructions', "_blank", 'height=600,width=400,menubar=no,resizable=no,scrollbars=no,status=no,location=no');
-    // history.push('/instructions');
-    // setOpen(true);
-    // const modalTitle = "Awesome Modal";
-    window.open("/instructions", "_blank", 'menubar=no,left=100,screenX=200,resizable,scrollbars,status');
+   
+     axios.post('cbt/student/login', obj).then(res => {
+      //  console.log("res", res);
+      //  if (res.status === 200) {
+    //  window.open('/instructions', "_blank", 'height=600,width=400,menubar=no,resizable=no,scrollbars=no,status=no,location=no');
+    //  history.push('/test');
+
+    //  setOpen(true);
+    //  let popup = window.open("/test", "popup", "fullscreen");
+    // if (popup.outerWidth < window.screen.availWidth || popup.outerHeight < window.screen.availHeight)
+    // {
+    //   popup.moveTo(0,0);
+    //   popup.resizeTo(window.screen.availWidth, window.screen.availHeight);
     // }
-    // })
+
+      history.push('/test');
+     dispatch({type:'HANDLELOADING' ,isLoading:false});
+     }).catch(err => {
+       console.log("error in login " , err);
+       dispatch({type:'HANDLELOADING' ,isLoading:false});
+       setpasswordErr("Either wrong username or password");
+       setregNoErr("Either wrong username or password");
+     })
+    // window.open("/instructions", "_blank", 'menubar=no,width=1000,height=1000,resizable=no,scrollbars,status,toolbar=yes');
+    //  }
+    //  })
+    // var popup = window.open("/test", "popup", "fullscreen");
+    // if (popup.outerWidth < window.screen.availWidth || popup.outerHeight < window.screen.availHeight)
+    // {
+    //   popup.moveTo(0,0);
+    //   popup.resizeTo(window.screen.availWidth, window.screen.availHeight);
+    // }
+
+  // if (popup.outerWidth < screen.width || popup.outerHeight < screen.height)
+  // {
+  //   popup.moveTo(0,0);
+  //   popup.resizeTo(screen.width, screen.height);
+  // }
   }
 
 
@@ -159,18 +200,21 @@ export default function Login() {
 
   const passChangeEvent = (e) => {
 
-    // if (e.target.value == "") {
-    //   setpasswordErr("Empty Password");
-    //   setisPassValid(false)
-    //   return;
-    // }
+    if (e.target.value == "") {
+      setpasswordErr("Empty Password");
+      setisPassValid(true);
+    } else {
+      setisPassValid(false);
+      
+    }
+    setpassword(e.target.value);
     // if (e.target.value.trim() !== "123") {
     //   setpasswordErr("Incorrect Password");
     //   setisPassValid(false)
     //   return;
     // }
     // setisPassValid(true)
-    setpassword(e.target.value);
+    
     // setpasswordErr("");
 
 
@@ -182,13 +226,7 @@ export default function Login() {
 
     <div className={classes.root}>
 
-      <NavigationPrompt>
-        {({ onConfirm, onCancel }) => {
-          console.log("onConfirm, onCancel", onConfirm, onCancel);
-          return <div>This is probably an anti-pattern but ya know...</div>;
-        }}
-      </NavigationPrompt>
-
+     
 
       {/* header start */}
       {/* <Header/> */}
@@ -232,7 +270,7 @@ export default function Login() {
             />
             <Button
               type="submit"
-              //disabled={(isregValid === true && ispassValid === true) === true ? false : true}
+              disabled={(isregValid === false && ispassValid === false)  ? false : true}
               fullWidth
               onClick={submitLoginForm}
               variant="contained"
@@ -241,23 +279,22 @@ export default function Login() {
             >
               Sign In
           </Button>
-            <a href="/instructions" rel="popup">Here is my link</a>
-            <Grid container>
+            {/* <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body1">
                   Forgot password?
               </Link>
               </Grid>
 
-            </Grid>
+            </Grid> */}
             {/* <Alert severity="error">This is an error alert — check it out!</Alert> */}
 
           </form>
         </div>
 
-        <Dialog fullScreen={fullScreen} onClose={handleClose} aria-labelledby="simple-dialog-title" open={open}>
+        {/* <Dialog fullScreen={fullScreen} onClose={handleClose} aria-labelledby="simple-dialog-title" open={open}>
           <Test />
-        </Dialog>
+        </Dialog> */}
 
 
 
@@ -266,7 +303,7 @@ export default function Login() {
           <Copyright />
         </Box>
       </Container>
-      <Footer />
+      {/* <Footer /> */}
     </div>
 
   )
