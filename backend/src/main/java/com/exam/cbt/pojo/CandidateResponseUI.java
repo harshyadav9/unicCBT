@@ -24,6 +24,10 @@ public class CandidateResponseUI {
 		this.resp = resp;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "CandidateResponseUI [resp=" + resp + "]";
+	}
+
 
 }
