@@ -198,6 +198,11 @@ export default function Login() {
     setOpen(false);
   }
 
+  const clickAdmin = () => {
+
+    history.push('/uploadExcel');
+  }
+
   const passChangeEvent = (e) => {
 
     if (e.target.value == "") {
@@ -278,6 +283,17 @@ export default function Login() {
               className={classes.submit}
             >
               Sign In
+          </Button>
+
+          <Button
+              type="submit"
+              fullWidth
+              onClick={clickAdmin}
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+            >
+              Admin
           </Button>
             {/* <Grid container>
               <Grid item xs>

@@ -191,7 +191,7 @@ function Test(props) {
             let unvisitedArr = [];
 
             for (let i = 0; i < res.data.questionList.Questions.length; i++) {
-                unvisitedArr.push(i);
+                unvisitedArr.push(i+1);
                 arr.push(res.data.questionList.Questions[i]);
                 if (i === 30) {
                     break
@@ -569,6 +569,7 @@ function Test(props) {
     const handleBack = () => {
         setactiveStep(activeStep - 1);
         setCurrentQuestion(questionList[(activeStep - 1)]);
+        checkVisitedQues(activeStep);
     };
 
 
@@ -735,7 +736,7 @@ function Test(props) {
 
             <Grid container className={classes.containerStyle}>
                 <Grid container xs={12} md={8} lg={8} className={classes.leftContainer}>
-                    <DisplayQuesCount totalQues={questionList.length} />
+                    <DisplayQuesCount totalQues={questionList.length}   activeStep={activeStep}/>
                     {/* <Paper square elevation={0} className={classes.header}>
                        <span>
                        <Typography>{questionList && questionList[activeStep] && questionList[activeStep].id && questionList[activeStep].id.questionNo} {questionList && questionList[activeStep] && questionList[activeStep].question}</Typography>
@@ -814,10 +815,10 @@ function Test(props) {
 
                             <Button variant="outlined" onClick={resetoption} color="secondary">Reset</Button>
 
-                            <Button type="button" variant="outlined" color="primary" onClick={reviewAndNext} disabled={activeStep === maxSteps - 1}>
+                            <Button type="button" variant="outlined" color="primary" onClick={reviewAndNext}>
                                 Review & Next
                     </Button>
-                            <Button type="button" variant="outlined" color="primary" onClick={saveAndNext} disabled={activeStep === maxSteps - 1}>
+                            <Button type="button" variant="outlined" color="primary" onClick={saveAndNext}>
                                 Save & Next
                     </Button>
                             <Button color="primary" variant="contained" onClick={submitAnswers}>Submit</Button>

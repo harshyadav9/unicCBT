@@ -43,7 +43,8 @@ export const ExamReducer = (state, action) => {
                 ...state,
 
                 ...{
-                    questions: action.questions
+                    questions: action.questions,
+                    reset:action.reset
                 }
             };
 

@@ -120,7 +120,6 @@ const useStyles = makeStyles((theme) => ({
         padding: '8px 15px 30px',
         height: 'calc(100vh - 420px)',
         overflowY: 'auto',
-
     },
     legendContainer: {
         display: 'flex',
@@ -189,13 +188,13 @@ function ButtonsGroup({ arrLen, questionInfo, changeStep }) {
     // useEffect(() => {
     //     console.log("ButtonsGroup called");
     // },[state.reset]);
-    console.log("questionInfo in ButtonsGroup", questionInfo);
+    // console.log("questionInfo in ButtonsGroup", questionInfo);
     useEffect(() => {
-        console.log("useEffect else called");
+        // console.log("useEffect else called");
         let tempArr = [];
         if (questionInfo.id == "") {
             const createArr = () => {
-                console.log("createArr called");
+                // console.log("createArr called");
                 let obj = {};
                 for (let i = 0; i < arrLen.length; i++) {
                     obj[i + 1] = {};
@@ -231,9 +230,9 @@ function ButtonsGroup({ arrLen, questionInfo, changeStep }) {
 
     const updateButtons = (questionInfo) => {
       
-        console.log("questionInfo called",questionInfo);
+        // console.log("questionInfo called",questionInfo);
         let buttonState = { ...newArr };
-        console.log("buttonState called",buttonState);
+        // console.log("buttonState called",buttonState);
         // if (!buttonState[questionInfo.id][questionInfo.type] === true){
             buttonState[questionInfo.id]['answered'] = false;
             buttonState[questionInfo.id]['default'] = false;
@@ -294,7 +293,6 @@ function ButtonsGroup({ arrLen, questionInfo, changeStep }) {
     // }
 
     // console.log("newArr", newArr);
-
 
     return (
         <>

@@ -16,6 +16,7 @@ import Footer from '../footer/footer';
 import Header from '../header/header';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
+
 import Snackbar from '@material-ui/core/Snackbar';
 import Test from '../Test'; import Modal from '@material-ui/core/Modal';
 import Dialog from '@material-ui/core/Dialog';
@@ -197,6 +198,11 @@ export default function Login() {
     setOpen(false);
   }
 
+  const clickAdmin = () => {
+
+    history.push('/uploadExcel');
+  }
+
   const passChangeEvent = (e) => {
 
     if (e.target.value == "") {
@@ -277,6 +283,17 @@ export default function Login() {
               className={classes.submit}
             >
               Sign In
+          </Button>
+
+          <Button
+              type="submit"
+              fullWidth
+              onClick={clickAdmin}
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+            >
+              Admin
           </Button>
             {/* <Grid container>
               <Grid item xs>

@@ -148,7 +148,7 @@ function RadioButtonsGroup(props) {
                     localStorage.setItem('reviewQuestionNo', JSON.stringify(reviewQuestionNo));
                 }
                 // dispatch({ type: 'RESET', reset: false });
-                dispatch({type:'ADD_QUESTION_VALUES' , questions:obj});
+                dispatch({type:'ADD_QUESTION_VALUES' , questions:obj , reset:false});
             }
             // localStorage.setItem('isReset',JSON.stringify({'reset':false}));
            
@@ -165,7 +165,7 @@ function RadioButtonsGroup(props) {
             radio: eventval
         }));
         let obj = {...state.questions , ...{[objective.id.questionNo]:eventval}};
-         dispatch({type:'ADD_QUESTION_VALUES' , questions:obj});
+         dispatch({type:'ADD_QUESTION_VALUES' , questions:obj , reset:false});
         // this.setState(() => ({
         //     radio:event
         // }))
@@ -339,7 +339,7 @@ function RadioButtonsGroup(props) {
        }
 
         let obj = {...state.questions , ...{[objective.id.questionNo]:arr}};
-        dispatch({type:'ADD_QUESTION_VALUES' , questions:obj});
+        dispatch({type:'ADD_QUESTION_VALUES' , questions:obj , reset:false});
         // this.setState(prevState => ({
         //     checkbox: prevState.checkbox.set(name, isChecked)
         // }));
