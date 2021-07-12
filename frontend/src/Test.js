@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import Button from '@material-ui/core/Button';
@@ -21,8 +21,10 @@ import DisplayQuesCount from './buttonsGroup/displayQuesCount';
 import {
     Divider,
     AppBar,
-    Toolbar
+    Toolbar,
+    IconButton
 } from '@material-ui/core';
+
 
 
 const useStyles = theme => ({
@@ -45,7 +47,7 @@ const useStyles = theme => ({
     },
     Toolbar: {
         justifyContent: 'center',
-        gridGap: 20
+        gridGap: 34
     },
     Footer: {
         background: 'transparent',
@@ -129,6 +131,9 @@ const useStyles = theme => ({
             minWidth: '50px'
         }
     },
+    rightIcon: {
+        height: 40
+    },
     legendContainer: {
         display: 'flex',
         flexWrap: 'wrap',
@@ -161,11 +166,13 @@ const useStyles = theme => ({
 
 function Test(props) {
     const { state, dispatch } = useContext(ExamDataContext);
-    console.log("state,dispatch", state, dispatch);
+    // console.log("state,dispatch", state, dispatch);
     const [activeStep, setactiveStep] = useState(0);
     const history = useHistory();
+    const [currentQuestion, setCurrentQuestion] = useState({});
     const [finalData, setfinalData] = useState([]);
-    const maxSteps = Questions.length;
+    const [maxSteps, setMaxSteps] = useState(0);
+    // const maxSteps = Questions.length;
     const { classes, theme } = props;
     let quesNo = '';
     var hidden, visibilityChange;
@@ -174,7 +181,9 @@ function Test(props) {
     const [questionList, setquestionList] = useState([]);
     const [resetData, setResetData] = useState('');
     const [questionNo, setquestionNo] = useState({ id: '', type: 'unanswered' });
+    console.log("Tets component loaded");
     useEffect(() => {
+        console.log("test getting called");
         dispatch({ type: 'HANDLELOADING', isLoading: true });
         let keys = {};
         axios.get('cbt/student/getQuestions/1').then(res => {
@@ -184,16 +193,19 @@ function Test(props) {
             for (let i = 0; i < res.data.questionList.Questions.length; i++) {
                 unvisitedArr.push(i);
                 arr.push(res.data.questionList.Questions[i]);
-                if (i === 200) {
+                if (i === 30) {
                     break
                 }
             }
-            // console.log("res.data.questionList.Questions",arr);
-            // setquestionList(res.data.questionList.Questions);
+            // console.log("res.data.questionList.Questions",res.data.questionList.Questions);
             setquestionList(arr);
+            // console.log("arr.length", arr.length);
+            setMaxSteps(arr.length);
+            setCurrentQuestion(res.data.questionList.Questions[activeStep]);
+            // setquestionList(arr);
             dispatch({
                 type: 'ADDINFO', hours: res.data.durationHr, minutes: res.data.durationMin, photo: res.data.photo, name: res.data.instituteName,
-                candidateName: res.data.candidateName, registrationNo: res.data.registrationNo, isLoading: false
+                candidateName: res.data.candidateName, registrationNo: res.data.registrationNo, isLoading: false,time:{hours:res.data.durationHr,minutes:res.data.durationMin,seconds:60}
             });
             // populateResultSet();
             localStorage.setItem('unvisitedQues', JSON.stringify(unvisitedArr));
@@ -291,36 +303,36 @@ function Test(props) {
 
     }
 
-    const saveQuestion = (e) => {
-        console.log(e);
-        console.log("quesNo", quesNo);
-        // if (e == "save")
-        //     setquestionNo({ id: 1, type: 'answered' });
-        // else {
-        //     if (JSON.parse(localStorage.getItem('questionNo')) === null)
-        //         setquestionNo({ id: 1, type: 'reviewU' });
-        //     else
-        //         setquestionNo({ id: 1, type: 'reviewA' });
-        // }
+    // const saveQuestion = (e) => {
+    //     console.log(e);
+    //     console.log("quesNo", quesNo);
+    //     // if (e == "save")
+    //     //     setquestionNo({ id: 1, type: 'answered' });
+    //     // else {
+    //     //     if (JSON.parse(localStorage.getItem('questionNo')) === null)
+    //     //         setquestionNo({ id: 1, type: 'reviewU' });
+    //     //     else
+    //     //         setquestionNo({ id: 1, type: 'reviewA' });
+    //     // }
 
-        if (JSON.parse(localStorage.getItem('questionNo')) === null) {
-            if (e == "save") {
-                setquestionNo({ id: 1, type: 'unanswered' });
-            } else {
-                setquestionNo({ id: 1, type: 'reviewU' });
-            }
-        } else {
-            if (e == "save") {
-                setquestionNo({ id: 1, type: 'answered' });
-            } else {
-                setquestionNo({ id: 1, type: 'reviewA' });
-            }
+    //     if (JSON.parse(localStorage.getItem('questionNo')) === null) {
+    //         if (e == "save") {
+    //             setquestionNo({ id: 1, type: 'unanswered' });
+    //         } else {
+    //             setquestionNo({ id: 1, type: 'reviewU' });
+    //         }
+    //     } else {
+    //         if (e == "save") {
+    //             setquestionNo({ id: 1, type: 'answered' });
+    //         } else {
+    //             setquestionNo({ id: 1, type: 'reviewA' });
+    //         }
 
-        }
+    //     }
 
 
 
-    }
+    // }
 
 
     const submitAnswers = () => {
@@ -335,44 +347,44 @@ function Test(props) {
         console.log("obj", obj);
     }
 
-    const reviewQuestion = () => {
-        let reviewquestions;
-        if ((JSON.parse(localStorage.getItem('reviewQuestionNo'))) === null) {
+    // const reviewQuestion = () => {
+    //     let reviewquestions;
+    //     if ((JSON.parse(localStorage.getItem('reviewQuestionNo'))) === null) {
 
-            localStorage.setItem('reviewQuestionNo', JSON.stringify({ 'reviewU': [], 'reviewA': [] }));
-        }
-        reviewquestions = JSON.parse(localStorage.getItem('reviewQuestionNo'));
+    //         localStorage.setItem('reviewQuestionNo', JSON.stringify({ 'reviewU': [], 'reviewA': [] }));
+    //     }
+    //     reviewquestions = JSON.parse(localStorage.getItem('reviewQuestionNo'));
 
-        console.log("activeStep", activeStep)
-        let activeQues = activeStep + 1;
-        let questions = JSON.parse(localStorage.getItem('questionNo'));
-        console.log("reviewquestions", reviewquestions);
-        if (questions && questions.indexOf(activeQues) > -1) {
-            // if (JSON.parse(localStorage.getItem('questionNo')) === question) {
-            if (reviewquestions && reviewquestions['reviewA'].indexOf(activeQues) == -1) {
+    //     console.log("activeStep", activeStep)
+    //     let activeQues = activeStep + 1;
+    //     let questions = JSON.parse(localStorage.getItem('questionNo'));
+    //     console.log("reviewquestions", reviewquestions);
+    //     if (questions && questions.indexOf(activeQues) > -1) {
+    //         // if (JSON.parse(localStorage.getItem('questionNo')) === question) {
+    //         if (reviewquestions && reviewquestions['reviewA'].indexOf(activeQues) == -1) {
 
-                reviewquestions['reviewA'].push(activeQues);
-                if (reviewquestions['reviewU'].indexOf(activeQues) > -1) {
-                    reviewquestions['reviewU'].splice(reviewquestions['reviewU'].indexOf(activeQues), 1);
-                }
-            }
-
-
-            setquestionNo({ id: activeQues, type: 'reviewA' });
-        } else {
-            if (reviewquestions && reviewquestions['reviewU'].indexOf(activeQues) == -1) {
-                reviewquestions['reviewU'].push(activeQues);
-                if (reviewquestions['reviewA'].indexOf(activeQues) > -1) {
-                    reviewquestions['reviewA'].splice(reviewquestions['reviewA'].indexOf(activeQues), 1);
-                }
-            }
+    //             reviewquestions['reviewA'].push(activeQues);
+    //             if (reviewquestions['reviewU'].indexOf(activeQues) > -1) {
+    //                 reviewquestions['reviewU'].splice(reviewquestions['reviewU'].indexOf(activeQues), 1);
+    //             }
+    //         }
 
 
-            setquestionNo({ id: activeQues, type: 'reviewU' });
-        }
-        localStorage.setItem('reviewQuestionNo', JSON.stringify(reviewquestions));
-        setactiveStep(activeStep + 1);
-    }
+    //         setquestionNo({ id: activeQues, type: 'reviewA' });
+    //     } else {
+    //         if (reviewquestions && reviewquestions['reviewU'].indexOf(activeQues) == -1) {
+    //             reviewquestions['reviewU'].push(activeQues);
+    //             if (reviewquestions['reviewA'].indexOf(activeQues) > -1) {
+    //                 reviewquestions['reviewA'].splice(reviewquestions['reviewA'].indexOf(activeQues), 1);
+    //             }
+    //         }
+
+
+    //         setquestionNo({ id: activeQues, type: 'reviewU' });
+    //     }
+    //     localStorage.setItem('reviewQuestionNo', JSON.stringify(reviewquestions));
+    //     setactiveStep(activeStep + 1);
+    // }
 
 
 
@@ -388,12 +400,13 @@ function Test(props) {
     }
 
     const changeActiveStep = (key) => {
-        console.log("key", key);
+        // console.log("key", key);
         checkVisitedQues(key);
+        setCurrentQuestion(questionList[key]);
         setactiveStep(key);
     }
 
-    const reviewAndNext = () => {
+    const reviewAndNext = useCallback(() => {
         let activeQues = activeStep + 1;
         checkVisitedQues(activeStep);
         let questions = JSON.parse(localStorage.getItem('questionNo'));
@@ -447,10 +460,41 @@ function Test(props) {
             //         setquestionNo({ id: activeQues, type: 'reviewU' });
             //     }
             // }
+            // }
         }
+        setCurrentQuestion(questionList[(activeStep + 1)]);
         setactiveStep(activeStep + 1);
-    }
 
+    }, [activeStep]);
+    // () => {
+
+    // }
+
+
+    // const saveAndNext =  useCallback(() => {
+    //     let activeQues = activeStep + 1;
+    //     checkVisitedQues(activeStep);
+    //     setCurrentQuestion(questionList[activeQues]);
+    //     let questions = JSON.parse(localStorage.getItem('questionNo'));
+    //     let reviewQues = JSON.parse(localStorage.getItem('reviewQuestionNo'));
+    //     if (questions && questions.indexOf(activeQues) > -1) {
+    //         setquestionNo({ id: activeQues, type: 'answered' });
+    //     }
+    //     if (reviewQues !== null) {
+    //         let obj = reviewQues;
+    //         if (obj.reviewA.indexOf(activeQues) > -1) {
+    //             obj.reviewA.splice(obj.reviewA.indexOf(activeQues), 1);
+    //         }
+
+    //         if (obj.reviewU.indexOf(activeQues) > -1) {
+    //             obj.reviewU.splice(obj.reviewU.indexOf(activeQues), 1);
+    //         }
+
+    //         console.log("obj", obj);
+    //         localStorage.setItem('reviewQuestionNo', JSON.stringify(obj));
+    //     }
+    //     setactiveStep(activeStep + 1);
+    // },[activeStep]);
 
     const saveAndNext = () => {
         let activeQues = activeStep + 1;
@@ -473,18 +517,23 @@ function Test(props) {
             console.log("obj", obj);
             localStorage.setItem('reviewQuestionNo', JSON.stringify(obj));
         }
+        setCurrentQuestion(questionList[(activeStep + 1)]);
         setactiveStep(activeStep + 1);
     }
 
     const handleNext = () => {
         checkVisitedQues(activeStep);
+        setCurrentQuestion(questionList[(activeStep + 1)]);
         setactiveStep(activeStep + 1);
     };
 
 
     const resetoption = () => {
 
-        dispatch({type:'RESET',reset:true});
+        // dispatch({type:'RESET',reset:true});
+        
+        localStorage.setItem('isReset', JSON.stringify({ 'reset': true }));
+
         // for (let i = 0; i < questionList.length; i++) {
         //     if (questionList[i].id.questionNo === (activeStep + 1)) {
         //         if (questionList[i].multiple === 'N') {
@@ -513,10 +562,13 @@ function Test(props) {
             localStorage.setItem('reviewQuestionNo', JSON.stringify(reviewQuestionNo));
         }
         setquestionNo({ id: (activeStep + 1), type: 'default' });
+        setactiveStep(activeStep);
+        dispatch({ type: 'RESET', reset: true });
     }
 
     const handleBack = () => {
         setactiveStep(activeStep - 1);
+        setCurrentQuestion(questionList[(activeStep - 1)]);
     };
 
 
@@ -692,34 +744,44 @@ function Test(props) {
                     {/* <Prompt  message="Are you sure you want to logout ?" /> */}
                     {/* {Questions.map(question => ( */}
 
-                    <div className={classes.swipableViews}>
+
+
+                    <div>
+
+                        {questionList && (<div>
+                            <RadioButtonsGroup
+                                // isReset={resetData}
+                                activeStep={activeStep}
+                                objective={currentQuestion}
+                            // setReset={(isReset) => { resetValue(isReset) }}
+                            // reset={resetData}
+
+                            // response={(event) => response(event)}
+                            // checkQuestionNo={(quesNo) => checkQuestionNo(quesNo)}
+                            />
+                        </div>)}
+
+                    </div>
+                    {/* <div className={classes.swipableViews}>
                         <SwipeableViews
                             axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
                             index={activeStep}
                             key={activeStep}
                             onChangeIndex={handleStepChange}
                             enableMouseEvents
-                        >
-                            {/* <Objective
-                            objective={Questions[1].obj}
-                            key={Questions[1].id}
-                            response={(quesNo) => response(quesNo)}
-                            checkQuestionNo={(quesNo) => checkQuestionNo(quesNo)} /> */}
-                            {/* {console.log(questionList)} */}
+                        >                           
                             {questionList && questionList.map(question => (
-                                <RadioButtonsGroup
-                                    // isReset={resetData}
+                                <div key={question.id.questionNo}>
+                                     <RadioButtonsGroup
                                     activeStep={activeStep}
                                     objective={question}
-                                    setReset={(isReset) => { resetValue(isReset) }}
-                                    reset={resetData}
-                                    key={question.id.questionNo}
-                                    // response={(event) => response(event)}
-                                    checkQuestionNo={(quesNo) => checkQuestionNo(quesNo)} />
+                                     />
+                                </div>
+                               
                             ))}
 
                         </SwipeableViews>
-                    </div>
+                    </div> */}
 
                     {/* ))} */}
                     {/* <MobileStepper
@@ -745,7 +807,10 @@ function Test(props) {
                     <Divider />
                     <AppBar position="static" className={classes.Footer}>
                         <Toolbar className={classes.Toolbar}>
-                            <Button variant="outlined" onClick={handleBack} endIcon={<ArrowBackIosIcon></ArrowBackIosIcon>} disabled={activeStep === 0}></Button>
+                            <IconButton aria-label="left arrow" disabled={activeStep === 0} onClick={handleBack}>
+                                <ArrowBackIosIcon></ArrowBackIosIcon>
+                            </IconButton>
+                            {/* <Button variant="outlined" onClick={handleBack} endIcon={<ArrowBackIosIcon></ArrowBackIosIcon>} disabled={activeStep === 0}></Button> */}
 
                             <Button variant="outlined" onClick={resetoption} color="secondary">Reset</Button>
 
@@ -756,8 +821,10 @@ function Test(props) {
                                 Save & Next
                     </Button>
                             <Button color="primary" variant="contained" onClick={submitAnswers}>Submit</Button>
-                            <Button color="primary" onClick={handleNext} endIcon={<ArrowForwardIosIcon></ArrowForwardIosIcon>} disabled={activeStep === maxSteps - 1} variant="contained"></Button>
-
+                            {/* <Button color="primary" className={classes.rightIcon} onClick={handleNext} endIcon={<ArrowForwardIosIcon></ArrowForwardIosIcon>} disabled={activeStep === maxSteps - 1} variant="contained"></Button> */}
+                            <IconButton aria-label="right arrow" disabled={activeStep === maxSteps - 1} onClick={handleNext}>
+                                <ArrowForwardIosIcon></ArrowForwardIosIcon>
+                            </IconButton>
                         </Toolbar>
                     </AppBar>
 
@@ -817,7 +884,7 @@ function Test(props) {
                 </Grid>
                 <Grid item xs={12} md={4} lg={3} className={classes.rightContainer}>
 
-                    <ButtonsGroup arrLen={questionList} questionInfo={questionNo} totalQues={questionList.length} changeStep={changeActiveStep} />
+                    <ButtonsGroup arrLen={questionList} questionInfo={questionNo} changeStep={changeActiveStep} />
 
 
                 </Grid>

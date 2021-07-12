@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import Button from '@material-ui/core/Button';
@@ -9,8 +9,10 @@ import Avatar from '@material-ui/core/Avatar';
 import Paper from '@material-ui/core/Paper';
 import { green, red, grey } from '@material-ui/core/colors';
 import {
-    Fab, Box , Typography,Divider} from '@material-ui/core';
+    Fab, Box, Typography, Divider
+} from '@material-ui/core';
 import Timer from '../Timer';
+import { ExamDataContext } from '../context/ExamDataContext';
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1
@@ -67,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
         margin: '12px',
         borderRadius: '50%',
         padding: '14px 0px',
-        color: theme.palette.getContrastText(green[400]),
+        color: '#fff',
         backgroundColor: green[400],
         "&:hover": {
             backgroundColor: green[400]
@@ -77,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
         margin: '12px',
         borderRadius: '50%',
         padding: '14px 0px',
-        color: theme.palette.getContrastText(red[200]),
+        color: '#fff',
         backgroundColor: red[200],
         "&:hover": {
             backgroundColor: red[200],
@@ -118,7 +120,6 @@ const useStyles = makeStyles((theme) => ({
         padding: '8px 15px 30px',
         height: 'calc(100vh - 420px)',
         overflowY: 'auto',
-        
     },
     legendContainer: {
         display: 'flex',
@@ -136,29 +137,29 @@ const useStyles = makeStyles((theme) => ({
         height: 'auto'
 
     },
-    buttonCls:{
+    buttonCls: {
         marginTop: '35px'
     },
-    answeredSample: {
-        color: theme.palette.getContrastText(green[900]),
-        backgroundColor: green[900]
-    },
-    unansweredSample: {
-        color: theme.palette.getContrastText(red[500]),
-        backgroundColor: red[500]
-    },
-    reviewansweredSample: {
-        color: theme.palette.getContrastText(green[400]),
-        backgroundColor: green[400]
-    },
-    reviewunansweredSample: {
-        color: theme.palette.getContrastText(red[200]),
-        backgroundColor: red[200]
-    },
-    unvisitedSample: {
-        color: theme.palette.getContrastText(grey[500]),
-        backgroundColor: grey[500]
-    },
+    // answeredSample: {
+    //     color: theme.palette.getContrastText(green[900]),
+    //     backgroundColor: green[900]
+    // },
+    // unansweredSample: {
+    //     color: theme.palette.getContrastText(red[500]),
+    //     backgroundColor: red[500]
+    // },
+    // reviewansweredSample: {
+    //     color: theme.palette.getContrastText(green[400]),
+    //     backgroundColor: green[400]
+    // },
+    // reviewunansweredSample: {
+    //     color: theme.palette.getContrastText(red[200]),
+    //     backgroundColor: red[200]
+    // },
+    // unvisitedSample: {
+    //     color: theme.palette.getContrastText(grey[500]),
+    //     backgroundColor: grey[500]
+    // },
     buttonGroupText: {
         lineHeight: '12px',
         fontSize: ' 12px',
@@ -172,32 +173,49 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
+function ButtonsGroup({ arrLen, questionInfo, changeStep }) {
 
 
+
+    const classes = useStyles();
+    // const [itemClicked, setitemClicked] = useState(-1);
+    // const [answersCount, setanswersCount] = useState({ unanswered: 0, answered: 0, reviewA: 0, reviewU: 0 });
+    const [newArr, setnewArr] = useState({});
+
+    const { state } = useContext(ExamDataContext);
     // console.log("ButtonsGroup*******", arrLen, questionInfo, totalQues, changeStep);
 
+    // useEffect(() => {
+    //     console.log("ButtonsGroup called");
+    // },[state.reset]);
+    console.log("questionInfo in ButtonsGroup", questionInfo);
     useEffect(() => {
-        // console.log("useEffect");
+        console.log("useEffect else called");
         let tempArr = [];
         if (questionInfo.id == "") {
             const createArr = () => {
+                console.log("createArr called");
+                let obj = {};
                 for (let i = 0; i < arrLen.length; i++) {
-                    let obj = {};
-                    obj['answered'] = false;
-                    obj['default'] = true;
-                    obj['unanswered'] = false;
-                    obj['reviewA'] = false;
-                    obj['reviewU'] = false;
-                    obj['id'] = i + 1;
-                    tempArr.push(obj);
+                    obj[i + 1] = {};
+                    obj[i + 1]['answered'] = false;
+                    obj[i + 1]['default'] = true;
+                    obj[i + 1]['unanswered'] = false;
+                    obj[i + 1]['reviewA'] = false;
+                    obj[i + 1]['reviewU'] = false;
+                    obj[i + 1]['id'] = i + 1;
+                    // tempArr.push(obj);
 
                 }
                 // console.log("newArr123", [...newArr, ...tempArr])
-                setnewArr(prevArrValues => ([...prevArrValues, ...tempArr]))
+                // setnewArr(prevArrValues => (...prevArrValues , ...obj));
+                setnewArr(prevState => ({
+                    ...prevState,
+                    ...obj
+                }));
                 // setnewArr([...newArr, ...tempArr]);
             }
-            if (newArr.length == 0) {
+            if (Object.keys(newArr).length == 0) {
                 createArr();
             }
 
@@ -206,36 +224,49 @@ function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
         }
 
 
-    }, [arrLen, changeStep]);
+    }, [arrLen,questionInfo]);
 
 
 
     const updateButtons = (questionInfo) => {
-        let obj = {};
-        setnewArr(state => {
-            // console.log("state", state);
-            const newArr = state.map(item => {
-                if (item.id == questionInfo.id) {
-                    item.answered = false;
-                    item.default = false;
-                    item.unanswered = false;
-                    item.reviewA = false;
-                    item.reviewU = false;
-                    item[questionInfo.type] = true;
-                    item['id'] = questionInfo.id;
+      
+        console.log("questionInfo called",questionInfo);
+        let buttonState = { ...newArr };
+        console.log("buttonState called",buttonState);
+        // if (!buttonState[questionInfo.id][questionInfo.type] === true){
+            buttonState[questionInfo.id]['answered'] = false;
+            buttonState[questionInfo.id]['default'] = false;
+            buttonState[questionInfo.id]['unanswered'] = false;
+            buttonState[questionInfo.id]['reviewA'] = false;
+            buttonState[questionInfo.id]['reviewU'] = false;
+            buttonState[questionInfo.id][questionInfo.type] = true;
+        // }
+       
 
-                }
-                return item;
-            })
-            return newArr;
-        })
-        // setnewArr([...newArr, obj]);
+
+        setnewArr(prevState => ({
+            ...prevState,
+            ...buttonState
+        }));
+        // setnewArr(state => {
+        //     const newArr = state.map(item => {
+        //         if (item.id == questionInfo.id) {
+        //             item.answered = false;
+        //             item.default = false;
+        //             item.unanswered = false;
+        //             item.reviewA = false;
+        //             item.reviewU = false;
+        //             item[questionInfo.type] = true;
+        //             item['id'] = questionInfo.id;
+
+        //         }
+        //         return item;
+        //     })
+        //     return newArr;
+        // })
     };
 
-    const classes = useStyles();
-    const [itemClicked, setitemClicked] = useState(-1);
-    // const [answersCount, setanswersCount] = useState({ unanswered: 0, answered: 0, reviewA: 0, reviewU: 0 });
-    const [newArr, setnewArr] = useState([]);
+
     // let unansweredQuestions = totalQues;
     // let answeredQuestions = 0;
     // let reviewUnQuestions = 0;
@@ -263,10 +294,6 @@ function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
 
     // console.log("newArr", newArr);
 
-    const clicked = (val) => {
-        let clickedVal = parseInt(val.target.innerText.trim() - 1);
-        setitemClicked(clickedVal);
-    }
     return (
         <>
             {/* <Grid container className={classes.container}> */}
@@ -283,7 +310,7 @@ function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
                         }
                     </Card> */}
 
-                    <Timer/>
+            <Timer hours={state.time.hours}  minutes={state.time.minutes}  seconds={state.time.seconds} />
             {/* <div className={classes.legendContainer}>
                 <div className={classes.legends} style={{ width: '45%' }}>
                   
@@ -343,29 +370,33 @@ function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
                 <Divider />
                 <Box component="div" className={classes.buttonContainer}>
                     {
-                        newArr.map((val, key) => {
+                        Object.keys(newArr).map((val, key) => {
+                            // newArr.map((val, key) => {
                             // console.log(val, key);
                             return (
-                                <Fab key={key} onClick={() => { changeStep(key) }} className={classNames({
-                                    [classes.buttonDefault]: (val.default === true ? true : false),
-                                    [classes.unansweredColor]: (val.unanswered === true ? true : false),
-                                    [classes.answeredColor]: (val.answered === true ? true : false),
-                                    [classes.reviewAnsweredColor]: (val.reviewA === true ? true : false),
-                                    [classes.reviewUnAnsweredColor]: (val.reviewU === true ? true : false)
-                                })} variant="contained" color="primary">
-                                    {key + 1}
-                                </Fab>)
+                                <div key={key}>
+                                    <Fab onClick={() => { changeStep(key) }} className={classNames({
+                                        [classes.buttonDefault]: (newArr[val].default === true ? true : false),
+                                        [classes.unansweredColor]: (newArr[val].unanswered === true ? true : false),
+                                        [classes.answeredColor]: (newArr[val].answered === true ? true : false),
+                                        [classes.reviewAnsweredColor]: (newArr[val].reviewA === true ? true : false),
+                                        [classes.reviewUnAnsweredColor]: (newArr[val].reviewU === true ? true : false)
+                                    })} variant="contained" color="primary">
+                                        {key + 1}
+                                    </Fab>
+                                </div>
+                            )
                         })
                     }
                 </Box>
                 <Divider />
                 <Typography variant="h6" gutterBottom className={classes.footer} >
-           
-           </Typography>
+
+                </Typography>
             </Paper>
-            
+
         </>
     )
 }
 
-export default ButtonsGroup
+export default React.memo(ButtonsGroup); 

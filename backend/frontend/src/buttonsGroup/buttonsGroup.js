@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import Button from '@material-ui/core/Button';
@@ -6,10 +6,13 @@ import classNames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
 import Brightness1Icon from '@material-ui/icons/Brightness1';
 import Avatar from '@material-ui/core/Avatar';
-import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import { green, red, grey } from '@material-ui/core/colors';
-
+import {
+    Fab, Box, Typography, Divider
+} from '@material-ui/core';
+import Timer from '../Timer';
+import { ExamDataContext } from '../context/ExamDataContext';
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1
@@ -53,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
         // margin: '12px',
         borderRadius: '50%',
         padding: '14px 0px',
+        margin: '12px',
         color: theme.palette.getContrastText(green[900]),
         backgroundColor: green[900],
         // color: '#fff',
@@ -65,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
         margin: '12px',
         borderRadius: '50%',
         padding: '14px 0px',
-        color: theme.palette.getContrastText(green[400]),
+        color: '#fff',
         backgroundColor: green[400],
         "&:hover": {
             backgroundColor: green[400]
@@ -75,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
         margin: '12px',
         borderRadius: '50%',
         padding: '14px 0px',
-        color: theme.palette.getContrastText(red[200]),
+        color: '#fff',
         backgroundColor: red[200],
         "&:hover": {
             backgroundColor: red[200],
@@ -93,22 +97,30 @@ const useStyles = makeStyles((theme) => ({
     },
 
     buttonContainer: {
-        display: 'flex',
-        width: 'calc(100% - 17%)',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginLeft: '30px',
-        maxHeight: '600px',
-        overflowY: 'scroll',
-        boxShadow: '0px 4px 13px -1px rgba(0,0,0,0.2), 0px 1px 10px 0px rgba(0,0,0,0.14), 0px 1px 20px 0px rgba(0,0,0,0.19)',
-        borderRadius: '4px',
-        border: '2px solid  rgba(0,0,0,0.2)',
-        padding: '11px',
-        "& button": {
-            margin: '5px',
+        // display: 'flex',
+        // width: 'calc(100% - 17%)',
+        // flexDirection: 'row',
+        // flexWrap: 'wrap',
+        // marginLeft: '30px',
+        // maxHeight: '600px',
+        // overflowY: 'scroll',
+        // boxShadow: '0px 4px 13px -1px rgba(0,0,0,0.2), 0px 1px 10px 0px rgba(0,0,0,0.14), 0px 1px 20px 0px rgba(0,0,0,0.19)',
+        // borderRadius: '4px',
+        // border: '2px solid  rgba(0,0,0,0.2)',
+        // padding: '11px',
+        // "& button": {
+        //     margin: '5px',
+        //     height: '43px',
+        //     minWidth: '41px'
+        // }
+        display: 'grid',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        placeContent: 'start',
+        justifyItems: 'center',
+        padding: '8px 15px 30px',
+        height: 'calc(100vh - 420px)',
+        overflowY: 'auto',
 
-            minWidth: '50px'
-        }
     },
     legendContainer: {
         display: 'flex',
@@ -122,136 +134,168 @@ const useStyles = makeStyles((theme) => ({
         height: '40px',
         boxShadow: '0px 4px 13px -1px rgba(0,0,0,0.2), 0px 1px 10px 0px rgba(0,0,0,0.14), 0px 1px 20px 0px rgba(0,0,0,0.19)',
         borderRadius: '7px',
-        margin: '4px'
+        margin: '4px',
+        height: 'auto'
 
     },
-    answeredSample: {
-        color: theme.palette.getContrastText(green[900]),
-        backgroundColor: green[900]
+    buttonCls: {
+        marginTop: '35px'
     },
-    unansweredSample: {
-        color: theme.palette.getContrastText(red[500]),
-        backgroundColor: red[500]
+    // answeredSample: {
+    //     color: theme.palette.getContrastText(green[900]),
+    //     backgroundColor: green[900]
+    // },
+    // unansweredSample: {
+    //     color: theme.palette.getContrastText(red[500]),
+    //     backgroundColor: red[500]
+    // },
+    // reviewansweredSample: {
+    //     color: theme.palette.getContrastText(green[400]),
+    //     backgroundColor: green[400]
+    // },
+    // reviewunansweredSample: {
+    //     color: theme.palette.getContrastText(red[200]),
+    //     backgroundColor: red[200]
+    // },
+    // unvisitedSample: {
+    //     color: theme.palette.getContrastText(grey[500]),
+    //     backgroundColor: grey[500]
+    // },
+    buttonGroupText: {
+        lineHeight: '12px',
+        fontSize: ' 12px',
+        fontWeight: 'bold'
     },
-    reviewansweredSample: {
-        color: theme.palette.getContrastText(green[400]),
-        backgroundColor: green[400]
-    },
-    reviewunansweredSample: {
-        color: theme.palette.getContrastText(red[200]),
-        backgroundColor: red[200]
-    },
-    unvisitedSample: {
-        color: theme.palette.getContrastText(grey[500]),
-        backgroundColor: grey[500]
+    footer: {
+        padding: 10,
+        display: 'flex',
+        justifyContent: 'space-between'
     }
 }));
 
 
-function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
+function ButtonsGroup({ arrLen, questionInfo, changeStep }) {
 
 
-    console.log("ButtonsGroup*******", arrLen, questionInfo, totalQues, changeStep);
 
+    const classes = useStyles();
+    // const [itemClicked, setitemClicked] = useState(-1);
+    // const [answersCount, setanswersCount] = useState({ unanswered: 0, answered: 0, reviewA: 0, reviewU: 0 });
+    const [newArr, setnewArr] = useState({});
+
+    const { state } = useContext(ExamDataContext);
+    // console.log("ButtonsGroup*******", arrLen, questionInfo, totalQues, changeStep);
+
+    // useEffect(() => {
+    //     console.log("ButtonsGroup called");
+    // },[state.reset]);
+    console.log("questionInfo in ButtonsGroup", questionInfo);
     useEffect(() => {
-        console.log("useEffect");
+        console.log("useEffect else called");
         let tempArr = [];
         if (questionInfo.id == "") {
             const createArr = () => {
+                console.log("createArr called");
+                let obj = {};
                 for (let i = 0; i < arrLen.length; i++) {
-                    let obj = {};
-                    obj['answered'] = false;
-                    obj['default'] = true;
-                    obj['unanswered'] = false;
-                    obj['reviewA'] = false;
-                    obj['reviewU'] = false;
-                    obj['id'] = i + 1;
-                    tempArr.push(obj);
+                    obj[i + 1] = {};
+                    obj[i + 1]['answered'] = false;
+                    obj[i + 1]['default'] = true;
+                    obj[i + 1]['unanswered'] = false;
+                    obj[i + 1]['reviewA'] = false;
+                    obj[i + 1]['reviewU'] = false;
+                    obj[i + 1]['id'] = i + 1;
+                    // tempArr.push(obj);
 
                 }
-                console.log("newArr123", [...newArr, ...tempArr])
-                setnewArr(prevArrValues => ([...prevArrValues, ...tempArr]))
+                // console.log("newArr123", [...newArr, ...tempArr])
+                // setnewArr(prevArrValues => (...prevArrValues , ...obj));
+                setnewArr(prevState => ({
+                    ...prevState,
+                    ...obj
+                }));
                 // setnewArr([...newArr, ...tempArr]);
             }
-            createArr();
+            if (Object.keys(newArr).length == 0) {
+                createArr();
+            }
+
         } else {
             updateButtons(questionInfo);
         }
 
 
-    }, [arrLen]);
+    }, [arrLen,questionInfo]);
 
 
 
     const updateButtons = (questionInfo) => {
-        let obj = {};
-        // for (let i = 0; i < newArr.length; i++) {
-        //     if (newArr[i]['id'] == id) {
-
-        //         obj['answered'] = true;
-        //         obj['unanswered'] = false;
-        //         obj['review'] = false;
-        //         obj['id'] = id;
-
-        //     }
-
-        //     // tempArr.push(obj);
-
+      
+        console.log("questionInfo called",questionInfo);
+        let buttonState = { ...newArr };
+        console.log("buttonState called",buttonState);
+        // if (!buttonState[questionInfo.id][questionInfo.type] === true){
+            buttonState[questionInfo.id]['answered'] = false;
+            buttonState[questionInfo.id]['default'] = false;
+            buttonState[questionInfo.id]['unanswered'] = false;
+            buttonState[questionInfo.id]['reviewA'] = false;
+            buttonState[questionInfo.id]['reviewU'] = false;
+            buttonState[questionInfo.id][questionInfo.type] = true;
         // }
-        setnewArr(state => {
-            console.log("state", state);
-            const newArr = state.map(item => {
-                if (item.id == questionInfo.id) {
-                    item.answered = false;
-                    item.default = false;
-                    item.unanswered = false;
-                    item.reviewA = false;
-                    item.reviewU = false;
-                    item[questionInfo.type] = true;
-                    item['id'] = questionInfo.id;
+       
 
-                }
-                return item;
-            })
-            return newArr;
-        })
-        // setnewArr([...newArr, obj]);
+
+        setnewArr(prevState => ({
+            ...prevState,
+            ...buttonState
+        }));
+        // setnewArr(state => {
+        //     const newArr = state.map(item => {
+        //         if (item.id == questionInfo.id) {
+        //             item.answered = false;
+        //             item.default = false;
+        //             item.unanswered = false;
+        //             item.reviewA = false;
+        //             item.reviewU = false;
+        //             item[questionInfo.type] = true;
+        //             item['id'] = questionInfo.id;
+
+        //         }
+        //         return item;
+        //     })
+        //     return newArr;
+        // })
     };
 
-    const classes = useStyles();
-    const [itemClicked, setitemClicked] = useState(-1);
-    // const [answersCount, setanswersCount] = useState({ unanswered: 0, answered: 0, reviewA: 0, reviewU: 0 });
-    const [newArr, setnewArr] = useState([]);
-    let unansweredQuestions = totalQues;
-    let answeredQuestions = 0;
-    let reviewUnQuestions = 0;
-    let reviewAnQuestions = 0;
-    let unvisitedQuestions = 0;
 
-    let reviewquestionsObj = JSON.parse(localStorage.getItem('reviewQuestionNo'));
-    let answeredQuestionsObj = JSON.parse(localStorage.getItem('questionNo'));
+    // let unansweredQuestions = totalQues;
+    // let answeredQuestions = 0;
+    // let reviewUnQuestions = 0;
+    // let reviewAnQuestions = 0;
+    // let unvisitedQuestions = 0;
 
-    console.log("reviewquestionsObj", reviewquestionsObj);
-    console.log("answeredQuestionsObj", answeredQuestionsObj);
-    if (reviewquestionsObj !== null) {
-        reviewUnQuestions = reviewquestionsObj['reviewU'].length;
-        reviewAnQuestions = reviewquestionsObj['reviewA'].length;
-    }
-    if (answeredQuestionsObj !== null) {
-        answeredQuestions = answeredQuestionsObj.length;
-    }
-    unansweredQuestions = totalQues - (answeredQuestions + reviewAnQuestions + reviewUnQuestions)
-    const [isAnsweredColor, setisAnsweredColor] = useState(false);
+    // let reviewquestionsObj = JSON.parse(localStorage.getItem('reviewQuestionNo'));
+    // let answeredQuestionsObj = JSON.parse(localStorage.getItem('questionNo'));
+    // let unvisitedQuestions = JSON.parse(localStorage.getItem('unvisitedQues')) === null ? 0 : JSON.parse(localStorage.getItem('unvisitedQues')).length;
+
+    // console.log("unvisitedQuestions", unvisitedQuestions);
+    // console.log("answeredQuestionsObj", answeredQuestionsObj);
+    // if (reviewquestionsObj !== null) {
+    //     reviewUnQuestions = reviewquestionsObj['reviewU'].length;
+    //     reviewAnQuestions = reviewquestionsObj['reviewA'].length;
+    // }
+    // if (answeredQuestionsObj !== null) {
+    //     answeredQuestions = answeredQuestionsObj.length;
+    // }
+    // unansweredQuestions = totalQues - (answeredQuestions)
+    // const [isAnsweredColor, setisAnsweredColor] = useState(false);
     // if (id !== undefined) {
     //     updateButtons(id);
     // }
 
-    console.log("newArr", newArr);
+    // console.log("newArr", newArr);
 
-    const clicked = (val) => {
-        let clickedVal = parseInt(val.target.innerText.trim() - 1);
-        setitemClicked(clickedVal);
-    }
+
     return (
         <>
             {/* <Grid container className={classes.container}> */}
@@ -267,46 +311,46 @@ function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
                             })
                         }
                     </Card> */}
-            <div className={classes.legendContainer}>
+
+            <Timer hours={state.time.hours}  minutes={state.time.minutes}  seconds={state.time.seconds} />
+            {/* <div className={classes.legendContainer}>
                 <div className={classes.legends} style={{ width: '45%' }}>
-                    {/* <Brightness1Icon style={{ color: 'green' }} />1 */}
+                  
                     <Avatar className={classes.answeredSample}>{answeredQuestions}</Avatar>
-                    <span> Answered Questions</span>
+                    <span className={classes.buttonGroupText}> Answered Questions</span>
                 </div>
                 <div className={classes.legends} style={{ width: '45%' }}>
                     <Avatar className={classes.unansweredSample}>{unansweredQuestions}</Avatar>
-                    <span> Unanswered Questions</span>
+                    <span className={classes.buttonGroupText}> Unanswered Questions</span>
                 </div>
 
                 <div className={classes.legends} style={{ width: '45%' }}>
                     <Avatar className={classes.unvisitedSample}>{unvisitedQuestions}</Avatar>
-                    <span> Unvisited Questions</span>
+                    <span className={classes.buttonGroupText}> Unvisited Questions</span>
                 </div>
 
                 <div className={classes.legends} style={{ width: '45%' }}>
                     <Avatar className={classes.reviewansweredSample}>{reviewAnQuestions}</Avatar>
-                    <span> Review Answered Question</span>
+                    <span className={classes.buttonGroupText}> Review Answered Question</span>
                 </div>
                 <div className={classes.legends} style={{ width: '45%' }}>
                     <Avatar className={classes.reviewunansweredSample}>{reviewUnQuestions}</Avatar>
-                    <span> Review Unanswered Question</span>
+                    <span className={classes.buttonGroupText}> Review Unanswered Question</span>
                 </div>
 
-            </div>
+            </div> */}
 
 
 
-            <div style={{ width: '100%' }}>
+            {/* <div style={{ width: '100%' }}>
                 <h3>Question Numbers</h3>
-            </div>
-            <div className={classes.buttonContainer}>
+            </div> */}
+            {/* <div className={classes.buttonContainer}>
 
 
                 <br />
-                {/* <Card className={classes.card}> */}
                 {
                     newArr.map((val, key) => {
-                        // console.log(val, key);
                         return (
                             <Button key={key} onClick={() => { changeStep(key) }} className={classNames({
                                 [classes.buttonDefault]: (val.default === true ? true : false),
@@ -319,16 +363,42 @@ function ButtonsGroup({ arrLen, questionInfo, totalQues, changeStep }) {
                             </Button>)
                     })
                 }
-                {/* </Card> */}
-            </div>
+            </div> */}
 
+            <Paper elevation={3} className={classes.buttonCls}>
+                <Typography variant="h6" gutterBottom className={classes.padding}>
+                    Question Numbers
+            </Typography>
+                <Divider />
+                <Box component="div" className={classes.buttonContainer}>
+                    {
+                        Object.keys(newArr).map((val, key) => {
+                            // newArr.map((val, key) => {
+                            // console.log(val, key);
+                            return (
+                                <div key={key}>
+                                    <Fab onClick={() => { changeStep(key) }} className={classNames({
+                                        [classes.buttonDefault]: (newArr[val].default === true ? true : false),
+                                        [classes.unansweredColor]: (newArr[val].unanswered === true ? true : false),
+                                        [classes.answeredColor]: (newArr[val].answered === true ? true : false),
+                                        [classes.reviewAnsweredColor]: (newArr[val].reviewA === true ? true : false),
+                                        [classes.reviewUnAnsweredColor]: (newArr[val].reviewU === true ? true : false)
+                                    })} variant="contained" color="primary">
+                                        {key + 1}
+                                    </Fab>
+                                </div>
+                            )
+                        })
+                    }
+                </Box>
+                <Divider />
+                <Typography variant="h6" gutterBottom className={classes.footer} >
 
-
-            {/* </Grid> */}
-            {/* </Grid> */}
+                </Typography>
+            </Paper>
 
         </>
     )
 }
 
-export default ButtonsGroup
+export default React.memo(ButtonsGroup); 

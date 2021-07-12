@@ -6,35 +6,34 @@ import Instructions from './instructions/instructions';
 // import Header from './header/header';
 import Test from './Test';
 import Header from './header/header';
-import NewWindow from 'react-new-window'
-import { Prompt } from "react-router";
+import Excel from './excel';
+import { SnackbarProvider } from 'notistack';
+import ExamDataProvider from './context/ExamDataContext';
+import Loader from './Loader';
+
 function App() {
   return (
     <div className="App">
 
       <BrowserRouter>
-        {/* <MuiThemeProvider theme={theme}> */}
+        <ExamDataProvider>
+          {/* <MuiThemeProvider theme={theme}> */}
+          <Loader/>
+          {/* <div className="App"> */}
+          <Header />
 
-        {/* <div className="App"> */}
-        <Header />
+          <Switch>
+            <Route exact path="/" component={Login} />
+            <Route exact path="/test" component={Test} />
+            <Route exact path="/uploadExcel" component={Excel} />
 
-        <Switch>
-          {/* <NewWindow> */}
-          <Route exact path="/" component={Login} />
-          {/* <NewWindow copyStyles={true}> */}
-          {/* <NewWindow> */}
-          <Route exact path="/instructions" component={Test} />
-          {/* </NewWindow> */}
-          {/* <Prompt message="Are you sure you want to go to /test?" /> */}
-          {/* </NewWindow> */}
+          </Switch>
 
-          {/* </NewWindow> */}
-        </Switch>
+          {/* <Footer /> */}
+          {/* </div> */}
 
-        {/* <Footer /> */}
-        {/* </div> */}
-
-        {/* </MuiThemeProvider> */}
+          {/* </MuiThemeProvider> */}
+        </ExamDataProvider>
       </BrowserRouter>
 
       {/* <Login/> */}

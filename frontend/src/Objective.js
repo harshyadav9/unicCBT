@@ -28,6 +28,7 @@ const styles = makeStyles(theme => ({
     // },
     formControl: {
         margin: '33px 1px 4px 7px',
+        height: '240px',
         padding: '6px',
         '& legend': {
             fontSize: 20,
@@ -55,16 +56,18 @@ function RadioButtonsGroup(props) {
 
 
 
-    const { objective, reset, setReset ,activeStep } = props;
+    const { objective,activeStep } = props;
+    // console.log(" objective,activeStep", objective,activeStep)
     const [radioval, setRadio] = useState({
         radio: '',
         checkbox: new Map(),
         reset: false
     });
     const { state, dispatch } = useContext(ExamDataContext);
-    console.log("state",state);
+    // console.log("state",state);
     const classes = styles();
-    
+    // let resetFlag = JSON.parse(localStorage.getItem('isReset')) || false;
+    // console.log("resetFlag",resetFlag);
     // class RadioButtonsGroup extends React.Component {
     // state = {
     //     radio: '',
@@ -79,9 +82,9 @@ function RadioButtonsGroup(props) {
 
 
     useEffect(() => {
-        // console.log("objective",objective);
-        // console.log("reset",reset);
-        if(objective.id.questionNo === (activeStep+1) && state.questions[activeStep+1] !== undefined){
+        console.log("objective called");
+        if((objective && objective.id && objective.id.questionNo === (activeStep+1)) && state.questions[activeStep+1] !== undefined && !state.reset){
+            console.log("if callled");
             if(typeof(state.questions[activeStep+1]) === "string"){
                 setRadio(prevState => ({
                     ...prevState,
@@ -95,29 +98,68 @@ function RadioButtonsGroup(props) {
             }
            
         }
+    },[objective]);
 
-        // if (state.reset === true  && objective.id.questionNo === (activeStep+1)){
-        //     setRadio(prevState => ({
-        //                     ...prevState,
-        //                     radio: ''
-        //                 }));
-                        
-        // }
-            //         setRadio(prevState => ({
-            //             ...prevState,
-            //             radio: ''
-            //         }));
-            //         // this.props.setReset('');
-            //         setReset('')
-            //     }
-       
-      
-    },[]);
+   
+    useEffect(() => {
+        if(state.reset){
+            if(objective && objective.id && objective.id.questionNo === (activeStep+1)){
+                // if(typeof(state.questions[activeStep+1]) === "string"){
+                    let obj = {};
+                    if(objective.multiple === 'N'){
+                        setRadio(prevState => ({
+                            ...prevState,
+                            radio: ""
+                        }));
+                        obj = {...state.questions , ...{[objective.id.questionNo]:""}};
+                    } else {
+                        let arr = new Map();
+                        for (let i = 0; i < 4; i++) {
+                            let obj = {};
+                            arr.set(`option${i + 1}`, false);
+                        }
+                        setRadio(prevState => ({
+                            ...prevState,
+                            checkbox: arr
+                        }));
+                        obj = {...state.questions , ...{[objective.id.questionNo]:arr}};
+                      
+                    }
+                   
+                // } else {
+                   
+                // }
+                let answeredQues = JSON.parse(localStorage.getItem('questionNo'));
+                let reviewQuestionNo = JSON.parse(localStorage.getItem('reviewQuestionNo'));
+                if (answeredQues !== null) {
+                    if (answeredQues.indexOf(activeStep + 1) > -1) {
+                        answeredQues.splice(answeredQues.indexOf(activeStep + 1), 1);
+                    }
+                    localStorage.setItem('questionNo', JSON.stringify(answeredQues));
+        
+                }
+                if (reviewQuestionNo !== null) {
+                    if (reviewQuestionNo.reviewU.indexOf(activeStep + 1) > -1) {
+                        reviewQuestionNo.reviewU.splice(reviewQuestionNo.reviewU.indexOf(activeStep + 1), 1);
+                    }
+                    if (reviewQuestionNo.reviewA.indexOf(activeStep + 1) > -1) {
+                        reviewQuestionNo.reviewA.splice(reviewQuestionNo.reviewA.indexOf(activeStep + 1), 1);
+                    }
+                    localStorage.setItem('reviewQuestionNo', JSON.stringify(reviewQuestionNo));
+                }
+                // dispatch({ type: 'RESET', reset: false });
+                dispatch({type:'ADD_QUESTION_VALUES' , questions:obj});
+            }
+            // localStorage.setItem('isReset',JSON.stringify({'reset':false}));
+           
+        }
+    
+    },[state.reset]);
     
     const handleChange1 = (eventval, option, objective) => {
         let event = { option: option, id: objective.id.questionNo, isradio: true };
         // buttonChangeHandler(event);
-        console.log("event, option, objective", eventval, option, objective);
+        // console.log("event, option, objective", eventval, option, objective);
         setRadio(prevState => ({
             ...prevState,
             radio: eventval
@@ -130,10 +172,28 @@ function RadioButtonsGroup(props) {
         // this.setState({ radio: event });
         // console.log("this.state",this.state);
         // response();
-        // buttonChangeHandler(event);
+        updateQuestionNo(event);
     }
 
+    const updateQuestionNo = (event) => {
+        // console.log("updateQuestionNo",event.id);
+        if (event.id !== undefined) {
+            let arr = [];
+            const questionNo = JSON.parse(localStorage.getItem('questionNo'));
+            if (questionNo === null) {
+                arr.push(event.id);
+            } else {
+                if (questionNo.indexOf(event.id) == -1) {
+                    arr = questionNo.concat(event.id);
+                } else {
+                    arr = questionNo;
+                }
 
+            }
+
+            localStorage.setItem('questionNo', JSON.stringify(arr));
+        }
+    }
 
     const buttonChangeHandler = (event) => {
         let index = -1;
@@ -302,7 +362,8 @@ function RadioButtonsGroup(props) {
         // if (event === ans) {
             let event = { name: name, isChecked: isChecked, id: objective.id.questionNo, isradio: false };
             // response();
-            buttonChangeHandler(event);
+            // buttonChangeHandler(event);
+            updateQuestionNo(event);
         // response({ name: name, isChecked: isChecked, id: objective.id.questionNo, isradio: false });
         //     // this.setState({ value: '' });
         // } else {
@@ -403,8 +464,8 @@ function RadioButtonsGroup(props) {
             <div>
 
                 <FormControl component="fieldset" className={classes.formControl}>
-                    <FormLabel component="legend"><span className={classes.quesNo}>{objective.id.questionNo})</span><span className={classes.quesText}>{objective.question}</span></FormLabel>
-                    {objective.multiple === 'N' ? (<RadioGroup
+                    <FormLabel component="legend"><span className={classes.quesNo}>{objective && objective.id && objective.id.questionNo})</span><span className={classes.quesText}>{objective && objective.question}</span></FormLabel>
+                    {objective && objective.multiple === 'N' ? (<RadioGroup
                         aria-label="Gender"
                         name="gender1"
                         className={classes.group}
@@ -422,20 +483,20 @@ function RadioButtonsGroup(props) {
                     </RadioGroup>) : (
                             <FormGroup>
                                 <FormControlLabel
-                                    control={<Checkbox checked={!!radioval.checkbox.get('option1')} onChange={(e) => handleChange(e.target.checked, 'option1', objective)} name={objective.option1} />}
-                                    label={objective.option1}
+                                    control={<Checkbox checked={!!radioval.checkbox.get('option1')} onChange={(e) => handleChange(e.target.checked, 'option1', objective)} name={objective && objective.option1} />}
+                                    label={objective && objective.option1}
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox checked={!!radioval.checkbox.get('option2')} onChange={(e) => handleChange(e.target.checked, 'option2', objective)} name={objective.option2} />}
-                                    label={objective.option2}
+                                    control={<Checkbox checked={!!radioval.checkbox.get('option2')} onChange={(e) => handleChange(e.target.checked, 'option2', objective)} name={objective && objective.option2} />}
+                                    label={objective && objective.option2}
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox checked={!!radioval.checkbox.get('option3')} onChange={(e) => handleChange(e.target.checked, 'option3', objective)} name={objective.option3} />}
-                                    label={objective.option3}
+                                    control={<Checkbox checked={!!radioval.checkbox.get('option3')} onChange={(e) => handleChange(e.target.checked, 'option3', objective)} name={objective && objective.option3} />}
+                                    label={objective && objective.option3}
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox checked={!!radioval.checkbox.get('option4')} onChange={(e) => handleChange(e.target.checked, 'option4', objective)} name={objective.option4} />}
-                                    label={objective.option4}
+                                    control={<Checkbox checked={!!radioval.checkbox.get('option4')} onChange={(e) => handleChange(e.target.checked, 'option4', objective)} name={objective && objective.option4} />}
+                                    label={objective && objective.option4}
                                 />
                             </FormGroup>
 
