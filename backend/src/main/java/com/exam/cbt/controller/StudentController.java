@@ -1,12 +1,22 @@
 package com.exam.cbt.controller;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,15 +29,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.exam.cbt.entity.CandidateMaster;
 import com.exam.cbt.pojo.CandidateResponseUI;
 import com.exam.cbt.pojo.QuestionMasterResponse;
-import com.exam.cbt.service.CandidateResponseService;
 import com.exam.cbt.service.ConfigDataService;
+import com.exam.cbt.service.DownloadExamAnswers;
 import com.exam.cbt.service.QuestionService;
+import com.exam.cbt.service.QueueAzureService;
 import com.exam.cbt.service.SubmitExamService;
 import com.exam.cbt.service.impl.CandidateMasterDataServiceImpl;
 import com.exam.cbt.service.impl.CandidateServiceImpl;
 import com.exam.cbt.service.impl.ExamYearMasterDataServiceImpl;
 import com.exam.cbt.service.impl.InstituteNameMasterDataServiceImpl;
 import com.exam.cbt.service.impl.QuestionMasterDataServiceImpl;
+import com.microsoft.azure.storage.StorageException;
 
 @RestController
 @RequestMapping("/cbt/student")
@@ -41,7 +53,10 @@ public class StudentController {
 	
 	@Autowired
 	QuestionService questionService;
-
+	
+	@Autowired
+	DownloadExamAnswers excelExporter;
+	
 	@Autowired
 	QuestionMasterDataServiceImpl questionMasterServ;
 	
@@ -49,7 +64,7 @@ public class StudentController {
 	InstituteNameMasterDataServiceImpl instituteNameMasterDataServiceImpl;
 	
 	@Autowired
-	CandidateResponseService candidateRespServ;
+	QueueAzureService queueAzureService;
 	
 	@Autowired
 	ConfigDataService configDataService;
@@ -138,5 +153,66 @@ public class StudentController {
 		}		
 	}
 	
+//	@GetMapping(path = "/download")
+//	public ResponseEntity<ByteArrayResource> uploadFile(@RequestParam(value = "file") String file) throws IOException {
+//		byte[] data = azureAdapter.getFile(file);
+//		ByteArrayResource resource = new ByteArrayResource(data);
+//
+//		return ResponseEntity.ok().contentLength(data.length).header("Content-type", "application/octet-stream")
+//				.header("Content-disposition", "attachment; filename=\"" + file + "\"").body(resource);
+//
+//	}
+	
+	@RequestMapping(value = "/candidatesAnswers/export/excel/{examCd}/{instCd}/{year}", method = RequestMethod.GET)
+	public ResponseEntity<Resource> downloadCandidatesAnswers(@PathVariable String examCd,@PathVariable String instCd,
+			@PathVariable Integer year,HttpServletResponse httpServletResponse) throws IOException {
+		
+		log.info("Inside downloadCandidatesAnswers{} : ");
+		
+		httpServletResponse.setContentType("application/octet-stream");
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+		String currentDateTime = dateFormatter.format(new Date());
+		
+		String headerKey = "Content-Disposition";
+		String headerValue = "attachment; filename=candidates_" + currentDateTime + ".xlsx";
+		httpServletResponse.setHeader(headerKey, headerValue);
+		
+		//DownloadExamAnswers excelExporter = new DownloadExamAnswers((List<CandidateResponse>) listUsers);
+		
+		String workbook = "tutorials.xlsx";
+	    InputStreamResource file = new InputStreamResource(excelExporter.export(httpServletResponse, examCd, instCd, year));
+        
+        return ResponseEntity.ok()
+		        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + workbook)
+		        .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+		        .body(file); 		
+	}
+	
+	@RequestMapping(value = "/sendToQueue", method = RequestMethod.GET)
+	public void sendMessageToQueue() {
+		
+		//queueAzureService.sendMessage1();
+		//queueAzureService.sendMessageBatch();
+//		try {
+			//queueAzureService.receiveMessages();
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+	}
+	
+//	@RequestMapping(value = "/readMessage", method = RequestMethod.GET)
+//	public void readMessage() {
+//		
+//		try {
+//			queueAzureService.readMessage();
+//			//readMessagesAzureService.scheduleFixedDelayTask();
+//		} catch (StorageException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//	}
 	
 }

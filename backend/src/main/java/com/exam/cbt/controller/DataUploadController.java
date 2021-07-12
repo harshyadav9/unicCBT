@@ -3,13 +3,7 @@ package com.exam.cbt.controller;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.exam.cbt.azure.AzureBlobAdapter;
-import com.exam.cbt.entity.CandidateMaster;
-import com.exam.cbt.entity.Config;
 import com.exam.cbt.entity.ConfigId;
-import com.exam.cbt.entity.ExamYearMaster;
-import com.exam.cbt.entity.InstituteNameMaster;
-import com.exam.cbt.entity.QuestionMaster;
 import com.exam.cbt.helper.ReadExcelData;
 import com.exam.cbt.service.ImportDataService;
 import com.exam.cbt.service.impl.CandidateMasterDataServiceImpl;
@@ -205,85 +194,6 @@ public class DataUploadController {
 //		return "";
 //	}
 
-//	@GetMapping(path = "/download")
-//	public ResponseEntity<ByteArrayResource> uploadFile(@RequestParam(value = "file") String file) throws IOException {
-//		byte[] data = azureAdapter.getFile(file);
-//		ByteArrayResource resource = new ByteArrayResource(data);
-//
-//		return ResponseEntity.ok().contentLength(data.length).header("Content-type", "application/octet-stream")
-//				.header("Content-disposition", "attachment; filename=\"" + file + "\"").body(resource);
-//
-//	}
-	
-//	private void updatePhotoUrl(List<String> filesNames) {
-//		
-//		candidateMasterDataServiceImpl.updatePhotoUrl(filesNames);;
-//		
-//	}
-
-//	private File[] fetchFiles(String folderName) {
-//
-//		File directoryPath = new File(folderName);
-//		// List of all files and directories
-//		File filesList[] = directoryPath.listFiles();
-//		System.out.println("List of files and directories in the specified directory:");
-//		int counter = 0;
-//		for (File file : filesList) {
-//			counter++;
-//			System.out.println("File name: " + file.getName());
-//			System.out.println("File path: " + file.getAbsolutePath());
-//			System.out.println("Size :" + file.getTotalSpace());
-//			System.out.println(counter + " file is retrieved.");
-//			System.out.println(" ");
-//			
-//		}
-//
-//		return filesList;
-//
-//	}
-	
-	
-//	@RequestMapping(value = "/azCopyFolder", method = RequestMethod.POST)
-//	public String azCopyFolder(@RequestParam(name = "imagesFolderLocation") String imagesFolderLocation) {
-//		uploadFilesAZCopy(imagesFolderLocation);
-//		
-//		return "Done";
-//	}
-//	
-//	private void uploadFilesAZCopy(String folderPath) {
-//		String command="C:\\Users\\admin\\Downloads\\azcopy\\azcopy copy " +folderPath+" sp=r&st=2021-06-23T09:35:14Z&se=2021-06-23T17:35:14Z&spr=https&sv=2020-02-10&sr=c&sig=h%2BLq6PWEwCghbzYDI7N68Rg10s2A7HbBCLCS3Vx8evc%3D --recursive";
-//		try {
-//		    Process process = Runtime.getRuntime().exec(command);
-//		 
-//		    BufferedReader reader = new BufferedReader(
-//		            new InputStreamReader(process.getInputStream()));
-//		    String line;
-//		    String numberOfFileTransfers = null;
-//		    String numberOfTransfersCompleted = null;
-//		    String finalStatus = null;
-//		    	
-//		    while ((line = reader.readLine()) != null) {
-//		    	if (line.contains("Number of File Transfers:")) {
-//		    		numberOfFileTransfers = line;
-//		    		
-//		    	}
-//		    	if (line.contains("Number of Transfers Completed:")) {
-//		    		numberOfTransfersCompleted = line;
-//		    	}
-//		    	if (line.contains("Final Job Status:")) {
-//		    		finalStatus = line;
-//		    	}
-//		        System.out.println(line);
-//		    }
-//		    
-//		    
-//		 
-//		    reader.close();
-//		 
-//		} catch (IOException e) {
-//		    e.printStackTrace();
-//		}
-//	}
 	@RequestMapping(value = "/allocateSets", method = RequestMethod.POST)
 	public ResponseEntity<String> allocateSetToCandidateMaster(@RequestBody ConfigId id) {
 		

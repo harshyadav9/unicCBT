@@ -114,4 +114,10 @@ public class CandidateResponseServiceImpl implements CandidateResponseService {
 		return resp;
 	}
 
+	@Override
+	public List<CandidateResponse> getCandidateAnswersForGivenExam(String examCd, String instCd, int year) {
+		List<CandidateResponse> responses = candidateResponseRepository.findAllByExamCdAndInstCdAndIdYearOrderByIdRegistrationNoAsc(examCd, instCd, year);
+		return responses;
+	}
+
 }

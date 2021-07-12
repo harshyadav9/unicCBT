@@ -42,9 +42,9 @@ public class SubmitExamService {
 		id.setYear(candidate.get().getYear());
 		Optional<ExamYearMaster> examYearMaster = examYearMasterDataServiceImpl.getExamYearMasterDetail(id);
 		
-		if (candidate.isPresent() && examYearMaster.isPresent()) {
-			simpleTextMail.sendEmail(candidate.get().getEmailId(),examYearMaster.get().getExamName());
-		}
+//		if (candidate.isPresent() && examYearMaster.isPresent()) {
+//			simpleTextMail.sendEmail(candidate.get().getEmailId(),examYearMaster.get().getExamName());
+//		}
 	}
 	
 }

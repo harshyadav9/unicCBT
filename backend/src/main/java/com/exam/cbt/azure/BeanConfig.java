@@ -18,6 +18,8 @@ public class BeanConfig {
 
     @Autowired
     private Environment environment;
+    
+ // Define the connection-string with your values.
 
     @Bean
     public CloudBlobClient cloudBlobClient() throws URISyntaxException, StorageException, InvalidKeyException {
@@ -29,5 +31,6 @@ public class BeanConfig {
     public CloudBlobContainer testBlobContainer() throws URISyntaxException, StorageException, InvalidKeyException {
         return cloudBlobClient().getContainerReference(environment.getProperty("azure.storage.container.name"));
     }
+    
 
 }
