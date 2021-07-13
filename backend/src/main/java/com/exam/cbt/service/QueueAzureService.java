@@ -12,6 +12,9 @@ import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.queue.CloudQueue;
 import com.microsoft.azure.storage.queue.CloudQueueClient;
 import com.microsoft.azure.storage.queue.CloudQueueMessage;
+import com.azure.core.util.*;
+import com.azure.storage.queue.*;
+import com.azure.storage.queue.models.*;
 
 @Service
 public class QueueAzureService {
@@ -194,7 +197,12 @@ public class QueueAzureService {
 
 			// Retrieve a reference to a queue.
 			CloudQueue queue = queueClient.getQueueReference(configuredQueue);
-
+			
+//			QueueClient queueClientNew = new QueueClientBuilder()
+//                    .connectionString(azureConnectionString)
+//                    .queueName("cbtmdmsi0012021queue")
+//                    .buildClient();
+			
 			// Create the queue if it doesn't already exist.
 			// queue.createIfNotExists();
 
@@ -208,7 +216,7 @@ public class QueueAzureService {
 			// long cachedMessageCount = queue.getApproximateMessageCount();
 			// Retrieve 20 messages from the queue with a visibility timeout of 300 seconds.
 			queueProcessingStatusService.updateQueueProcessingStatus("MDMS", "I001", 2021, "PROCESSING");
-			for (CloudQueueMessage message : queue.retrieveMessages(numberofqueueMessages, visibilityTimeOutInSeconds, null, null)) {
+			for (CloudQueueMessage message : queue.retrieveMessages(32, visibilityTimeOutInSeconds, null, null)) {
 				// Do processing for all messages in less than 5 minutes,
 				// deleting each message after processing.
 				queue.deleteMessage(message);
