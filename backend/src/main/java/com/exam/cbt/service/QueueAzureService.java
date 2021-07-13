@@ -1,7 +1,7 @@
 package com.exam.cbt.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.exam.cbt.pojo.CandidateResponseUI;
@@ -12,22 +12,34 @@ import com.microsoft.azure.storage.StorageException;
 import com.microsoft.azure.storage.queue.CloudQueue;
 import com.microsoft.azure.storage.queue.CloudQueueClient;
 import com.microsoft.azure.storage.queue.CloudQueueMessage;
+import com.azure.core.util.*;
+import com.azure.storage.queue.*;
+import com.azure.storage.queue.models.*;
 
 @Service
 public class QueueAzureService {
 
 	@Autowired
-	private Environment environment;
-	
-	@Autowired
 	SubmitExamService submitExamService;
-	
+
+	@Autowired
+	QueueProcessingStatusService queueProcessingStatusService;
+
 	@Autowired
 	CandidateSubmissionHistoryServiceImpl candidateSubmissionHistoryServiceImpl;
 
-	static String connectionString = "Endpoint=sb://cbtservicebus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=wlpHl/zpvRtKuyfDxTfobbxQ2kD9wZnGBJbeffV8nJs=";
-	static String queueName = "cbtqueue";
+	@Value("${mdms.i001.2001.queue}")
+	private String configuredQueue;
 
+	@Value("${azure.storage.ConnectionString}")
+	private String azureConnectionString;
+	
+	@Value("${numberofqueueMessages}")
+	private int numberofqueueMessages;
+	
+	@Value("${visibilityTimeOutInSeconds}")
+	private int visibilityTimeOutInSeconds;
+	
 //	public static void sendMessage1() {
 //
 //		// create a Service Bus Sender client for the queue
@@ -146,45 +158,51 @@ public class QueueAzureService {
 //				message.getSequenceNumber(), message.getBody());
 //	}
 
-//	public void sendMessage() throws StorageException {
-//
-//		try {
-//			// Retrieve storage account from connection-string.
-//			CloudStorageAccount storageAccount = CloudStorageAccount
-//					.parse(environment.getProperty("azure.storage.ConnectionString"));
-//
-//			// Create the queue client.
-//			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
-//
-//			// Retrieve a reference to a queue.
-//			CloudQueue queue = queueClient.getQueueReference("cbtqueue");
-//
-//			// Create the queue if it doesn't already exist.
-//			// queue.createIfNotExists();
-//
-//			// Create a message and add it to the queue.
-//			CloudQueueMessage message = new CloudQueueMessage("Hello, World" + counter++);
-//			queue.addMessage(message);
-//		} catch (Exception e) {
-//			// Output the stack trace.
-//			e.printStackTrace();
-//		}
-//
-//	}
-
-	public void readMessage() throws StorageException {
+	public void sendMessage(String str) throws StorageException {
 
 		try {
 			// Retrieve storage account from connection-string.
 			CloudStorageAccount storageAccount = CloudStorageAccount
-					.parse(environment.getProperty("azure.storage.ConnectionString"));
+					.parse(azureConnectionString);
 
 			// Create the queue client.
 			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
 
 			// Retrieve a reference to a queue.
-			CloudQueue queue = queueClient.getQueueReference("cbtqueue");
+			CloudQueue queue = queueClient.getQueueReference(configuredQueue);
 
+			// Create the queue if it doesn't already exist.
+			// queue.createIfNotExists();
+
+			// Create a message and add it to the queue.
+			CloudQueueMessage message = new CloudQueueMessage(str);
+			queue.addMessage(message);
+		} catch (Exception e) {
+			// Output the stack trace.
+			e.printStackTrace();
+		}
+
+	}
+
+	public void readMessage() throws StorageException {
+
+		try {
+
+			
+			// Retrieve storage account from connection-string.
+			CloudStorageAccount storageAccount = CloudStorageAccount.parse(azureConnectionString);
+
+			// Create the queue client.
+			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
+
+			// Retrieve a reference to a queue.
+			CloudQueue queue = queueClient.getQueueReference(configuredQueue);
+			
+//			QueueClient queueClientNew = new QueueClientBuilder()
+//                    .connectionString(azureConnectionString)
+//                    .queueName("cbtmdmsi0012021queue")
+//                    .buildClient();
+			
 			// Create the queue if it doesn't already exist.
 			// queue.createIfNotExists();
 
@@ -197,17 +215,21 @@ public class QueueAzureService {
 			// Retrieve the newly cached approximate message count.
 			// long cachedMessageCount = queue.getApproximateMessageCount();
 			// Retrieve 20 messages from the queue with a visibility timeout of 300 seconds.
-			for (CloudQueueMessage message : queue.retrieveMessages(3, 300, null, null)) {
+			queueProcessingStatusService.updateQueueProcessingStatus("MDMS", "I001", 2021, "PROCESSING");
+			for (CloudQueueMessage message : queue.retrieveMessages(32, visibilityTimeOutInSeconds, null, null)) {
 				// Do processing for all messages in less than 5 minutes,
 				// deleting each message after processing.
 				queue.deleteMessage(message);
 				System.out.println("Message retrieved from queue: " + message.getMessageContentAsString());
-				//CloudQueueMessage resp = message;
-				CandidateResponseUI resp = new ObjectMapper().readValue(message.getMessageContentAsString(), CandidateResponseUI.class);  
+				// CloudQueueMessage resp = message;
+				CandidateResponseUI resp = new ObjectMapper().readValue(message.getMessageContentAsString(),
+						CandidateResponseUI.class);
 				System.out.println(resp);
-				candidateSubmissionHistoryServiceImpl.saveCandidateAnswerFromQueue(resp.getResp(),message.getMessageId());
-				submitExamService.submitCandidateExam(resp);
+				candidateSubmissionHistoryServiceImpl.saveCandidateAnswerFromQueue(resp.getResp(),
+						message.getMessageId());
+				submitExamService.submitCandidateExam(resp,message.getMessageId());
 			}
+			queueProcessingStatusService.updateQueueProcessingStatus("MDMS", "I001", 2021, "COMPLETED");
 
 //		    if (retrievedMessage != null)
 //		    {
@@ -216,6 +238,7 @@ public class QueueAzureService {
 //		    }
 
 		} catch (Exception e) {
+			queueProcessingStatusService.updateQueueProcessingStatus("MDMS", "I001", 2021, "COMPLETED");
 			// Output the stack trace.
 			e.printStackTrace();
 		}

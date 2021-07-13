@@ -21,6 +21,17 @@ public class CandidateResponse {
 	@Column(name = "ExamCd")
 	private String examCd;
 	
+	@Column
+	private String messageId;
+	
+	public String getMessageId() {
+		return messageId;
+	}
+
+	public void setMessageId(String messageId) {
+		this.messageId = messageId;
+	}
+
 	public CandidateResponseId getId() {
 		return id;
 	}
@@ -55,7 +66,9 @@ public class CandidateResponse {
 
 	@Override
 	public String toString() {
-		return "CandidateResponse [id=" + id + ", answer=" + answer + ", instCd=" + instCd + ", examCd=" + examCd + "]";
+		return "CandidateResponse [id=" + id + ", answer=" + answer + ", instCd=" + instCd + ", examCd=" + examCd
+				+ ", messageId=" + messageId + "]";
 	}
+
 
 }

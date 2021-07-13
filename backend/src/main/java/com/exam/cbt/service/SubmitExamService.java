@@ -22,7 +22,7 @@ public class SubmitExamService {
 
 	Logger log = LoggerFactory.getLogger(SubmitExamService.class);
 
-	@Value(value = "trigger.email")
+	@Value("${trigger.email}")
 	private String sendEmailFlag;
 
 	@Autowired
@@ -37,8 +37,12 @@ public class SubmitExamService {
 	@Autowired
 	SimpleTextMail simpleTextMail;
 
-	public void submitCandidateExam(CandidateResponseUI candidateResp) {
+	public void submitCandidateExam(CandidateResponseUI candidateResp,String messageId) {
 		log.info("Exiting submitExam{} ");
+		
+		candidateResp.getResp().forEach(resp->{
+			resp.setMessageId(messageId);
+		});
 		candidateRespServ.saveCandidateExam(candidateResp.getResp());
 		Optional<CandidateMaster> candidate = candidateMasterDataServiceImpl
 				.getCandidate(candidateResp.getResp().get(0).getId().getRegistrationNo());

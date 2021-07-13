@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.exam.cbt.entity.CandidateMaster;
-import com.exam.cbt.pojo.CandidateResponseUI;
 import com.exam.cbt.pojo.QuestionMasterResponse;
 import com.exam.cbt.service.ConfigDataService;
 import com.exam.cbt.service.DownloadExamAnswers;
@@ -115,20 +114,20 @@ public class StudentController {
 
 	}
 	
-	@RequestMapping(value = "/submitExam", method = RequestMethod.PUT)
-	public ResponseEntity<String> submitExam(@RequestBody CandidateResponseUI candidateResp) {
-		
-		if (candidateResp != null) {
-			submitExamService.submitCandidateExam(candidateResp);
-			
-			return new ResponseEntity<>("Exam Submitted Successfully", HttpStatus.OK);
-			
-		} else {
-			
-			log.info("Exiting submitExam{} ");
-			return new ResponseEntity<>("Bad Request", HttpStatus.BAD_REQUEST);
-		}		
-	}
+//	@RequestMapping(value = "/submitExam", method = RequestMethod.PUT)
+//	public ResponseEntity<String> submitExam(@RequestBody CandidateResponseUI candidateResp) {
+//		
+//		if (candidateResp != null) {
+//			submitExamService.submitCandidateExam(candidateResp);
+//			
+//			return new ResponseEntity<>("Exam Submitted Successfully", HttpStatus.OK);
+//			
+//		} else {
+//			
+//			log.info("Exiting submitExam{} ");
+//			return new ResponseEntity<>("Bad Request", HttpStatus.BAD_REQUEST);
+//		}		
+//	}
 
 	@RequestMapping(value = "/getQuestions/{registrationNumber}", method = RequestMethod.GET)
 	public ResponseEntity<QuestionMasterResponse> getQuestions(@PathVariable Integer registrationNumber) {
@@ -188,17 +187,16 @@ public class StudentController {
 		        .body(file); 		
 	}
 	
-	@RequestMapping(value = "/sendToQueue", method = RequestMethod.GET)
-	public void sendMessageToQueue() {
+	@RequestMapping(value = "/sendToQueue", method = RequestMethod.POST)
+	public void sendMessageToQueue(@RequestBody String str) {
 		
-		//queueAzureService.sendMessage1();
-		//queueAzureService.sendMessageBatch();
-//		try {
-			//queueAzureService.receiveMessages();
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+			try {
+				queueAzureService.sendMessage(str);
+			} catch (StorageException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
 		
 	}
 	

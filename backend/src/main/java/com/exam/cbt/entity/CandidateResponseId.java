@@ -45,7 +45,8 @@ public class CandidateResponseId implements Serializable{
 
 	@Override
 	public String toString() {
-		return "CandidateResponseId [registrationNo=" + registrationNo + ", year=" + year + "]";
+		return "CandidateResponseId [registrationNo=" + registrationNo + ", year=" + year + ", questionNo=" + questionNo
+				+ "]";
 	}
 
 }
