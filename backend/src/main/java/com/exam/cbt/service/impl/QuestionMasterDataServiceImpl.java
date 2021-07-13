@@ -47,7 +47,7 @@ public class QuestionMasterDataServiceImpl implements QuestionMasterDataService 
 	public HashMap<String, List<QuestionMaster>> getAllQuestions(int setNo, int year, String instCd, String examCd) {
 
 		HashMap<String, List<QuestionMaster>> hm = new HashMap<String, List<QuestionMaster>>();
-		Iterable<QuestionMaster> questions = questionMasterRepository.findBySetNoAndIdYearAndIdInstCdAndIdExamCdOrderByIdQuestionNoAsc(setNo,year,instCd,examCd);
+		Iterable<QuestionMaster> questions = questionMasterRepository.findAllBySetNoAndIdYearAndIdInstCdAndIdExamCdOrderByIdQuestionNoAsc(setNo,year,instCd,examCd);
 		hm.put("Questions", (List<QuestionMaster>) questions);
 		return hm;
 	}

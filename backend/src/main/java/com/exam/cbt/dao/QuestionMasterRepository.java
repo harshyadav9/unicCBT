@@ -11,5 +11,5 @@ import com.exam.cbt.entity.QuestionMasterId;
 @Repository
 public interface QuestionMasterRepository extends CrudRepository<QuestionMaster, QuestionMasterId> {
 	
-	 List<QuestionMaster> findBySetNoAndIdYearAndIdInstCdAndIdExamCdOrderByIdQuestionNoAsc(int setNo, int year, String instCode, String examCd);
+	 List<QuestionMaster> findAllBySetNoAndIdYearAndIdInstCdAndIdExamCdOrderByIdQuestionNoAsc(int setNo, int year, String instCode, String examCd);
 }
