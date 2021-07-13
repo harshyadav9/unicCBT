@@ -85,15 +85,15 @@ function RadioButtonsGroup(props) {
         console.log("objective called");
         if((objective && objective.id && objective.id.questionNo === (activeStep+1)) && state.questions[activeStep+1] !== undefined && !state.reset){
             console.log("if callled");
-            if(typeof(state.questions[activeStep+1]) === "string"){
+            if(typeof(state.questions[activeStep+1]) === "object"){
                 setRadio(prevState => ({
                     ...prevState,
-                    radio:  state.questions[activeStep+1]
+                    radio:  state.questions[activeStep+1].value
                 }));
             } else {
                 setRadio(prevState => ({
                     ...prevState,
-                    checkbox: state.questions[activeStep+1]
+                    checkbox: state.questions[activeStep+1].value
                 }));
             }
            
@@ -111,7 +111,8 @@ function RadioButtonsGroup(props) {
                             ...prevState,
                             radio: ""
                         }));
-                        obj = {...state.questions , ...{[objective.id.questionNo]:""}};
+                        state.questions[objective.id.questionNo] = {...state.questions[objective.id.questionNo] , value:""};
+                        // obj = {...state.questions , ...{[objective.id.questionNo]:}};
                     } else {
                         let arr = new Map();
                         for (let i = 0; i < 4; i++) {
@@ -122,7 +123,8 @@ function RadioButtonsGroup(props) {
                             ...prevState,
                             checkbox: arr
                         }));
-                        obj = {...state.questions , ...{[objective.id.questionNo]:arr}};
+                        state.questions[objective.id.questionNo] = {...state.questions[objective.id.questionNo] , value:arr};
+                        // obj = {...state.questions , ...{[objective.id.questionNo]:arr}};
                       
                     }
                    
@@ -148,7 +150,7 @@ function RadioButtonsGroup(props) {
                     localStorage.setItem('reviewQuestionNo', JSON.stringify(reviewQuestionNo));
                 }
                 // dispatch({ type: 'RESET', reset: false });
-                dispatch({type:'ADD_QUESTION_VALUES' , questions:obj , reset:false});
+                dispatch({type:'ADD_QUESTION_VALUES' , questions:state.questions , reset:false});
             }
             // localStorage.setItem('isReset',JSON.stringify({'reset':false}));
            
@@ -164,7 +166,7 @@ function RadioButtonsGroup(props) {
             ...prevState,
             radio: eventval
         }));
-        let obj = {...state.questions , ...{[objective.id.questionNo]:eventval}};
+        let obj = {...state.questions , ...{[objective.id.questionNo]:{key:option , value:eventval}}};
          dispatch({type:'ADD_QUESTION_VALUES' , questions:obj , reset:false});
         // this.setState(() => ({
         //     radio:event
@@ -323,7 +325,8 @@ function RadioButtonsGroup(props) {
 
     const handleChange = (isChecked, name, objective) => {
 
-
+        let checkboxValuesArr = [];
+        let checkBoxValues="";
         setRadio(prevState => ({
             ...prevState,
             checkbox: prevState.checkbox.set(name, isChecked)
@@ -334,11 +337,20 @@ function RadioButtonsGroup(props) {
            arr.set(name,isChecked);
 
        }else {
-            arr = state.questions[objective.id.questionNo];
+            arr = state.questions[objective.id.questionNo].value;
            arr.set(name,isChecked);
        }
 
-        let obj = {...state.questions , ...{[objective.id.questionNo]:arr}};
+       for (var [key, value] of arr) {
+        console.log(key + " = " + value);
+        if(value){
+            checkboxValuesArr.push(key);
+        }
+        
+        }
+
+        checkBoxValues = checkboxValuesArr.join(",");
+        let obj = {...state.questions , ...{[objective.id.questionNo]:{key:checkBoxValues , value:arr}}};
         dispatch({type:'ADD_QUESTION_VALUES' , questions:obj , reset:false});
         // this.setState(prevState => ({
         //     checkbox: prevState.checkbox.set(name, isChecked)

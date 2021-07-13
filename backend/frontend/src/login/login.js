@@ -139,19 +139,7 @@ export default function Login() {
       registrationNo: regNo,
       password: password
     };
-    let obj1 = {
-      "registrationNo": 2,
-      "resp": [
-        {
-          "id": {
-            "registrationNo": 2,
-            "questionId": 2,
-            "yearOfExam": 2020
-          },
-          "selectedAnswer": "option1,option2"
-        }
-      ]
-    };
+   
    
      axios.post('cbt/student/login', obj).then(res => {
       //  console.log("res", res);
@@ -160,12 +148,14 @@ export default function Login() {
     //  history.push('/test');
 
     //  setOpen(true);
-    //  let popup = window.open("/test", "popup", "fullscreen");
-    // if (popup.outerWidth < window.screen.availWidth || popup.outerHeight < window.screen.availHeight)
-    // {
-    //   popup.moveTo(0,0);
-    //   popup.resizeTo(window.screen.availWidth, window.screen.availHeight);
-    // }
+
+    localStorage.setItem('regNo', JSON.stringify({ 'registrationNo':regNo}));
+     var popup = window.open("/test", "popup", "fullscreen");
+    if (popup.outerWidth < window.screen.availWidth || popup.outerHeight < window.screen.availHeight)
+    {
+      popup.moveTo(0,0);
+      popup.resizeTo(window.screen.availWidth, window.screen.availHeight);
+    }
 
       history.push('/test');
      dispatch({type:'HANDLELOADING' ,isLoading:false});
@@ -178,12 +168,7 @@ export default function Login() {
     // window.open("/instructions", "_blank", 'menubar=no,width=1000,height=1000,resizable=no,scrollbars,status,toolbar=yes');
     //  }
     //  })
-    // var popup = window.open("/test", "popup", "fullscreen");
-    // if (popup.outerWidth < window.screen.availWidth || popup.outerHeight < window.screen.availHeight)
-    // {
-    //   popup.moveTo(0,0);
-    //   popup.resizeTo(window.screen.availWidth, window.screen.availHeight);
-    // }
+   
 
   // if (popup.outerWidth < screen.width || popup.outerHeight < screen.height)
   // {

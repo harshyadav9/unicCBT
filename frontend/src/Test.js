@@ -186,7 +186,8 @@ function Test(props) {
         console.log("test getting called");
         dispatch({ type: 'HANDLELOADING', isLoading: true });
         let keys = {};
-        axios.get('cbt/student/getQuestions/1').then(res => {
+        let regNo = JSON.parse(localStorage.getItem('regNo'));
+        axios.get(`cbt/student/getQuestions/${regNo.registrationNo}`).then(res => {
             let arr = [];
             let unvisitedArr = [];
 
@@ -339,12 +340,29 @@ function Test(props) {
         // for(let i = 1 ; i < questionList.length;i++){
         //     if(finalData() questionList[i])
         // }
+        console.log("questionList",questionList);
+        let finalData = {resp:[]};
+        let finalStateData = state.questions;
+        for(let question in finalStateData){
+            let obj = {
+                "id": {
+                    registrationNo: 1,
+                    questionNo:question,
+                    year: questionList[0].id.year
+                },
+                setNo:questionList[0].setNo,
+                answer: finalStateData[question].key,
+                examCd:questionList[0].id.examCd,
+                instCd:questionList[0].id.instCd
+            };
+            finalData.resp.push(obj);
+        }
         console.log(JSON.stringify(finalData));
-        let obj = { registrationNo: 2, resp: finalData };
-        axios.put('/student/submitExam', obj).then(res => {
+        // let obj = { registrationNo: 2, resp: finalData };
+        axios.post('cbt/student/submitExam', finalData).then(res => {
             console.log("res", res);
         })
-        console.log("obj", obj);
+        console.log("finalData", finalData);
     }
 
     // const reviewQuestion = () => {
@@ -569,7 +587,7 @@ function Test(props) {
     const handleBack = () => {
         setactiveStep(activeStep - 1);
         setCurrentQuestion(questionList[(activeStep - 1)]);
-        checkVisitedQues(activeStep);
+        checkVisitedQues(activeStep-1);
     };
 
 

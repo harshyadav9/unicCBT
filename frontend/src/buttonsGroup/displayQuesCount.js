@@ -63,7 +63,7 @@ const userStyles = makeStyles({
 
 const DisplayQuesCount = ({totalQues,activeStep}) => {
     const classes = userStyles();
-    console.log("DisplayQuesCount loaded",activeStep);
+    // console.log("DisplayQuesCount loaded",activeStep);
     let unansweredQuestions = totalQues;
     let answeredQuestions = 0;
     let reviewUnQuestions = 0;
@@ -71,7 +71,7 @@ const DisplayQuesCount = ({totalQues,activeStep}) => {
    
     let reviewquestionsObj = JSON.parse(localStorage.getItem('reviewQuestionNo'));
     let answeredQuestionsObj = JSON.parse(localStorage.getItem('questionNo'));
-    console.log("JSON.parse(localStorage.getItem('unvisitedQues'))",JSON.parse(localStorage.getItem('unvisitedQues')));
+    // console.log("JSON.parse(localStorage.getItem('unvisitedQues'))",JSON.parse(localStorage.getItem('unvisitedQues')));
     let unvisitedQuestions = JSON.parse(localStorage.getItem('unvisitedQues')) === null ? 0 : JSON.parse(localStorage.getItem('unvisitedQues')).length;
 
    
